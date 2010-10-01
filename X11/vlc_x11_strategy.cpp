@@ -1,7 +1,7 @@
 /*
-** encrev2_vlc.hh
+** vlc_x11_strategy.cpp
 ** Login : <elthariel@rincevent>
-** Started on  Thu Sep 30 18:27:40 2010 elthariel
+** Started on  Fri Oct  1 02:15:32 2010 elthariel
 ** $Id$
 **
 ** Author(s):
@@ -23,25 +23,21 @@
 ** Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
 */
 
-#ifndef   	ENCREV2_VLC_HH_
-# define   	ENCREV2_VLC_HH_
+#include <iostream>
+#include "X11/PluginWindowX11.h"
+#include "vlc_system_strategy.hh"
 
-# include "vlc_system_strategy.hh"
 
-class Vlc
+void            VlcSystemStrategy::set_window(libvlc_media_player_t *mp,
+                                              FB::PluginWindow *w)
 {
-public:
-  Vlc();
-  ~Vlc();
+  if (w && mp)
+  {
+    FB::PluginWindowX11 *x11 = w->get_as<FB::PluginWindowX11>();
 
-  bool          attach_window(FB::PluginWindow *win);
-  bool          detach_window(FB::PluginWindow *win);
+    libvlc_media_player_set_xwindow(mp, (libvlc_drawable_t)x11->getWindow(), 0);
+  }
+  else if (mp)
+    libvlc_media_player_set_xwindow(mp, (libvlc_drawable_t)0, 0);
+}
 
-protected:
-  libvlc_exception_t            m_ex;
-  libvlc_instance_t             *m_vlc;
-  libvlc_media_player_t         *m_mp;
-  libvlc_media_t                *m_m;
-};
-
-#endif	    /* !ENCREV2_VLC_HH_ */

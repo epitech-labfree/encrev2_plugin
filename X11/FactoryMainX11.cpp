@@ -21,3 +21,4 @@ FB::PluginWindowX11 *_createPluginWindow(GdkNativeWindow win)
 {
     return new FB::PluginWindowX11(win);
 }
+

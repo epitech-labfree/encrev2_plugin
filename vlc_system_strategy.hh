@@ -1,7 +1,7 @@
 /*
-** encrev2_vlc.hh
+** vlc_system_specific.hh
 ** Login : <elthariel@rincevent>
-** Started on  Thu Sep 30 18:27:40 2010 elthariel
+** Started on  Fri Oct  1 02:12:13 2010 elthariel
 ** $Id$
 **
 ** Author(s):
@@ -23,25 +23,18 @@
 ** Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
 */
 
-#ifndef   	ENCREV2_VLC_HH_
-# define   	ENCREV2_VLC_HH_
+#ifndef   	VLC_SYSTEM_SPECIFIC_HH_
+# define   	VLC_SYSTEM_SPECIFIC_HH_
 
-# include "vlc_system_strategy.hh"
+# include <vlc/vlc.h>
+# include "PluginWindow.h"
 
-class Vlc
+class Vlc;
+
+class VlcSystemStrategy
 {
 public:
-  Vlc();
-  ~Vlc();
-
-  bool          attach_window(FB::PluginWindow *win);
-  bool          detach_window(FB::PluginWindow *win);
-
-protected:
-  libvlc_exception_t            m_ex;
-  libvlc_instance_t             *m_vlc;
-  libvlc_media_player_t         *m_mp;
-  libvlc_media_t                *m_m;
+  static void   set_window(libvlc_media_player_t *mp, FB::PluginWindow *);
 };
 
-#endif	    /* !ENCREV2_VLC_HH_ */
+#endif	    /* !VLC_SYSTEM_SPECIFIC_HH_ */

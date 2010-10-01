@@ -29,9 +29,9 @@
 using namespace std;
 
 static const char * const vlc_args[] = {
-              "-I", "dummy", /* Don't use any interface */
-              "--ignore-config", /* Don't use VLC's config */
-              "-v"
+  "-I", "dummy", /* Don't use any interface */
+  "--ignore-config", /* Don't use VLC's config */
+  "-v"
 };
 
 static void raise(libvlc_exception_t * ex)
@@ -44,22 +44,41 @@ static void raise(libvlc_exception_t * ex)
 Vlc::Vlc()
   :m_vlc(0), m_mp(0), m_m(0)
 {
-    cout << "Encre::Vlc, Initialization..." << endl;
+  cout << "Encre::Vlc, Initialization..." << endl;
 
-    libvlc_exception_init(&m_ex);
+  libvlc_exception_init(&m_ex);
 
-    // init vlc modules, should be done only once
-    m_vlc = libvlc_new(sizeof(vlc_args) / sizeof(vlc_args[0]), vlc_args, &m_ex);
+  // init vlc modules, should be done only once
+  m_vlc = libvlc_new(sizeof(vlc_args) / sizeof(vlc_args[0]), vlc_args, &m_ex);
+  raise (&m_ex);
+  if (m_vlc)
+  {
+    m_mp = libvlc_media_player_new(m_vlc, &m_ex);
     raise (&m_ex);
+  }
 
-    cout << "Encre::Vlc, ...Done!" << endl;
+  cout << "Encre::Vlc, ...Done!" << endl;
 }
 
 Vlc::~Vlc()
 {
-    cout << "Encre::Vlc, Destruction" << endl;
+  cout << "Encre::Vlc, Destruction" << endl;
 
-    libvlc_release(m_vlc);
-    raise (&m_ex);
+  libvlc_release(m_vlc);
+  raise (&m_ex);
+}
+
+bool          Vlc::attach_window(FB::PluginWindow *win)
+{
+  cout << "Attaching to the window" << endl;
+  VlcSystemStrategy::set_window(m_mp, win);
+  return true;
+}
+
+bool          Vlc::detach_window(FB::PluginWindow *win)
+{
+  cout << "Detaching from the window" << endl;
+  VlcSystemStrategy::set_window(m_mp, 0);
+  return true;
 }
 

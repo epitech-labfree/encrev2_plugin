@@ -12,6 +12,7 @@
 #include "NpapiTypes.h"
 #include "encrev2_pluginAPI.h"
 #include "encrev2_plugin.h"
+#include "PluginWindow.h"
 
 using namespace std;
 
@@ -61,14 +62,14 @@ bool encrev2_plugin::onMouseMove(FB::MouseMoveEvent *evt, FB::PluginWindow *)
   //printf("Mouse move at: %d, %d\n", evt->m_x, evt->m_y);
   return false;
 }
-bool encrev2_plugin::onWindowAttached(FB::AttachedEvent *evt, FB::PluginWindow *)
+bool encrev2_plugin::onWindowAttached(FB::AttachedEvent *evt, FB::PluginWindow *w)
 {
-  // The window is attached; act appropriately
+  m_vlc.attach_window(w);
   return false;
 }
 
-bool encrev2_plugin::onWindowDetached(FB::DetachedEvent *evt, FB::PluginWindow *)
+bool encrev2_plugin::onWindowDetached(FB::DetachedEvent *evt, FB::PluginWindow *w)
 {
-  // The window is about to be detached; act appropriately
+  m_vlc.detach_window(w);
   return false;
 }
