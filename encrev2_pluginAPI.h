@@ -12,29 +12,42 @@
 #ifndef H_encrev2_pluginAPI
 #define H_encrev2_pluginAPI
 
+class encrev2_plugin;
+
 class encrev2_pluginAPI : public FB::JSAPIAuto
 {
-public:
-    encrev2_pluginAPI(FB::BrowserHost host);
-    virtual ~encrev2_pluginAPI();
+ public:
+  encrev2_pluginAPI(FB::BrowserHostPtr host, encrev2_plugin &core);
+  virtual ~encrev2_pluginAPI();
 
-    // Read/Write property ${PROPERTY.ident}
-    std::string get_testString();
-    void set_testString(const std::string& val);
+  /*
+   * Generated example code
+   */
+  // Read/Write property ${PROPERTY.ident}
+  std::string get_testString();
+  void set_testString(const std::string& val);
 
-    // Read-only property ${PROPERTY.ident}
-    std::string get_version();
+  // Read-only property ${PROPERTY.ident}
+  std::string get_version();
 
-    // Method echo
-    FB::variant echo(const FB::variant& msg);
-    
-    // Method test-event
-    void testEvent(const FB::variant& s);
+  // Method echo
+  FB::variant echo(const FB::variant& msg);
 
-private:
-    FB::BrowserHost m_host;
+  // Method test-event
+  void testEvent(const FB::variant& s);
 
-    std::string m_testString;
+  /*
+   * Encre actual code
+   */
+  void                  stream(const std::string &host,
+                               const std::string &port);
+  void                  play(const std::string &mrl);
+
+ private:
+  FB::BrowserHostPtr    m_host;
+  encrev2_plugin        &m_plugin;
+
+  std::string           m_testString;
 };
 
 #endif // H_encrev2_pluginAPI

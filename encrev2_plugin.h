@@ -20,8 +20,9 @@
 class encrev2_plugin : public FB::PluginCore
 {
  public:
-  static void StaticInitialize();
-  static void StaticDeinitialize();
+  static void   StaticInitialize();
+  static void   StaticDeinitialize();
+  Vlc           &vlc();
 
  public:
   encrev2_plugin();

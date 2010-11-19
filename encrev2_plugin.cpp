@@ -16,7 +16,7 @@
 
 using namespace std;
 
-void encrev2_plugin::StaticInitialize()
+void            encrev2_plugin::StaticInitialize()
 {
   cout << "encrev2_plugin::StaticInitialize()" << endl;
   // Place one-time initialization stuff here; note that there isn't an absolute guarantee that
@@ -24,7 +24,7 @@ void encrev2_plugin::StaticInitialize()
   // after StaticDeinitialize is called
 }
 
-void encrev2_plugin::StaticDeinitialize()
+void            encrev2_plugin::StaticDeinitialize()
 {
   cout << "encrev2_plugin::StaticDeinitialize()" << endl;
   // Place one-time deinitialization stuff here
@@ -39,37 +39,50 @@ encrev2_plugin::~encrev2_plugin()
 {
 }
 
-FB::JSAPIPtr encrev2_plugin::createJSAPI()
+FB::JSAPIPtr    encrev2_plugin::createJSAPI()
 {
   // m_host is the BrowserHostWrapper
-  return FB::JSAPIPtr(new encrev2_pluginAPI(m_host));
+  return FB::JSAPIPtr(new encrev2_pluginAPI(m_host, *this));
 }
 
-bool encrev2_plugin::onMouseDown(FB::MouseDownEvent *evt, FB::PluginWindow *)
+bool            encrev2_plugin::onMouseDown(FB::MouseDownEvent *evt,
+                                            FB::PluginWindow *)
 {
   //printf("Mouse down at: %d, %d\n", evt->m_x, evt->m_y);
   return false;
 }
 
-bool encrev2_plugin::onMouseUp(FB::MouseUpEvent *evt, FB::PluginWindow *)
+bool            encrev2_plugin::onMouseUp(FB::MouseUpEvent *evt,
+                                          FB::PluginWindow *)
 {
   //printf("Mouse up at: %d, %d\n", evt->m_x, evt->m_y);
   return false;
 }
 
-bool encrev2_plugin::onMouseMove(FB::MouseMoveEvent *evt, FB::PluginWindow *)
+bool            encrev2_plugin::onMouseMove(FB::MouseMoveEvent *evt,
+                                            FB::PluginWindow *)
 {
   //printf("Mouse move at: %d, %d\n", evt->m_x, evt->m_y);
   return false;
 }
-bool encrev2_plugin::onWindowAttached(FB::AttachedEvent *evt, FB::PluginWindow *w)
+bool            encrev2_plugin::onWindowAttached(FB::AttachedEvent *evt,
+                                                 FB::PluginWindow *w)
 {
-  m_vlc.attach_window(w);
+  m_vlc.set_window(w);
   return false;
 }
 
-bool encrev2_plugin::onWindowDetached(FB::DetachedEvent *evt, FB::PluginWindow *w)
+bool            encrev2_plugin::onWindowDetached(FB::DetachedEvent *evt,
+                                                 FB::PluginWindow *w)
 {
-  m_vlc.detach_window(w);
+  m_vlc.set_window(0);
   return false;
 }
+
+Vlc             &encrev2_plugin::vlc()
+{
+  return m_vlc;
+}
+
+
+

@@ -26,6 +26,7 @@
 #ifndef   	VLC_SYSTEM_SPECIFIC_HH_
 # define   	VLC_SYSTEM_SPECIFIC_HH_
 
+# include <string>
 # include <vlc/vlc.h>
 # include "PluginWindow.h"
 
@@ -34,7 +35,10 @@ class Vlc;
 class VlcSystemStrategy
 {
 public:
-  static void   set_window(libvlc_media_player_t *mp, FB::PluginWindow *);
+  // static void           set_window(libvlc_media_player_t *mp, FB::PluginWindow *,
+  //                                  libvlc_exception_t *ex);
+  static void           set_window(libvlc_media_player_t *mp, FB::PluginWindow *);
+  static bool           get_webcam_mrl(std::string &mrl);
 };
 
 #endif	    /* !VLC_SYSTEM_SPECIFIC_HH_ */

@@ -3,6 +3,20 @@
 <title>Basic Encrev2 Plugin Test</title>
 </head>
 <body>
-  <object id="test" type="application/x-encrev2-plugin" width=320 height=240 text="Encre Video Conf">Unable to load plugin </object>
+  <object id="publish" type="application/x-encrev2-plugin" width=320 height=240 text="Encre Video Conf">Unable to load plugin </object>
+  <!-- <object id="receive" type="application/x-encrev2-plugin" width=320 height=240 text="Encre Video Conf">Unable to load plugin </object> -->
+
+  <script language=JavaScript>
+    function start_publish()
+    {
+    var publish = document.getElementById('publish');
+    publish.stream('file:///home/elthariel/test.avi', '1234');
+    }
+  </script>
+
+  <form>
+  <input type="button" value="Publish..." OnClick="start_publish()"/>
+  </form>
+
 </body>
 </html>
