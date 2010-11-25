@@ -37,17 +37,18 @@ void            VlcSystemStrategy::set_window(libvlc_media_player_t *mp,
   if (w && mp)
   {
     FB::PluginWindowX11 *x11 = w->get_as<FB::PluginWindowX11>();
-
-    cout << "Xid = " << x11->getWindow() << endl;
-
-    libvlc_media_player_set_xwindow(mp, (uint32_t)x11->getWindow());
+    libvlc_media_player_set_xwindow(mp, (libvlc_drawable_t)x11->getWindow(), 0);
+    //    cout << "Xid = " << x11->getWindow() << endl;
+    //
+    //libvlc_media_player_set_xwindow(mp, (uint32_t)x11->getWindow());
   }
   else if (mp)
-    libvlc_media_player_set_xwindow(mp, (uint32_t)0);
+    libvlc_media_player_set_xwindow(mp, (libvlc_drawable_t)0, 0);
+  //    libvlc_media_player_set_xwindow(mp, (uint32_t)0);
 }
 
-bool             VlcSystemStrategy::get_webcam_mrl(std::string &mrl)
-{
-  mrl = "v4l2://";
-}
+//bool             VlcSystemStrategy::get_webcam_mrl(std::string &mrl)
+//{
+//  mrl = "v4l2://";
+//}
 

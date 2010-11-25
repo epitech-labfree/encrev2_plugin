@@ -39,9 +39,9 @@ class encrev2_pluginAPI : public FB::JSAPIAuto
   /*
    * Encre actual code
    */
-  void                  stream(const std::string &host,
-                               const std::string &port);
-  void                  play(const std::string &mrl);
+  //  void                  stream(const std::string &host,
+  //                               const std::string &port);
+//void                  play(const std::string &mrl);
 
  private:
   FB::BrowserHostPtr    m_host;

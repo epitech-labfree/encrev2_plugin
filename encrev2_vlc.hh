@@ -26,7 +26,7 @@
 #ifndef   	ENCREV2_VLC_HH_
 # define   	ENCREV2_VLC_HH_
 
-# include <string>
+//# include <string>
 
 # include "vlc_system_strategy.hh"
 
@@ -36,17 +36,19 @@ public:
   Vlc();
   ~Vlc();
 
-  bool          set_window(FB::PluginWindow *win);
+  bool          attach_window(FB::PluginWindow *win);
+  bool          detach_window(FB::PluginWindow *win);
+  //  bool          set_window(FB::PluginWindow *win);
 
-  void          stream(std::string host, std::string port);
-  void          play(std::string mrl);
+  //  void          stream(std::string host, std::string port);
+  // void          play(std::string mrl);
 
 protected:
-  //libvlc_exception_t            m_ex;
+  libvlc_exception_t            m_ex;
   libvlc_instance_t             *m_vlc;
   libvlc_media_player_t         *m_mp;
   libvlc_media_t                *m_m;
-  FB::PluginWindow              *m_window;
+  //FB::PluginWindow              *m_window;
 };
 
 #endif	    /* !ENCREV2_VLC_HH_ */
