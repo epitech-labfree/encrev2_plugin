@@ -31,32 +31,24 @@ using namespace std;
 static const char * const vlc_args[] = {
   "-I", "dummy", /* Don't use any interface */
   "--ignore-config", /* Don't use VLC's config */
-  "-v"
+  "-vvv"
 };
 
 // Exception mechanism has been removed in 1.1
-static void raise(libvlc_exception_t * ex)
-{
-  if (libvlc_exception_raised(ex))
-    cerr <<  "Encre::Vlc, Error: " << libvlc_exception_get_message(ex) << endl;
-}
+// static void raise(libvlc_exception_t * ex)
+// {
+//   if (libvlc_exception_raised(ex))
+//     cerr <<  "Encre::Vlc, Error: " << libvlc_exception_get_message(ex) << endl;
+// }
 
 
 Vlc::Vlc()
-  :m_vlc(0), m_mp(0), m_m(0)
+  :m_vlc(0), m_mp(0), m_m(0), m_window(0)
 {
   cout << "Encre::Vlc, Initialization..." << endl;
 
-  libvlc_exception_init(&m_ex);
-
   // init vlc modules, should be done only once
-  m_vlc = libvlc_new(sizeof(vlc_args) / sizeof(vlc_args[0]), vlc_args, &m_ex);
-  raise (&m_ex);
-  if (m_vlc)
-    {
-      m_mp = libvlc_media_player_new(m_vlc, &m_ex);
-      raise (&m_ex);
-    }
+  m_vlc = libvlc_new(sizeof(vlc_args) / sizeof(vlc_args[0]), vlc_args);
 
   cout << "Encre::Vlc, ...Done!" << endl;
 }
@@ -66,28 +58,49 @@ Vlc::~Vlc()
   cout << "Encre::Vlc, Destruction" << endl;
 
   libvlc_release(m_vlc);
-  raise (&m_ex);
 }
 
-bool          Vlc::attach_window(FB::PluginWindow *win)
+bool          Vlc::set_window(FB::PluginWindow *win)
 {
-  cout << "Attaching to the window" << endl;
-  VlcSystemStrategy::set_window(m_mp, win);
-  //  if (win)
-  //cout << "Attaching to the window" << endl;
-  //else
-  // cout << "Detaching from the window" << endl;
+  if (win)
+    cout << "Attaching to the window" << endl;
+  else
+    cout << "Detaching from the window" << endl;
 
   // VlcSystemStrategy::set_window(m_mp, win);
-  //m_window = win;
+  m_window = win;
 
   return true;
 }
 
-bool          Vlc::detach_window(FB::PluginWindow *win)
-//void          Vlc::stream(std::string host, std::string port)
+void          Vlc::stream(std::string host, std::string port)
 {
-  cout << "Detaching from the window" << endl;
-  VlcSystemStrategy::set_window(m_mp, 0);   
-  return true;
+  std::string mrl;
+
+  VlcSystemStrategy::get_webcam_mrl(mrl);
+  cout << "Streaming " << mrl << " to " << host << ":" << port << endl;
+
+  m_m = libvlc_media_new_path(m_vlc, mrl.c_str());
+  if (m_m)
+  {
+    m_mp = libvlc_media_player_new_from_media(m_m);
+    libvlc_media_release (m_m);
+    VlcSystemStrategy::set_window(m_mp, m_window);
+    libvlc_media_player_play(m_mp);
+  }
+}
+
+void          Vlc::play(std::string mrl)
+{
+  cout << "Playing " << mrl << endl;
+
+
+  m_m = libvlc_media_new_path(m_vlc, mrl.c_str());
+  if (m_m)
+  {
+    m_mp = libvlc_media_player_new_from_media(m_m);
+    libvlc_media_release(m_m);
+    VlcSystemStrategy::set_window(m_mp, m_window);
+    libvlc_media_player_play(m_mp);
+  }
 }

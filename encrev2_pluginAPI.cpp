@@ -16,6 +16,8 @@ encrev2_pluginAPI::encrev2_pluginAPI(FB::BrowserHostPtr host, encrev2_plugin &pl
 {
   registerMethod("echo",      make_method(this, &encrev2_pluginAPI::echo));
   registerMethod("testEvent", make_method(this, &encrev2_pluginAPI::testEvent));
+  registerMethod("stream",    make_method(this, &encrev2_pluginAPI::stream));
+  registerMethod("play",      make_method(this, &encrev2_pluginAPI::play));
 
   // Read-write property
   registerProperty("testString",
@@ -63,9 +65,14 @@ void            encrev2_pluginAPI::testEvent(const FB::variant& var)
   FireEvent("onfired", FB::variant_list_of(var));
 }
 
-//void            encrev2_pluginAPI::play(const std::string &mrl)
-//{
-  //  m_plugin.vlc().play(mrl);
-//  FireEvent("onfired", FB::variant_list_of(var));
-//}
+void            encrev2_pluginAPI::stream(const std::string &host,
+                                          const std::string &port)
+{
+  m_plugin.vlc().stream(host, port);
+}
+
+void            encrev2_pluginAPI::play(const std::string &mrl)
+{
+  m_plugin.vlc().play(mrl);
+}
 
