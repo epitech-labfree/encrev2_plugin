@@ -16,13 +16,20 @@
     function start_play()
     {
     var publish = document.getElementById('publish');
+    publish.set_option("transcode","acodec", "wav");
     publish.play('file:///home/xin/test.avi');
+    }
+    function stop_play()
+    {
+    var publish = document.getElementById('publish');
+    publish.stop();
     }
   </script>
 
   <form>
   <input type="button" value="Stream..." OnClick="start_stream()"/>
-  <input type="button" value="Paly..." OnClick="start_play()"/>
+  <input type="button" value="Play..." OnClick="start_play()"/>
+  <input type="button" value="Stop !" OnClick="stop_play()"/>
   </form>
 
 </body>
