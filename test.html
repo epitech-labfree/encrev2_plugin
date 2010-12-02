@@ -7,15 +7,22 @@
   <!-- <object id="receive" type="application/x-encrev2-plugin" width=320 height=240 text="Encre Video Conf">Unable to load plugin </object> -->
 
   <script language=JavaScript>
-    function start_publish()
+    function start_stream()
     {
     var publish = document.getElementById('publish');
-    publish.stream('file:///home/elthariel/test.avi', '1234');
+    publish.stream('file:///home/elthariel/test.avi','1234');
+    }
+
+    function start_play()
+    {
+    var publish = document.getElementById('publish');
+    publish.play('file:///home/xin/Documents/test.avi');
     }
   </script>
 
   <form>
-  <input type="button" value="Publish..." OnClick="start_publish()"/>
+  <input type="button" value="Stream..." OnClick="start_stream()"/>
+  <input type="button" value="Paly..." OnClick="start_play()"/>
   </form>
 
 </body>
