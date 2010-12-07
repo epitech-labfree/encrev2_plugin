@@ -4,12 +4,14 @@
 
 \**********************************************************/
 
+#include "iostream"
 #include "JSObject.h"
 #include "variant_list.h"
 #include "DOM/Document.h"
 
 #include "encrev2_pluginAPI.h"
 #include "encrev2_plugin.h"
+#include "encrev2_CliOpt.hh"
 
 encrev2_pluginAPI::encrev2_pluginAPI(FB::BrowserHostPtr host, encrev2_plugin &plugin)
   : m_host(host), m_plugin(plugin)
@@ -18,6 +20,8 @@ encrev2_pluginAPI::encrev2_pluginAPI(FB::BrowserHostPtr host, encrev2_plugin &pl
   registerMethod("testEvent", make_method(this, &encrev2_pluginAPI::testEvent));
   registerMethod("stream",    make_method(this, &encrev2_pluginAPI::stream));
   registerMethod("play",      make_method(this, &encrev2_pluginAPI::play));
+  registerMethod("stop",      make_method(this, &encrev2_pluginAPI::stop));
+  registerMethod("set_option",      make_method(this, &encrev2_pluginAPI::set_option));
 
   // Read-write property
   registerProperty("testString",
@@ -76,3 +80,15 @@ void            encrev2_pluginAPI::play(const std::string &mrl)
   m_plugin.vlc().play(mrl);
 }
 
+void            encrev2_pluginAPI::stop()
+{
+  m_plugin.vlc().stop();
+}
+
+void
+encrev2_pluginAPI::set_option(const std::string& s1,
+    const std::string&s2, const std::string&s3)
+{
+	std::clog << "encrev2_pluginAPI" << std::endl;
+	m_plugin.vlc().set_option(s1,s2,s3);
+}

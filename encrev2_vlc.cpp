@@ -42,8 +42,7 @@ static const char * const vlc_args[] = {
 // }
 
 
-Vlc::Vlc()
-  :m_vlc(0), m_mp(0), m_m(0), m_window(0)
+Vlc::Vlc() : m_vlc(0), m_mp(0), m_m(0), m_window(0)
 {
   cout << "Encre::Vlc, Initialization..." << endl;
 
@@ -92,8 +91,7 @@ void          Vlc::stream(std::string host, std::string port)
 
 void          Vlc::play(std::string mrl)
 {
-  cout << "Playing " << mrl << endl;
-
+	std::cout << "Playing " << mrl << std::endl;
 
   m_m = libvlc_media_new_path(m_vlc, mrl.c_str());
   if (m_m)
@@ -103,4 +101,24 @@ void          Vlc::play(std::string mrl)
     VlcSystemStrategy::set_window(m_mp, m_window);
     libvlc_media_player_play(m_mp);
   }
+}
+
+void
+Vlc::stop() {
+	std::cout << "Stop" << std::endl;
+	return libvlc_media_player_stop(m_mp);
+}
+
+VlcCliOpt*
+Vlc::getCliOpt() const {
+	return m_vlc_cli_opt;
+}
+
+// Just a wrapper
+void
+Vlc::set_option(const std::string& s1,
+    const std::string&s2, const std::string&s3) {
+	std::clog << "Vlc" << std::endl;
+	m_vlc_cli_opt->set_option(s1,s2,s3);
+	std::clog << "END:Vlc" << std::endl;
 }
