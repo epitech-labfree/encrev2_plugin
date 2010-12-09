@@ -45,7 +45,7 @@ static const char * const vlc_args[] = {
 Vlc::Vlc() : m_vlc(0), m_mp(0), m_m(0), m_window(0)
 {
   cout << "Encre::Vlc, Initialization..." << endl;
-
+  m_vlc_cli_opt = new VlcCliOpt();
   // init vlc modules, should be done only once
   m_vlc = libvlc_new(sizeof(vlc_args) / sizeof(vlc_args[0]), vlc_args);
 
@@ -124,5 +124,6 @@ Vlc::set_option(const std::string& s1,
 
 std::string&
 Vlc::get_option() {
+	std::cout << "test ?" << std::endl;
 	m_vlc_cli_opt->get_option();
 }
