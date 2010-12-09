@@ -43,6 +43,7 @@ public:
   void		stop();
   VlcCliOpt*	getCliOpt() const;
   void		set_option(const std::string&, const std::string&, const std::string&);
+  std::string&	get_option();
 
 protected:
   libvlc_instance_t             *m_vlc;

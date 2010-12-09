@@ -7,6 +7,7 @@
 # Written to work with cmake 2.6
 cmake_minimum_required (VERSION 2.6)
 set (CMAKE_BACKWARDS_COMPATIBILITY 2.6)
+set (CMAKE_BUILD_TYPE Debug)
 
 include(${CMAKE_DIR}/common.cmake)
 
@@ -54,5 +55,7 @@ endif (VLC_FOUND)
 include_directories(${VLC_INCLUDE_DIRS})
 
 target_link_libraries(${PLUGIN_NAME} ${VLC_LIBRARIES})
+
+install(TARGETS ${PLUGIN_NAME} LIBRARY DESTINATION ~/.mozilla/plugins)
 
 

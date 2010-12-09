@@ -91,7 +91,7 @@ void          Vlc::stream(std::string host, std::string port)
 
 void          Vlc::play(std::string mrl)
 {
-	std::cout << "Playing " << mrl << std::endl;
+	std::clog << "Playing " << mrl << std::endl;
 
   m_m = libvlc_media_new_path(m_vlc, mrl.c_str());
   if (m_m)
@@ -105,7 +105,7 @@ void          Vlc::play(std::string mrl)
 
 void
 Vlc::stop() {
-	std::cout << "Stop" << std::endl;
+	std::clog << "Stop" << std::endl;
 	return libvlc_media_player_stop(m_mp);
 }
 
@@ -114,11 +114,15 @@ Vlc::getCliOpt() const {
 	return m_vlc_cli_opt;
 }
 
-// Just a wrapper
+// Just wrappers
 void
 Vlc::set_option(const std::string& s1,
     const std::string&s2, const std::string&s3) {
-	std::clog << "Vlc" << std::endl;
+	std::cout << "Vlc::set_option" << std::endl;
 	m_vlc_cli_opt->set_option(s1,s2,s3);
-	std::clog << "END:Vlc" << std::endl;
+}
+
+std::string&
+Vlc::get_option() {
+	m_vlc_cli_opt->get_option();
 }

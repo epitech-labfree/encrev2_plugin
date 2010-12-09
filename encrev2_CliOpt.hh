@@ -5,12 +5,11 @@
 # define ENCREV2_CLIOPT_HH_
 
 class VlcCliOpt {
-	std::map<std::string, std::string> _opt;
-
-	void initTranscode();
+	std::multimap<std::string, std::string> _opt;
 
 public:
 	void set_option(const std::string&, const std::string&, const std::string&);
+	std::string& get_option();
 	VlcCliOpt();
 	virtual ~VlcCliOpt();
 };

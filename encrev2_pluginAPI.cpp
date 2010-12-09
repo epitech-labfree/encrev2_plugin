@@ -22,6 +22,7 @@ encrev2_pluginAPI::encrev2_pluginAPI(FB::BrowserHostPtr host, encrev2_plugin &pl
   registerMethod("play",      make_method(this, &encrev2_pluginAPI::play));
   registerMethod("stop",      make_method(this, &encrev2_pluginAPI::stop));
   registerMethod("set_option",      make_method(this, &encrev2_pluginAPI::set_option));
+  registerMethod("get_option",      make_method(this, &encrev2_pluginAPI::get_option));
 
   // Read-write property
   registerProperty("testString",
@@ -91,4 +92,9 @@ encrev2_pluginAPI::set_option(const std::string& s1,
 {
 	std::clog << "encrev2_pluginAPI" << std::endl;
 	m_plugin.vlc().set_option(s1,s2,s3);
+}
+
+std::string&
+encrev2_pluginAPI::get_option() {
+	m_plugin.vlc().get_option();
 }
