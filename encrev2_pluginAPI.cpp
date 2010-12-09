@@ -94,7 +94,7 @@ encrev2_pluginAPI::set_option(const std::string& s1,
 	m_plugin.vlc().set_option(s1,s2,s3);
 }
 
-std::string&
+std::string*
 encrev2_pluginAPI::get_option() {
 	m_plugin.vlc().get_option();
 }

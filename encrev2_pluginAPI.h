@@ -45,7 +45,7 @@ class encrev2_pluginAPI : public FB::JSAPIAuto
   void			set_option(const std::string&,
 	    const std::string&,const std::string&);
   void			stop();
-  std::string&		get_option();
+  std::string*		get_option();
 
  private:
   FB::BrowserHostPtr    m_host;

@@ -41,16 +41,15 @@ public:
   void          stream(std::string host, std::string port);
   void          play(std::string mrl);
   void		stop();
-  VlcCliOpt*	getCliOpt() const;
   void		set_option(const std::string&, const std::string&, const std::string&);
-  std::string&	get_option();
+  std::string*	get_option();
 
 protected:
   libvlc_instance_t             *m_vlc;
   libvlc_media_player_t         *m_mp;
   libvlc_media_t                *m_m;
   FB::PluginWindow              *m_window;
-  VlcCliOpt			*m_vlc_cli_opt;
+  std::multimap<std::string, std::string> _opt;
 };
 
 #endif	    /* !ENCREV2_VLC_HH_ */

@@ -42,10 +42,9 @@ static const char * const vlc_args[] = {
 // }
 
 
-Vlc::Vlc() : m_vlc(0), m_mp(0), m_m(0), m_window(0)
+Vlc::Vlc() : m_vlc(0), m_mp(0), m_m(0), m_window(0), _opt()
 {
   cout << "Encre::Vlc, Initialization..." << endl;
-  m_vlc_cli_opt = new VlcCliOpt();
   // init vlc modules, should be done only once
   m_vlc = libvlc_new(sizeof(vlc_args) / sizeof(vlc_args[0]), vlc_args);
 
@@ -109,21 +108,24 @@ Vlc::stop() {
 	return libvlc_media_player_stop(m_mp);
 }
 
-VlcCliOpt*
-Vlc::getCliOpt() const {
-	return m_vlc_cli_opt;
-}
-
-// Just wrappers
 void
-Vlc::set_option(const std::string& s1,
-    const std::string&s2, const std::string&s3) {
-	std::cout << "Vlc::set_option" << std::endl;
-	m_vlc_cli_opt->set_option(s1,s2,s3);
+Vlc::set_option(const std::string& global_option,
+    const std::string& option, const std::string& value) {
+
+	std::string key(option.c_str());
+	key.append("=");
+	key.append(value.c_str());
+	_opt.insert(std::pair<std::string, std::string>(global_option, key));
 }
 
-std::string&
+std::string*
 Vlc::get_option() {
-	std::cout << "test ?" << std::endl;
-	m_vlc_cli_opt->get_option();
+	std::string* str = new std::string("#");
+	std::multimap<std::string, std::string>::iterator it = _opt.begin();
+
+	while (it != _opt.end()) {
+		std::cout << (*it).first << " => " << (*it).second << std::endl;
+		for (unsigned int i = 0; i != _opt.count((*it).first); ++it);
+	}
+	return str;
 }
