@@ -105,7 +105,8 @@ void          Vlc::play(std::string mrl)
 void
 Vlc::stop() {
 	std::clog << "Stop" << std::endl;
-	return libvlc_media_player_stop(m_mp);
+	if (m_mp != 0)
+		libvlc_media_player_stop(m_mp);
 }
 
 void
@@ -124,8 +125,17 @@ Vlc::get_option() {
 	std::multimap<std::string, std::string>::iterator it = _opt.begin();
 
 	while (it != _opt.end()) {
-		std::cout << (*it).first << " => " << (*it).second << std::endl;
-		for (unsigned int i = 0; i != _opt.count((*it).first); ++it);
+		unsigned int count = _opt.count((*it).first);
+		str->append((*it).first);
+		str->append("{");
+
+		for (unsigned int i = 0; i != count; ++i, ++it) {
+			str->append((*it).second);
+			if ((i+1) != count)
+				str->append(",");
+		}
+		str->append("}:");
 	}
+	std::clog << *str << std::endl;
 	return str;
 }

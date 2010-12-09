@@ -11,7 +11,6 @@
 
 #include "encrev2_pluginAPI.h"
 #include "encrev2_plugin.h"
-#include "encrev2_CliOpt.hh"
 
 encrev2_pluginAPI::encrev2_pluginAPI(FB::BrowserHostPtr host, encrev2_plugin &plugin)
   : m_host(host), m_plugin(plugin)

@@ -17,6 +17,7 @@
     {
     var publish = document.getElementById('publish');
     publish.set_option("transcode","acodec", "wav");
+    publish.get_option();
     publish.play('file:///home/xin/test.avi');
     }
     function stop_play()

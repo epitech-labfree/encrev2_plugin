@@ -27,7 +27,7 @@
 # define   	ENCREV2_VLC_HH_
 
 # include <string>
-# include "encrev2_CliOpt.hh"
+# include <map>
 # include "vlc_system_strategy.hh"
 
 class Vlc
