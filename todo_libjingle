@@ -1,6 +1,8 @@
 ***************************************
 ****
 **LIBJINGLE
+***besoins de scons pour build
+***besoins de swtoolkit pour build (appel scons)
 ***cvs pour le srtp
 ***besoins de libssl-dev (apt-get)
 ***besoins de libasound2-dev
