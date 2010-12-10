@@ -34,7 +34,7 @@ static const char * vlc_args[] = {
   "-I", "dummy", /* Don't use any interface */
   "--ignore-config", /* Don't use VLC's config */
   "-vv",
-  0, /* Left this empty for the --sout option */
+  "--sout", 0, /* Left this empty for the --sout option */
 };
 
 // Exception mechanism has been removed in 1.1
@@ -65,8 +65,9 @@ void	      Vlc::start()
 {
 	if (m_vlc != 0)
 		return ;
+
 	std::cout << "Start vlc with :" << std::endl;
-	vlc_args[4] = get_option()->c_str();
+	vlc_args[5] = get_option()->c_str();
 
 	for (int i = 0; i != sizeof(vlc_args) / sizeof(vlc_args[0]); ++i)
 		std::cout << "- " << vlc_args[i] << std::endl;
@@ -148,7 +149,7 @@ Vlc::set_option(const std::string& global_option,
 
 std::string*
 Vlc::get_option() {
-	std::string* str = new std::string("--sout '#");
+	std::string* str = new std::string("#");
 	std::multimap<std::string, std::string>::iterator it = _opt.begin();
 
 	if (_opt.empty())
@@ -164,7 +165,7 @@ Vlc::get_option() {
 			if ((i+1) != count)
 				str->append(",");
 		}
-		str->append("}'");
+		str->append("}");
 	}
 	std::clog << *str << std::endl;
 	return str;
