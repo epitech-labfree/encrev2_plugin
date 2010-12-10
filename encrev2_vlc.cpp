@@ -33,7 +33,7 @@ using namespace std;
 static const char * vlc_args[] = {
   "-I", "dummy", /* Don't use any interface */
   "--ignore-config", /* Don't use VLC's config */
-  "--help",
+  "-vv",
   0, /* Left this empty for the --sout option */
 };
 
@@ -150,6 +150,9 @@ std::string*
 Vlc::get_option() {
 	std::string* str = new std::string("--sout '#");
 	std::multimap<std::string, std::string>::iterator it = _opt.begin();
+
+	if (_opt.empty())
+		return (new std::string(""));
 
 	while (it != _opt.end()) {
 		unsigned int count = _opt.count((*it).first);
