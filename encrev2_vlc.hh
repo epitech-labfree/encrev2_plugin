@@ -37,7 +37,7 @@ public:
   ~Vlc();
 
   bool          set_window(FB::PluginWindow *win);
-  void		start();
+  bool		start();
   bool          stream(std::string host, std::string port);
   bool          play(std::string mrl);
   void		stop();

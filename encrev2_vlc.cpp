@@ -61,10 +61,10 @@ Vlc::~Vlc()
   libvlc_release(m_vlc);
 }
 
-void	      Vlc::start()
+bool	      Vlc::start()
 {
 	if (m_vlc != 0)
-		return ;
+		return false;
 
 	std::cout << "Start vlc with :" << std::endl;
 	vlc_args[5] = get_option()->c_str();
@@ -73,6 +73,7 @@ void	      Vlc::start()
 		std::cout << "- " << vlc_args[i] << std::endl;
 
 	m_vlc = libvlc_new(sizeof(vlc_args) / sizeof(vlc_args[0]), vlc_args);
+	return m_vlc != 0;
 }
 
 bool          Vlc::set_window(FB::PluginWindow *win)
@@ -129,6 +130,8 @@ Vlc::stop() {
 	if (m_mp != 0)
 		libvlc_media_player_stop(m_mp);
 }
+
+// TODO: Utiliser libvlc_media_add_option_flag
 
 void
 Vlc::set_option(const std::string& global_option,

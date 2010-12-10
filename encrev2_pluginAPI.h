@@ -38,7 +38,7 @@ class encrev2_pluginAPI : public FB::JSAPIAuto
   bool                  stream(const std::string &host,
                                const std::string &port);
   bool                  play(const std::string &mrl);
-  void			start();
+  bool			start();
   void			stop();
   void			set_option(const std::string&,
       const std::string&, const std::string&);

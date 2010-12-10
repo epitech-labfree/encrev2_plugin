@@ -71,9 +71,9 @@ void            encrev2_pluginAPI::stop()
   m_plugin.vlc().stop();
 }
 
-void            encrev2_pluginAPI::start()
+bool            encrev2_pluginAPI::start()
 {
-  m_plugin.vlc().start();
+  return m_plugin.vlc().start();
 }
 
 void
