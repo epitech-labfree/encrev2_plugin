@@ -24,14 +24,17 @@
 */
 
 #include <iostream>
+#include <map>
+#include <string>
 #include "encrev2_vlc.hh"
 
 using namespace std;
 
-static const char * const vlc_args[] = {
+static const char * vlc_args[] = {
   "-I", "dummy", /* Don't use any interface */
   "--ignore-config", /* Don't use VLC's config */
-  "-vvv"
+  "--help",
+  0, /* Left this empty for the --sout option */
 };
 
 // Exception mechanism has been removed in 1.1
@@ -46,7 +49,7 @@ Vlc::Vlc() : m_vlc(0), m_mp(0), m_m(0), m_window(0), _opt()
 {
   cout << "Encre::Vlc, Initialization..." << endl;
   // init vlc modules, should be done only once
-  m_vlc = libvlc_new(sizeof(vlc_args) / sizeof(vlc_args[0]), vlc_args);
+  //m_vlc = libvlc_new(sizeof(vlc_args) / sizeof(vlc_args[0]), vlc_args);
 
   cout << "Encre::Vlc, ...Done!" << endl;
 }
@@ -56,6 +59,19 @@ Vlc::~Vlc()
   cout << "Encre::Vlc, Destruction" << endl;
 
   libvlc_release(m_vlc);
+}
+
+void	      Vlc::start()
+{
+	if (m_vlc != 0)
+		return ;
+	std::cout << "Start vlc with :" << std::endl;
+	vlc_args[4] = get_option()->c_str();
+
+	for (int i = 0; i != sizeof(vlc_args) / sizeof(vlc_args[0]); ++i)
+		std::cout << "- " << vlc_args[i] << std::endl;
+
+	m_vlc = libvlc_new(sizeof(vlc_args) / sizeof(vlc_args[0]), vlc_args);
 }
 
 bool          Vlc::set_window(FB::PluginWindow *win)
@@ -71,13 +87,14 @@ bool          Vlc::set_window(FB::PluginWindow *win)
   return true;
 }
 
-void          Vlc::stream(std::string host, std::string port)
+bool          Vlc::stream(std::string host, std::string port)
 {
   std::string mrl;
 
+  if (m_vlc == 0)
+    return false;
   VlcSystemStrategy::get_webcam_mrl(mrl);
-  cout << "Streaming " << mrl << " to " << host << ":" << port << endl;
-
+  std::cout << "Streaming " << mrl << " to " << host << ":" << port << std::endl;
   m_m = libvlc_media_new_path(m_vlc, mrl.c_str());
   if (m_m)
   {
@@ -86,12 +103,14 @@ void          Vlc::stream(std::string host, std::string port)
     VlcSystemStrategy::set_window(m_mp, m_window);
     libvlc_media_player_play(m_mp);
   }
+  return true;
 }
 
-void          Vlc::play(std::string mrl)
+bool          Vlc::play(std::string mrl)
 {
-	std::clog << "Playing " << mrl << std::endl;
-
+  if (m_vlc == 0)
+    return false;
+  std::clog << "Playing " << mrl << std::endl;
   m_m = libvlc_media_new_path(m_vlc, mrl.c_str());
   if (m_m)
   {
@@ -100,6 +119,7 @@ void          Vlc::play(std::string mrl)
     VlcSystemStrategy::set_window(m_mp, m_window);
     libvlc_media_player_play(m_mp);
   }
+  return true;
 }
 
 void
@@ -112,16 +132,23 @@ Vlc::stop() {
 void
 Vlc::set_option(const std::string& global_option,
     const std::string& option, const std::string& value) {
-
+	std::multimap<std::string, std::string>::iterator it = _opt.find(global_option);
 	std::string key(option.c_str());
 	key.append("=");
 	key.append(value.c_str());
+
+	for (; it != _opt.end(); ++it) {
+		if ((*it).second.substr(0, (*it).second.find("=")) == option) {
+			(*it).second = key;
+			return ;
+		}
+	}
 	_opt.insert(std::pair<std::string, std::string>(global_option, key));
 }
 
 std::string*
 Vlc::get_option() {
-	std::string* str = new std::string("#");
+	std::string* str = new std::string("--sout '#");
 	std::multimap<std::string, std::string>::iterator it = _opt.begin();
 
 	while (it != _opt.end()) {
@@ -134,7 +161,7 @@ Vlc::get_option() {
 			if ((i+1) != count)
 				str->append(",");
 		}
-		str->append("}:");
+		str->append("}'");
 	}
 	std::clog << *str << std::endl;
 	return str;

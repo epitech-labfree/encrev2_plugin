@@ -16,10 +16,14 @@
     function start_play()
     {
     var publish = document.getElementById('publish');
-    publish.set_option("transcode","acodec", "wav");
+    publish.set_option("transcode","acodec", "s161");
+    publish.set_option("transcode","channels", "2");
+    publish.set_option("transcode","samplerate", "44100");
     publish.get_option();
+    publish.start();
     publish.play('file:///home/xin/test.avi');
     }
+
     function stop_play()
     {
     var publish = document.getElementById('publish');
