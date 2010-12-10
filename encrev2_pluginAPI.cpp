@@ -23,12 +23,7 @@ encrev2_pluginAPI::encrev2_pluginAPI(FB::BrowserHostPtr host, encrev2_plugin &pl
   registerMethod("start",      make_method(this, &encrev2_pluginAPI::start));
   registerMethod("set_option",      make_method(this, &encrev2_pluginAPI::set_option));
   registerMethod("get_option",      make_method(this, &encrev2_pluginAPI::get_option));
-
-  // Read-write property
-  registerProperty("testString",
-                   make_property(this,
-                                 &encrev2_pluginAPI::get_testString,
-                                 &encrev2_pluginAPI::set_testString));
+  registerMethod("reset_option",      make_method(this, &encrev2_pluginAPI::reset_option));
 
   // Read-only property
   registerProperty("version",
@@ -41,16 +36,6 @@ encrev2_pluginAPI::encrev2_pluginAPI(FB::BrowserHostPtr host, encrev2_plugin &pl
 
 encrev2_pluginAPI::~encrev2_pluginAPI()
 {
-}
-
-// Read/Write property testString
-std::string encrev2_pluginAPI::get_testString()
-{
-  return m_testString;
-}
-void encrev2_pluginAPI::set_testString(const std::string& val)
-{
-  m_testString = val;
 }
 
 // Read-only property version
@@ -101,4 +86,9 @@ encrev2_pluginAPI::set_option(const std::string& s1,
 std::string*
 encrev2_pluginAPI::get_option() {
 	m_plugin.vlc().get_option();
+}
+
+void
+encrev2_pluginAPI::reset_option() {
+	m_plugin.vlc().reset_option();
 }

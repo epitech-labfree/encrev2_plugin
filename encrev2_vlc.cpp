@@ -170,3 +170,8 @@ Vlc::get_option() {
 	std::clog << *str << std::endl;
 	return str;
 }
+
+void
+Vlc::reset_option() {
+	_opt.clear();
+}

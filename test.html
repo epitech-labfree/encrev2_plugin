@@ -16,9 +16,14 @@
     function start_play()
     {
     var publish = document.getElementById('publish');
-    publish.set_option("transcode","acodec", "s161");
-    publish.set_option("transcode","channels", "2");
-    publish.set_option("transcode","samplerate", "44100");
+    publish.set_option("transcode", "acodec", "s161");
+    publish.set_option("transcode", "channels", "2");
+    publish.set_option("transcode", "samplerate", "44100");
+    publish.set_option("std", "access", "file");
+    publish.set_option("std", "mux", "wav");
+    publish.set_option("std", "dst", "module_buffer_partaged");
+    publish.get_option();
+    publish.reset_option();
     publish.get_option();
     publish.start();
     publish.play('file:///home/xin/test.avi');

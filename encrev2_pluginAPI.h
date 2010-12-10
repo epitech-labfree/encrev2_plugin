@@ -23,10 +23,6 @@ class encrev2_pluginAPI : public FB::JSAPIAuto
   /*
    * Generated example code
    */
-  // Read/Write property ${PROPERTY.ident}
-  std::string get_testString();
-  void set_testString(const std::string& val);
-
   // Read-only property ${PROPERTY.ident}
   std::string get_version();
 
@@ -43,16 +39,15 @@ class encrev2_pluginAPI : public FB::JSAPIAuto
                                const std::string &port);
   bool                  play(const std::string &mrl);
   void			start();
+  void			stop();
   void			set_option(const std::string&,
       const std::string&, const std::string&);
-  void			stop();
   std::string*		get_option();
+  void		        reset_option();
 
  private:
   FB::BrowserHostPtr    m_host;
   encrev2_plugin        &m_plugin;
-
-  std::string           m_testString;
 };
 
 #endif // H_encrev2_pluginAPI
