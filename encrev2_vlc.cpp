@@ -33,9 +33,7 @@
 using namespace std;
 
 static const char * const vlc_args[] = {
-  "-I", "dummy", /* Don't use any interface */
-  "--ignore-config", /* Don't use VLC's config */
-  "-v"
+  "-vvv"
 };
 
 // Exception mechanism has been removed in 1.1
@@ -93,16 +91,16 @@ void          Vlc::stream(std::string host, std::string port)
   m_m = libvlc_media_new_path(m_vlc, mrl.c_str());
   if (m_m)
   {
-
-    addOption( ":no-audio" );
-    addOption( ":no-sout-audio" );
-    addOption( ":sout=#transcode{}:smem" );
+    addOption(":no-audio");
+    addOption(":no-sout-audio");
+    addOption(":sout=#transcode{}:smem");
+    addOption(":v4l2-caching=500");
     setVideoDataCtx( this );
     setVideoLockCallback(reinterpret_cast<void*>(&lock));
     setVideoUnlockCallback(reinterpret_cast<void*>(&unlock));
-    addOption(":sout-transcode-vcodec=RV32");
-    addOption(":sout-transcode-width=200");
-    addOption(":sout-transcode-height=200");
+    addOption(":sout-transcode-vcodec=RV16");
+    addOption(":sout-transcode-width=400");
+    addOption(":sout-transcode-height=400");
     m_mp = libvlc_media_player_new(m_vlc);
     libvlc_media_player_set_media (m_mp, m_m);
 
@@ -202,7 +200,7 @@ Vlc::callback(const libvlc_event_t* event, void* ptr)
   Vlc*	self = reinterpret_cast<Vlc*>(ptr);
 
   cout << "Media player playing" << endl;
-  self->playd();
+  //self->playd();
 }
 
 void
@@ -212,16 +210,18 @@ Vlc::playd()
 }
 
 void
-Vlc::lock(Vlc* clipWorkflow, void** pp_ret,
+Vlc::lock(Vlc* vlc, void** pp_ret,
 	   int size)
 {
-  cout << "coucou" << endl;
+  int * buffer = new int[size];
+  cout << "coucou" << size << endl;
+  *pp_ret = (void*)buffer;
 }
 
 void
-Vlc::unlock( Vlc* clipWorkflow, void* buffer,
+Vlc::unlock( Vlc* vlc, void* buffer,
 	     int width, int height, int bpp, int size,
 	     long pts )
 {
-  cout << "coucou2" << endl;
+  cout << "coucou2 " << buffer << endl;
 }
