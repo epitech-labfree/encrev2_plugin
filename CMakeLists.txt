@@ -12,6 +12,22 @@ include(${CMAKE_DIR}/common.cmake)
 
 set (PROJNAME ${PLUGIN_NAME})
 
+#
+# Dependencies detection
+#
+set(ENV{PKG_CONFIG_PATH} /usr/local/myvlc/lib/pkgconfig)
+find_package(PkgConfig REQUIRED)
+pkg_check_modules(VLC libvlc)
+
+if (VLC_FOUND)
+  message(STATUS "Found vlc. (libdir = ${VLC_LIBRARY_DIRS})")
+else (VLC_FOUND)
+  message(SEND_ERROR "libvlc not found, this is required. Maybe check the PKG_CONFIG_PATH variable")
+endif (VLC_FOUND)
+
+include_directories(${VLC_INCLUDE_DIRS})
+link_directories(${VLC_LIBRARY_DIRS})
+
 browserplugin_project(${PROJNAME})
 
 file (GLOB GENERAL RELATIVE ${CMAKE_CURRENT_SOURCE_DIR}
@@ -38,20 +54,6 @@ SET( SOURCES
 
 # This will include Win/projectDef.cmake, Linux/projectDef.cmake, etc
 include_platform()
-
-#
-# Dependencies detection
-#
-find_package(PkgConfig REQUIRED)
-pkg_check_modules(VLC libvlc)
-
-if (VLC_FOUND)
-  message(STATUS "Found vlc.")
-else (VLC_FOUND)
-  message(SEND_ERROR "libvlc not found, this is required. Maybe check the PKG_CONFIG_PATH variable")
-endif (VLC_FOUND)
-
-include_directories(${VLC_INCLUDE_DIRS})
 
 target_link_libraries(${PLUGIN_NAME} ${VLC_LIBRARIES})
 
