@@ -88,19 +88,19 @@ void          Vlc::stream(std::string host, std::string port)
 {
   std::string mrl;
 
-  addOption( ":no-audio" );
-  addOption( ":no-sout-audio" );
-  addOption( ":sout=#transcode{}:smem" );
-  setVideoDataCtx( this );
-  setVideoLockCallback(reinterpret_cast<void*>(&lock));
-  setVideoUnlockCallback(reinterpret_cast<void*>(&unlock));
-  addOption(":sout-transcode-vcodec=RV32");
   VlcSystemStrategy::get_webcam_mrl(mrl);
   cout << "Streaming " << mrl << " to " << host << ":" << port << endl;
   m_m = libvlc_media_new_path(m_vlc, mrl.c_str());
   if (m_m)
   {
 
+    addOption( ":no-audio" );
+    addOption( ":no-sout-audio" );
+    addOption( ":sout=#transcode{}:smem" );
+    setVideoDataCtx( this );
+    setVideoLockCallback(reinterpret_cast<void*>(&lock));
+    setVideoUnlockCallback(reinterpret_cast<void*>(&unlock));
+    addOption(":sout-transcode-vcodec=RV32");
     addOption(":sout-transcode-width=200");
     addOption(":sout-transcode-height=200");
     m_mp = libvlc_media_player_new(m_vlc);
