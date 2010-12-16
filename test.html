@@ -10,14 +10,15 @@
     function start_stream()
     {
     var publish = document.getElementById('publish');
-    publish.stream('file:///home/elthariel/test.avi','1234');
+    publish.set_option("transcode","acodec", "wav");
+    publish.stream('localhost','1234');
     }
 
     function start_play()
     {
     var publish = document.getElementById('publish');
     publish.set_option("transcode","acodec", "wav");
-    publish.play('file:///home/xin/test.avi');
+    publish.play('file:///home/tribou_f/part/firebreath/projects/encrev2_plugin/test.avi');
     }
     function stop_play()
     {

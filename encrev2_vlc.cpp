@@ -25,13 +25,17 @@
 
 #include <iostream>
 #include "encrev2_vlc.hh"
+//Allow PRId64 to be defined:
+#define __STDC_FORMAT_MACROS
+#include <inttypes.h>
+#include <cstdio>
 
 using namespace std;
 
 static const char * const vlc_args[] = {
   "-I", "dummy", /* Don't use any interface */
   "--ignore-config", /* Don't use VLC's config */
-  "-vvv"
+  "-v"
 };
 
 // Exception mechanism has been removed in 1.1
@@ -48,14 +52,13 @@ Vlc::Vlc() : m_vlc(0), m_mp(0), m_m(0), m_window(0)
 
   // init vlc modules, should be done only once
   m_vlc = libvlc_new(sizeof(vlc_args) / sizeof(vlc_args[0]), vlc_args);
-
   cout << "Encre::Vlc, ...Done!" << endl;
 }
 
 Vlc::~Vlc()
 {
   cout << "Encre::Vlc, Destruction" << endl;
-
+  libvlc_event_detach(m_me, libvlc_MediaPlayerPlaying, callback, this);
   libvlc_release(m_vlc);
 }
 
@@ -72,31 +75,54 @@ bool          Vlc::set_window(FB::PluginWindow *win)
   return true;
 }
 
+void
+Vlc::setVideoDataCtx( void* dataCtx )
+{
+  char    param[64]; 
+  sprintf( param, ":sout-smem-video-data=%"PRId64, (intptr_t)dataCtx );
+  addOption( param );
+}
+
+#include <stdlib.h>
 void          Vlc::stream(std::string host, std::string port)
 {
   std::string mrl;
 
+  addOption( ":no-audio" );
+  addOption( ":no-sout-audio" );
+  addOption( ":sout=#transcode{}:smem" );
+  setVideoDataCtx( this );
+  setVideoLockCallback(reinterpret_cast<void*>(&lock));
+  setVideoUnlockCallback(reinterpret_cast<void*>(&unlock));
+  addOption(":sout-transcode-vcodec=RV32");
   VlcSystemStrategy::get_webcam_mrl(mrl);
   cout << "Streaming " << mrl << " to " << host << ":" << port << endl;
-
   m_m = libvlc_media_new_path(m_vlc, mrl.c_str());
   if (m_m)
   {
-    m_mp = libvlc_media_player_new_from_media(m_m);
-    libvlc_media_release (m_m);
-    VlcSystemStrategy::set_window(m_mp, m_window);
+
+    addOption(":sout-transcode-width=200");
+    addOption(":sout-transcode-height=200");
+    m_mp = libvlc_media_player_new(m_vlc);
+    libvlc_media_player_set_media (m_mp, m_m);
+
+    m_me = libvlc_media_player_event_manager(m_mp);
+    put_events();
+    cout << "event : " << (int)m_me << endl;
+    //play la video
     libvlc_media_player_play(m_mp);
   }
 }
 
 void          Vlc::play(std::string mrl)
 {
-	std::cout << "Playing " << mrl << std::endl;
+  std::cout << "Playing " << mrl << std::endl;
 
   m_m = libvlc_media_new_path(m_vlc, mrl.c_str());
   if (m_m)
   {
     m_mp = libvlc_media_player_new_from_media(m_m);
+
     libvlc_media_release(m_m);
     VlcSystemStrategy::set_window(m_mp, m_window);
     libvlc_media_player_play(m_mp);
@@ -121,4 +147,81 @@ Vlc::set_option(const std::string& s1,
 	std::clog << "Vlc" << std::endl;
 	m_vlc_cli_opt->set_option(s1,s2,s3);
 	std::clog << "END:Vlc" << std::endl;
+}
+
+void
+Vlc::setVideoLockCallback(void* callback)
+{
+  char    param[64];
+
+  sprintf(param, ":sout-smem-video-prerender-callback=%"PRId64, (long long int)callback);
+  addOption(param);
+}
+
+void
+Vlc::setVideoUnlockCallback(void* callback)
+{
+  char    param[64];
+
+  sprintf(param, ":sout-smem-video-postrender-callback=%"PRId64, (long long int)callback);
+  addOption(param);
+}
+void
+Vlc::setAudioLockCallback(void* callback)
+{
+  char    param[64];
+
+  sprintf(param, ":sout-smem-audio-prerender-callback=%"PRId64, (long long int)callback);
+  addOption(param);
+}
+
+void
+Vlc::setAudioUnlockCallback(void* callback)
+{
+  char    param[64];
+
+  sprintf(param, ":sout-smem-audio-postrender-callback=%"PRId64, (long long int)callback);
+  addOption(param);
+}
+
+void
+Vlc::addOption( const char* opt )
+{
+  libvlc_media_add_option_flag(m_m, opt, libvlc_media_option_trusted);
+}
+
+void
+Vlc::put_events()
+{
+  libvlc_event_attach(m_me, libvlc_MediaPlayerPlaying, callback, this);
+}
+
+void
+Vlc::callback(const libvlc_event_t* event, void* ptr)
+{
+  Vlc*	self = reinterpret_cast<Vlc*>(ptr);
+
+  cout << "Media player playing" << endl;
+  self->playd();
+}
+
+void
+Vlc::playd()
+{
+  libvlc_media_player_play(m_mp);
+}
+
+void
+Vlc::lock(Vlc* clipWorkflow, void** pp_ret,
+	   int size)
+{
+  cout << "coucou" << endl;
+}
+
+void
+Vlc::unlock( Vlc* clipWorkflow, void* buffer,
+	     int width, int height, int bpp, int size,
+	     long pts )
+{
+  cout << "coucou2" << endl;
 }

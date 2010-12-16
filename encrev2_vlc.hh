@@ -27,6 +27,9 @@
 # define   	ENCREV2_VLC_HH_
 
 # include <string>
+#define __STDC_FORMAT_MACROS
+#include <inttypes.h>
+
 # include "encrev2_CliOpt.hh"
 # include "vlc_system_strategy.hh"
 
@@ -44,11 +47,28 @@ public:
   VlcCliOpt*	getCliOpt() const;
   void		set_option(const std::string&, const std::string&, const std::string&);
 
+  void		setVideoLockCallback(void* callback);
+  void		setVideoUnlockCallback(void* callback);
+  void		setAudioLockCallback(void* callback);
+  void		setAudioUnlockCallback(void* callback);
+  void		addOption(const char* opt);
+  void		setVideoDataCtx(void*);
+
+  void		put_events();
+  static void	callback(const libvlc_event_t* event, void* ptr);
+  static void	lock(Vlc* clipWorkflow, void**, int);
+  static void	unlock(Vlc* clipWorkflow, void* buffer,
+			     int width, int height, int bpp, int size,
+			     long pts);
+
+  void		playd();
+
 protected:
-  libvlc_instance_t             *m_vlc;
-  libvlc_media_player_t         *m_mp;
-  libvlc_media_t                *m_m;
-  FB::PluginWindow              *m_window;
+  libvlc_instance_t		*m_vlc;
+  libvlc_media_player_t		*m_mp;
+  libvlc_event_manager_t	*m_me;
+  libvlc_media_t		*m_m;
+  FB::PluginWindow		*m_window;
   VlcCliOpt			*m_vlc_cli_opt;
 };
 
