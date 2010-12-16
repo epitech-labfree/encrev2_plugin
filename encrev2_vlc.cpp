@@ -33,6 +33,11 @@
 using namespace std;
 
 static const char * const vlc_args[] = {
+  "",
+  "--no-disable-screensaver",
+  "--no-skip-frames",
+  // "-I", "dummy", /* Don't use any interface */
+  // "--ignore-config", /* Don't use VLC's config */
   "-vvv"
 };
 
@@ -76,7 +81,7 @@ bool          Vlc::set_window(FB::PluginWindow *win)
 void
 Vlc::setVideoDataCtx( void* dataCtx )
 {
-  char    param[64]; 
+  char    param[64];
   sprintf( param, ":sout-smem-video-data=%"PRId64, (intptr_t)dataCtx );
   addOption( param );
 }
@@ -88,7 +93,7 @@ void          Vlc::stream(std::string host, std::string port)
 
   VlcSystemStrategy::get_webcam_mrl(mrl);
   cout << "Streaming " << mrl << " to " << host << ":" << port << endl;
-  m_m = libvlc_media_new_path(m_vlc, mrl.c_str());
+  m_m = libvlc_media_new_location(m_vlc, mrl.c_str());
   if (m_m)
   {
     addOption(":no-audio");
@@ -101,12 +106,13 @@ void          Vlc::stream(std::string host, std::string port)
     addOption(":sout-transcode-vcodec=RV16");
     addOption(":sout-transcode-width=400");
     addOption(":sout-transcode-height=400");
+    addOption(":no-skip-frames");
     m_mp = libvlc_media_player_new(m_vlc);
     libvlc_media_player_set_media (m_mp, m_m);
 
     m_me = libvlc_media_player_event_manager(m_mp);
     put_events();
-    cout << "event : " << (int)m_me << endl;
+    cout << "event : " << (int64_t)m_me << endl;
     //play la video
     libvlc_media_player_play(m_mp);
   }
@@ -152,7 +158,7 @@ Vlc::setVideoLockCallback(void* callback)
 {
   char    param[64];
 
-  sprintf(param, ":sout-smem-video-prerender-callback=%"PRId64, (long long int)callback);
+  sprintf(param, ":sout-smem-video-prerender-callback=%"PRId64, (intptr_t)callback);
   addOption(param);
 }
 
@@ -161,7 +167,7 @@ Vlc::setVideoUnlockCallback(void* callback)
 {
   char    param[64];
 
-  sprintf(param, ":sout-smem-video-postrender-callback=%"PRId64, (long long int)callback);
+  sprintf(param, ":sout-smem-video-postrender-callback=%"PRId64, (intptr_t)callback);
   addOption(param);
 }
 void
@@ -169,7 +175,7 @@ Vlc::setAudioLockCallback(void* callback)
 {
   char    param[64];
 
-  sprintf(param, ":sout-smem-audio-prerender-callback=%"PRId64, (long long int)callback);
+  sprintf(param, ":sout-smem-audio-prerender-callback=%"PRId64, (intptr_t)callback);
   addOption(param);
 }
 
@@ -178,13 +184,14 @@ Vlc::setAudioUnlockCallback(void* callback)
 {
   char    param[64];
 
-  sprintf(param, ":sout-smem-audio-postrender-callback=%"PRId64, (long long int)callback);
+  sprintf(param, ":sout-smem-audio-postrender-callback=%"PRId64, (intptr_t)callback);
   addOption(param);
 }
 
 void
 Vlc::addOption( const char* opt )
 {
+  cout << "EncreVlc::addOption " << opt << endl;
   libvlc_media_add_option_flag(m_m, opt, libvlc_media_option_trusted);
 }
 
