@@ -36,18 +36,8 @@ static const char * const vlc_args[] = {
   "",
   "--no-disable-screensaver",
   "--no-skip-frames",
-  // "-I", "dummy", /* Don't use any interface */
-  // "--ignore-config", /* Don't use VLC's config */
   "-vvv"
 };
-
-// Exception mechanism has been removed in 1.1
-// static void raise(libvlc_exception_t * ex)
-// {
-//   if (libvlc_exception_raised(ex))
-//     cerr <<  "Encre::Vlc, Error: " << libvlc_exception_get_message(ex) << endl;
-// }
-
 
 Vlc::Vlc() : m_vlc(0), m_mp(0), m_m(0), m_window(0)
 {
@@ -96,8 +86,6 @@ void          Vlc::stream(std::string host, std::string port)
   m_m = libvlc_media_new_location(m_vlc, mrl.c_str());
   if (m_m)
   {
-    addOption(":no-audio");
-    addOption(":no-sout-audio");
     addOption(":sout=#transcode{}:smem");
     addOption(":v4l2-caching=500");
     setVideoDataCtx( this );
