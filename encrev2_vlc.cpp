@@ -29,6 +29,7 @@
 #define __STDC_FORMAT_MACROS
 #include <inttypes.h>
 #include <cstdio>
+#include "Jingle.hh"
 
 using namespace std;
 
@@ -45,6 +46,7 @@ Vlc::Vlc() : m_vlc(0), m_mp(0), m_m(0), m_window(0)
 
   // init vlc modules, should be done only once
   m_vlc = libvlc_new(sizeof(vlc_args) / sizeof(vlc_args[0]), vlc_args);
+  Jingle j;
   cout << "Encre::Vlc, ...Done!" << endl;
 }
 

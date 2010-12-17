@@ -16,7 +16,6 @@ set (PROJNAME ${PLUGIN_NAME})
 # Dependencies detection
 #
 set(ENV{PKG_CONFIG_PATH} /usr/local/myvlc/lib/pkgconfig)
-find_package(PkgConfig REQUIRED)
 pkg_check_modules(VLC libvlc)
 
 if (VLC_FOUND)
@@ -27,6 +26,15 @@ endif (VLC_FOUND)
 
 include_directories(${VLC_INCLUDE_DIRS})
 link_directories(${VLC_LIBRARY_DIRS})
+
+
+set(CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}")
+FIND_PACKAGE(Jingle)
+include_directories(${JINGLE_INCLUDE_DIR})
+include_directories(${EXPAT_INCLUDE_DIR})
+include_directories(${SRTP_INCLUDE_DIR})
+include_directories(${XMPPHELP_INCLUDE_DIR})
+
 
 browserplugin_project(${PROJNAME})
 
@@ -55,6 +63,4 @@ SET( SOURCES
 # This will include Win/projectDef.cmake, Linux/projectDef.cmake, etc
 include_platform()
 
-target_link_libraries(${PLUGIN_NAME} ${VLC_LIBRARIES})
-
-
+target_link_libraries(${PLUGIN_NAME} ${VLC_LIBRARIES} ${JINGLE_LIBRARIES})
