@@ -8,6 +8,8 @@
 cmake_minimum_required (VERSION 2.6)
 set (CMAKE_BACKWARDS_COMPATIBILITY 2.6)
 
+add_definitions(-DPOSIX)
+
 include(${CMAKE_DIR}/common.cmake)
 
 set (PROJNAME ${PLUGIN_NAME})
@@ -30,6 +32,7 @@ link_directories(${VLC_LIBRARY_DIRS})
 
 set(CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}")
 FIND_PACKAGE(Jingle)
+include_directories(/usr/include)
 include_directories(${JINGLE_INCLUDE_DIR})
 include_directories(${EXPAT_INCLUDE_DIR})
 include_directories(${SRTP_INCLUDE_DIR})
