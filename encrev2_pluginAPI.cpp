@@ -61,9 +61,9 @@ bool            encrev2_pluginAPI::stream(const std::string &host,
 	return m_plugin.vlc().stream(host, port);
 }
 
-bool            encrev2_pluginAPI::play(const std::string &mrl)
+bool            encrev2_pluginAPI::play()
 {
-	return m_plugin.vlc().play(mrl);
+	return m_plugin.vlc().play();
 }
 
 void            encrev2_pluginAPI::stop()

@@ -35,16 +35,6 @@
 
 using namespace std;
 
-<<<<<<< HEAD
-static const char * const vlc_args[] = {
-  "",
-  "--no-disable-screensaver",
-  "--no-skip-frames",
-  "-vvv"
-};
-
-Vlc::Vlc() : m_vlc(0), m_mp(0), m_m(0), m_window(0)
-=======
 static const char * vlc_args[] = {
   "-I", "dummy", /* Don't use any interface */
   "--ignore-config", /* Don't use VLC's config */
@@ -104,7 +94,6 @@ bool          Vlc::set_window(FB::PluginWindow *win)
   return true;
 }
 
-<<<<<<< HEAD
 void
 Vlc::setVideoDataCtx( void* dataCtx )
 {
@@ -147,15 +136,20 @@ bool		Vlc::stream(std::string host, std::string port)
   return true;
 }
 
-bool          Vlc::play(std::string mrl)
+bool          Vlc::play()
 {
   if (m_vlc == 0)
     return false;
-  std::clog << "Playing " << mrl << std::endl;
-  m_m = libvlc_media_new_path(m_vlc, mrl.c_str());
+  std::clog << "Playing " << "imem://" << std::endl;
+  m_m = libvlc_media_new_location(m_vlc, "imem://");
   if (m_m)
   {
     m_mp = libvlc_media_player_new_from_media(m_m);
+
+    setVideoGetCallback(reinterpret_cast<void*>(&getVideo));
+    setVideoReleaseCallback(reinterpret_cast<void*>(&release));
+    addOption("imem-width=400");
+    addOption("imem-height=400");
 
     libvlc_media_release(m_m);
     VlcSystemStrategy::set_window(m_mp, m_window);
@@ -236,6 +230,7 @@ Vlc::setVideoUnlockCallback(void* callback)
   sprintf(param, ":sout-smem-video-postrender-callback=%"PRId64, (intptr_t)callback);
   addOption(param);
 }
+
 void
 Vlc::setAudioLockCallback(void* callback)
 {
@@ -287,7 +282,6 @@ Vlc::lock(Vlc* vlc, void** pp_ret,
 	   int size)
 {
   int * buffer = new int[size];
-  cout << "coucou" << size << endl;
   *pp_ret = (void*)buffer;
 }
 
@@ -296,5 +290,34 @@ Vlc::unlock( Vlc* vlc, void* buffer,
 	     int width, int height, int bpp, int size,
 	     long pts )
 {
-  cout << "coucou2 " << buffer << endl;
+  //ici qu'on traite la video
+}
+
+int
+Vlc::getVideo(void* data, const char* cookie, int64_t* dts, int64_t* pts,
+			     unsigned* flags, size_t* len, void** buffer)
+{
+}
+
+void
+Vlc::release(void *data, const char *cookie, size_t, void *)
+{
+}
+
+void
+Vlc::setVideoGetCallback(void* callback)
+{
+  char    param[64];
+
+  sprintf(param, ":imem-get=%"PRId64, (intptr_t)callback);
+  addOption(param);
+}
+
+void
+Vlc::setVideoReleaseCallback(void* callback)
+{
+  char    param[64];
+
+  sprintf(param, ":imem-release=%"PRId64, (intptr_t)callback);
+  addOption(param);
 }

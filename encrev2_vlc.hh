@@ -43,7 +43,7 @@ public:
   bool          set_window(FB::PluginWindow *win);
   bool		start();
   bool          stream(std::string host, std::string port);
-  bool          play(std::string mrl);
+  bool          play();
   void		stop();
   void		set_option(const std::string&, const std::string&, const std::string&);
   std::string*	get_option();
@@ -56,6 +56,9 @@ public:
   void		addOption(const char* opt);
   void		setVideoDataCtx(void*);
 
+  void		setVideoReleaseCallback(void*);
+  void		setVideoGetCallback(void*);
+
   void		put_events();
   static void	callback(const libvlc_event_t* event, void* ptr);
   static void	lock(Vlc* clipWorkflow, void**, int);
@@ -64,6 +67,10 @@ public:
 			     long pts);
 
   void		playd();
+
+  static int	getVideo(void *data, const char *cookie, int64_t *dts, int64_t *pts,
+			     unsigned *flags, size_t *, void **);
+  static void	release(void *data, const char *cookie, size_t, void *);
 
 protected:
   libvlc_instance_t		*m_vlc;
