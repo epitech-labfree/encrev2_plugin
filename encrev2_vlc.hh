@@ -31,6 +31,7 @@
 #include <inttypes.h>
 
 # include "encrev2_CliOpt.hh"
+# include <map>
 # include "vlc_system_strategy.hh"
 
 class Vlc
@@ -40,12 +41,13 @@ public:
   ~Vlc();
 
   bool          set_window(FB::PluginWindow *win);
-
-  void          stream(std::string host, std::string port);
-  void          play(std::string mrl);
+  bool		start();
+  bool          stream(std::string host, std::string port);
+  bool          play(std::string mrl);
   void		stop();
-  VlcCliOpt*	getCliOpt() const;
   void		set_option(const std::string&, const std::string&, const std::string&);
+  std::string*	get_option();
+  void		reset_option();
 
   void		setVideoLockCallback(void* callback);
   void		setVideoUnlockCallback(void* callback);
@@ -70,6 +72,7 @@ protected:
   libvlc_media_t		*m_m;
   FB::PluginWindow		*m_window;
   VlcCliOpt			*m_vlc_cli_opt;
+  std::multimap<std::string, std::string> _opt;
 };
 
 #endif	    /* !ENCREV2_VLC_HH_ */

@@ -7,6 +7,7 @@
 # Written to work with cmake 2.6
 cmake_minimum_required (VERSION 2.6)
 set (CMAKE_BACKWARDS_COMPATIBILITY 2.6)
+set (CMAKE_BUILD_TYPE Debug)
 
 add_definitions(-DPOSIX)
 
@@ -67,3 +68,5 @@ SET( SOURCES
 include_platform()
 
 target_link_libraries(${PLUGIN_NAME} ${VLC_LIBRARIES} ${JINGLE_LIBRARIES})
+
+install(TARGETS ${PLUGIN_NAME} LIBRARY DESTINATION ~/.mozilla/plugins)
