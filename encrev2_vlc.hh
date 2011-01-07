@@ -70,7 +70,7 @@ public:
 
   static int	getVideo(void *data, const char *cookie, int64_t *dts, int64_t *pts,
 			     unsigned *flags, size_t *, void **);
-  static void	release(void *data, const char *cookie, size_t, void *);
+  static int	release(void *data, const char *cookie, size_t, void *);
 
 protected:
   libvlc_instance_t		*m_vlc;

@@ -147,13 +147,11 @@ bool          Vlc::play()
 
     setVideoGetCallback(reinterpret_cast<void*>(&getVideo));
     setVideoReleaseCallback(reinterpret_cast<void*>(&release));
-    addOption("imem-width=400");
-    addOption("imem-height=400");
-    addOption("imem-cat=4");
-
+    addOption(":imem-width=400");
+    addOption(":imem-height=400");
+    addOption(":imem-cat=4");
     char    param[64];
-    sprintf(param, ":imem-data=%p", new std::string("toto"));
-
+    sprintf(param, ":imem-data=%p", this);
     addOption(param);
     
 
@@ -303,17 +301,21 @@ int
 Vlc::getVideo(void* data, const char* cookie, int64_t* dts, int64_t* pts,
 			     unsigned* flags, size_t* len, void** buffer)
 {
-  *dts = *pts = 0;
-  *buffer = new char [4096];
-  *len = 4096;
-  std::cout << "bwahh" << std::endl;
-  std::string* s = (std::string*)data;
-  std::cout << *s << std::endl;
+  Vlc	*myVlc = static_cast<Vlc*>(data);
+  // *buffer = new char [4096];
+  // *len = 4096;
+  //lecture sur le reseau
+  //*len = myVlc->_network->read(buffer);
+  *buffer = NULL;
+  *len = 0;
+  return (*len ? 0 : -1);
 }
 
-void
-Vlc::release(void *data, const char *cookie, size_t, void *)
+int
+Vlc::release(void *data, const char *cookie, size_t, void *buffer)
 {
+  delete (char*)buffer;
+  return 0;
 }
 
 void
