@@ -32,9 +32,7 @@ link_directories(${VLC_LIBRARY_DIRS})
 
 
 set(CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}")
-FIND_PACKAGE(Jingle)
 include_directories(/usr/include)
-include_directories(${JINGLE_INCLUDE_DIR})
 include_directories(${EXPAT_INCLUDE_DIR})
 include_directories(${SRTP_INCLUDE_DIR})
 include_directories(${XMPPHELP_INCLUDE_DIR})
@@ -67,6 +65,6 @@ SET( SOURCES
 # This will include Win/projectDef.cmake, Linux/projectDef.cmake, etc
 include_platform()
 
-target_link_libraries(${PLUGIN_NAME} ${VLC_LIBRARIES} ${JINGLE_LIBRARIES})
+target_link_libraries(${PLUGIN_NAME} ${VLC_LIBRARIES})
 
 install(TARGETS ${PLUGIN_NAME} LIBRARY DESTINATION ~/.mozilla/plugins)

@@ -31,7 +31,6 @@
 #define __STDC_FORMAT_MACROS
 #include <inttypes.h>
 #include <cstdio>
-#include "Jingle.hh"
 
 using namespace std;
 
@@ -150,6 +149,13 @@ bool          Vlc::play()
     setVideoReleaseCallback(reinterpret_cast<void*>(&release));
     addOption("imem-width=400");
     addOption("imem-height=400");
+    addOption("imem-cat=4");
+
+    char    param[64];
+    sprintf(param, ":imem-data=%p", new std::string("toto"));
+
+    addOption(param);
+    
 
     libvlc_media_release(m_m);
     VlcSystemStrategy::set_window(m_mp, m_window);
@@ -297,6 +303,12 @@ int
 Vlc::getVideo(void* data, const char* cookie, int64_t* dts, int64_t* pts,
 			     unsigned* flags, size_t* len, void** buffer)
 {
+  *dts = *pts = 0;
+  *buffer = new char [4096];
+  *len = 4096;
+  std::cout << "bwahh" << std::endl;
+  std::string* s = (std::string*)data;
+  std::cout << *s << std::endl;
 }
 
 void
