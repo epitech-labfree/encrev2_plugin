@@ -24,6 +24,7 @@
 */
 
 #include <iostream>
+#include <stdlib.h>
 #include <map>
 #include <string>
 #include "encrev2_vlc.hh"
@@ -41,43 +42,20 @@ static const char * vlc_args[] = {
   "--sout", 0, /* Left this empty for the --sout option */
 };
 
-// Exception mechanism has been removed in 1.1
-// static void raise(libvlc_exception_t * ex)
-// {
-//   if (libvlc_exception_raised(ex))
-//     cerr <<  "Encre::Vlc, Error: " << libvlc_exception_get_message(ex) << endl;
-// }
-
-
 Vlc::Vlc() : m_vlc(0), m_mp(0), m_m(0), m_window(0), _opt()
 {
-  cout << "Encre::Vlc, Initialization..." << endl;
+  std::cout << "Encre::Vlc, Initialization..." << std::endl;
   // init vlc modules, should be done only once
   m_vlc = libvlc_new(sizeof(vlc_args) / sizeof(vlc_args[0]), vlc_args);
-  //m_vlc = libvlc_new(sizeof(vlc_args) / sizeof(vlc_args[0]), vlc_args);
-  cout << "Encre::Vlc, ...Done!" << endl;
+  std::cout << "Encre::Vlc, ...Done!" << std::endl;
 }
 
 Vlc::~Vlc()
 {
-  cout << "Encre::Vlc, Destruction" << endl;
+  std::cout << "Encre::Vlc, Destruction" << std::endl;
   libvlc_event_detach(m_me, libvlc_MediaPlayerPlaying, callback, this);
+  libvlc_media_player_release(m_mp);
   libvlc_release(m_vlc);
-}
-
-bool	      Vlc::start()
-{
-	if (m_vlc != 0)
-		return false;
-
-	std::cout << "Start vlc with :" << std::endl;
-	vlc_args[5] = get_option()->c_str();
-
-	for (int i = 0; i != sizeof(vlc_args) / sizeof(vlc_args[0]); ++i)
-		std::cout << "- " << vlc_args[i] << std::endl;
-
-	m_vlc = libvlc_new(sizeof(vlc_args) / sizeof(vlc_args[0]), vlc_args);
-	return m_vlc != 0;
 }
 
 bool          Vlc::set_window(FB::PluginWindow *win)
@@ -93,15 +71,6 @@ bool          Vlc::set_window(FB::PluginWindow *win)
   return true;
 }
 
-void
-Vlc::setVideoDataCtx( void* dataCtx )
-{
-  char    param[64];
-  sprintf( param, ":sout-smem-video-data=%"PRId64, (intptr_t)dataCtx );
-  addOption( param );
-}
-
-#include <stdlib.h>
 bool		Vlc::stream(std::string host, std::string port)
 {
   std::string mrl;
@@ -169,90 +138,6 @@ Vlc::stop() {
 		libvlc_media_player_stop(m_mp);
 }
 
-// TODO: Utiliser libvlc_media_add_option_flag
-
-void
-Vlc::set_option(const std::string& global_option,
-    const std::string& option, const std::string& value) {
-	std::multimap<std::string, std::string>::iterator it = _opt.find(global_option);
-	std::string key(option.c_str());
-	key.append("=");
-	key.append(value.c_str());
-
-	for (; it != _opt.end(); ++it) {
-		if ((*it).second.substr(0, (*it).second.find("=")) == option) {
-			(*it).second = key;
-			return ;
-		}
-	}
-	_opt.insert(std::pair<std::string, std::string>(global_option, key));
-}
-
-std::string*
-Vlc::get_option() {
-	std::string* str = new std::string("#");
-	std::multimap<std::string, std::string>::iterator it = _opt.begin();
-
-	if (_opt.empty())
-		return (new std::string(""));
-
-	while (it != _opt.end()) {
-		unsigned int count = _opt.count((*it).first);
-		str->append((*it).first);
-		str->append("{");
-
-		for (unsigned int i = 0; i != count; ++i, ++it) {
-			str->append((*it).second);
-			if ((i+1) != count)
-				str->append(",");
-		}
-		str->append("}");
-	}
-	std::clog << *str << std::endl;
-	return str;
-}
-
-void
-Vlc::reset_option() {
-	_opt.clear();
-}
-
-void
-Vlc::setVideoLockCallback(void* callback)
-{
-  char    param[64];
-
-  sprintf(param, ":sout-smem-video-prerender-callback=%"PRId64, (intptr_t)callback);
-  addOption(param);
-}
-
-void
-Vlc::setVideoUnlockCallback(void* callback)
-{
-  char    param[64];
-
-  sprintf(param, ":sout-smem-video-postrender-callback=%"PRId64, (intptr_t)callback);
-  addOption(param);
-}
-
-void
-Vlc::setAudioLockCallback(void* callback)
-{
-  char    param[64];
-
-  sprintf(param, ":sout-smem-audio-prerender-callback=%"PRId64, (intptr_t)callback);
-  addOption(param);
-}
-
-void
-Vlc::setAudioUnlockCallback(void* callback)
-{
-  char    param[64];
-
-  sprintf(param, ":sout-smem-audio-postrender-callback=%"PRId64, (intptr_t)callback);
-  addOption(param);
-}
-
 void
 Vlc::addOption( const char* opt )
 {
@@ -318,6 +203,44 @@ Vlc::release(void *data, const char *cookie, size_t, void *buffer)
   return 0;
 }
 
+// ---------------- Private Methods -----------------------
+
+void
+Vlc::setVideoLockCallback(void* callback)
+{
+  char    param[64];
+
+  sprintf(param, ":sout-smem-video-prerender-callback=%"PRId64, (intptr_t)callback);
+  addOption(param);
+}
+
+void
+Vlc::setVideoUnlockCallback(void* callback)
+{
+  char    param[64];
+
+  sprintf(param, ":sout-smem-video-postrender-callback=%"PRId64, (intptr_t)callback);
+  addOption(param);
+}
+
+void
+Vlc::setAudioLockCallback(void* callback)
+{
+  char    param[64];
+
+  sprintf(param, ":sout-smem-audio-prerender-callback=%"PRId64, (intptr_t)callback);
+  addOption(param);
+}
+
+void
+Vlc::setAudioUnlockCallback(void* callback)
+{
+  char    param[64];
+
+  sprintf(param, ":sout-smem-audio-postrender-callback=%"PRId64, (intptr_t)callback);
+  addOption(param);
+}
+
 void
 Vlc::setVideoGetCallback(void* callback)
 {
@@ -335,3 +258,13 @@ Vlc::setVideoReleaseCallback(void* callback)
   sprintf(param, ":imem-release=%"PRId64, (intptr_t)callback);
   addOption(param);
 }
+	
+void
+Vlc::setVideoDataCtx( void* dataCtx )
+{
+  char    param[64];
+  sprintf( param, ":sout-smem-video-data=%"PRId64, (intptr_t)dataCtx );
+  addOption( param );
+}
+
+
