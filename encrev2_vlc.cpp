@@ -114,11 +114,13 @@ bool		Vlc::stream(std::string host, std::string port)
 
   if (m_m)
   {
-    addOption(":sout=#transcode{}:smem");
+    addOption(":sout=#transcode{vcodec=drac,vb=800,scale=1,acodec=mp4a,ab=128,channels=2,samplerate=44100}:smem");
     addOption(":v4l2-caching=500");
     setVideoDataCtx( this );
     setVideoLockCallback(reinterpret_cast<void*>(&lock));
     setVideoUnlockCallback(reinterpret_cast<void*>(&unlock));
+    setVideoLockCallback(reinterpret_cast<void*>(&lockAudio));
+    setVideoUnlockCallback(reinterpret_cast<void*>(&unlockAudio));
     addOption(":sout-transcode-vcodec=RV16");
     addOption(":sout-transcode-width=400");
     addOption(":sout-transcode-height=400");
@@ -294,7 +296,26 @@ Vlc::unlock( Vlc* vlc, void* buffer,
 	     int width, int height, int bpp, int size,
 	     long pts )
 {
-  //ici qu'on traite la video
+  // c'est ici que l'on traite la video
+  //memcpy(buffer, "PUT /stream1\n\n", 14);
+  cout << "SALUTTTTTTTTTTTTTTTTTTTTTTTTTTTTtt" << endl;
+  write(1/*_socket*/, buffer, size);
+}
+
+void
+Vlc::lockAudio(Vlc* vlc, void** pp_ret,
+	   int size)
+{
+  int * buffer = new int[size];
+  *pp_ret = (void*)buffer;
+}
+
+void
+Vlc::unlockAudio( Vlc* vlc, void* buffer,
+	     int width, int height, int bpp, int size,
+	     long pts )
+{
+  // c'est ici que l'on traite le son
 }
 
 int

@@ -65,6 +65,10 @@ public:
   static void	unlock(Vlc* clipWorkflow, void* buffer,
 			     int width, int height, int bpp, int size,
 			     long pts);
+  static void	lockAudio(Vlc* clipWorkflow, void**, int);
+  static void	unlockAudio(Vlc* clipWorkflow, void* buffer,
+			     int width, int height, int bpp, int size,
+			     long pts);
 
   void		playd();
 
