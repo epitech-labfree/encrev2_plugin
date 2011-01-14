@@ -54,7 +54,8 @@ public:
   void		setAudioLockCallback(void* callback);
   void		setAudioUnlockCallback(void* callback);
   void		addOption(const char* opt);
-  void		setVideoDataCtx(void*);
+  void		setDataCtx(void*);
+  void		setImemDataCtx(void*);
 
   void		setVideoReleaseCallback(void*);
   void		setVideoGetCallback(void*);

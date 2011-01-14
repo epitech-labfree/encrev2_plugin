@@ -94,11 +94,21 @@ bool          Vlc::set_window(FB::PluginWindow *win)
 }
 
 void
-Vlc::setVideoDataCtx( void* dataCtx )
+Vlc::setDataCtx( void* dataCtx )
 {
   char    param[64];
-  sprintf( param, ":sout-smem-video-data=%"PRId64, (intptr_t)dataCtx );
-  addOption( param );
+  sprintf(param, ":sout-smem-video-data=%"PRId64, (intptr_t)dataCtx);
+  addOption(param);
+  sprintf(param, ":sout-smem-audio-data=%"PRId64, (intptr_t)dataCtx);
+  addOption(param);
+}
+
+void
+Vlc::setImemDataCtx( void* dataCtx )
+{
+  char    param[64];
+  sprintf(param, ":imem-data=%"PRId64, (intptr_t)dataCtx);
+  addOption(param);
 }
 
 #include <stdlib.h>
@@ -111,17 +121,17 @@ bool		Vlc::stream(std::string host, std::string port)
   VlcSystemStrategy::get_webcam_mrl(mrl);
   m_m = libvlc_media_new_location(m_vlc, mrl.c_str());
   std::cout << "Streaming " << mrl << " to " << host << ":" << port << std::endl;
-
   if (m_m)
   {
-    addOption(":sout=#transcode{vcodec=drac,vb=800,scale=1,acodec=mp4a,ab=128,channels=2,samplerate=44100}:smem");
+    //vcodec=h264,vb=800,scale=1,acodec=mp4a,ab=128,channels=2,samplerate=44100
+    addOption(":sout=#transcode{vcodec=h264,vb=800,scale=1,acodec=mp4a,ab=128,channels=2,samplerate=44100}:smem");
     addOption(":v4l2-caching=500");
-    setVideoDataCtx( this );
-    setVideoLockCallback(reinterpret_cast<void*>(&lock));
-    setVideoUnlockCallback(reinterpret_cast<void*>(&unlock));
-    setVideoLockCallback(reinterpret_cast<void*>(&lockAudio));
-    setVideoUnlockCallback(reinterpret_cast<void*>(&unlockAudio));
-    addOption(":sout-transcode-vcodec=RV16");
+    setVideoLockCallback(reinterpret_cast<void*>(&Vlc::lock));
+    setVideoUnlockCallback(reinterpret_cast<void*>(&Vlc::unlock));
+    setDataCtx( this );
+    // setAudioLockCallback(reinterpret_cast<void*>(&lockAudio));
+    // setAudioUnlockCallback(reinterpret_cast<void*>(&unlockAudio));
+    addOption(":sout-transcode-vcodec=RV32");
     addOption(":sout-transcode-width=400");
     addOption(":sout-transcode-height=400");
     addOption(":no-skip-frames");
@@ -141,21 +151,24 @@ bool          Vlc::play()
 {
   if (m_vlc == 0)
     return false;
-  std::clog << "Playing " << "imem://" << std::endl;
-  m_m = libvlc_media_new_location(m_vlc, "imem://");
+  std::clog << "Playing " << "imem://width=400:height=400:fps=30:cookie=0:codec=H264:cat=4:caching=0" << std::endl;
+  m_m = libvlc_media_new_location(m_vlc, "imem://width=400:height=400:fps=30:cookie=0:codec=H264:cat=4:caching=0");
   if (m_m)
   {
     m_mp = libvlc_media_player_new_from_media(m_m);
 
+    addOption(":input-slave=imem://cookie=1:cat=1:codec=mp4a:samplerate=44100:channels=2:caching=0");
     setVideoGetCallback(reinterpret_cast<void*>(&getVideo));
     setVideoReleaseCallback(reinterpret_cast<void*>(&release));
-    addOption(":imem-width=400");
-    addOption(":imem-height=400");
-    addOption(":imem-cat=4");
-    char    param[64];
-    sprintf(param, ":imem-data=%p", this);
-    addOption(param);
+    setImemDataCtx(this);
+    // addOption(":imem-codec=h264");
+    // addOption(":imem-width=400");
+    // addOption(":imem-height=400");
+    // addOption(":imem-fps=1");
+
+    addOption(":text-renderer dummy");
     
+    //addOption(":imem-cat=4");    
 
     libvlc_media_release(m_m);
     VlcSystemStrategy::set_window(m_mp, m_window);
@@ -283,10 +296,12 @@ Vlc::playd()
   libvlc_media_player_play(m_mp);
 }
 
+#include <iostream>
 void
 Vlc::lock(Vlc* vlc, void** pp_ret,
 	   int size)
 {
+  std::cout << "SALUTTTTTTTTTTTTTTTTTTTTTTTTTTTTtt" << std::endl;
   int * buffer = new int[size];
   *pp_ret = (void*)buffer;
 }
@@ -297,8 +312,6 @@ Vlc::unlock( Vlc* vlc, void* buffer,
 	     long pts )
 {
   // c'est ici que l'on traite la video
-  //memcpy(buffer, "PUT /stream1\n\n", 14);
-  cout << "SALUTTTTTTTTTTTTTTTTTTTTTTTTTTTTtt" << endl;
   write(1/*_socket*/, buffer, size);
 }
 
@@ -306,7 +319,7 @@ void
 Vlc::lockAudio(Vlc* vlc, void** pp_ret,
 	   int size)
 {
-  int * buffer = new int[size];
+  int * buffer = new int[size * size];
   *pp_ret = (void*)buffer;
 }
 
@@ -316,6 +329,7 @@ Vlc::unlockAudio( Vlc* vlc, void* buffer,
 	     long pts )
 {
   // c'est ici que l'on traite le son
+  delete buffer;
 }
 
 int
@@ -323,19 +337,22 @@ Vlc::getVideo(void* data, const char* cookie, int64_t* dts, int64_t* pts,
 			     unsigned* flags, size_t* len, void** buffer)
 {
   Vlc	*myVlc = static_cast<Vlc*>(data);
-  // *buffer = new char [4096];
-  // *len = 4096;
+  int ret = 1;
+
   //lecture sur le reseau
   //*len = myVlc->_network->read(buffer);
   *buffer = NULL;
   *len = 0;
-  return (*len ? 0 : -1);
+  // if (*buffer != NULL)
+  //   ret = 0;
+  return (ret);
 }
 
 int
 Vlc::release(void *data, const char *cookie, size_t, void *buffer)
 {
   delete (char*)buffer;
+  buffer = NULL;
   return 0;
 }
 
