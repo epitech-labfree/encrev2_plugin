@@ -32,21 +32,28 @@
 #define __STDC_FORMAT_MACROS
 #include <inttypes.h>
 #include <cstdio>
+#include <boost/asio.hpp>
 
 using namespace std;
 
 static const char * vlc_args[] = {
   "-I", "dummy", /* Don't use any interface */
   "--ignore-config", /* Don't use VLC's config */
-  "-vv",
-  "--sout", 0, /* Left this empty for the --sout option */
+  "-vv"
 };
 
-Vlc::Vlc() : m_vlc(0), m_mp(0), m_m(0), m_window(0), _opt()
+Vlc::Vlc() : m_vlc(0), m_mp(0), m_m(0), m_window(0)
 {
+  using boost::asio::ip::tcp;
   std::cout << "Encre::Vlc, Initialization..." << std::endl;
   // init vlc modules, should be done only once
   m_vlc = libvlc_new(sizeof(vlc_args) / sizeof(vlc_args[0]), vlc_args);
+  boost::asio::io_service io_service;
+  tcp::resolver resolver(io_service);
+  tcp::resolver::query query(tcp::v4(), "localhost", "4242");
+  tcp::resolver::iterator iterator = resolver.resolve(query);
+  _socket = new tcp::socket(io_service);
+  _socket->connect(*iterator);
   std::cout << "Encre::Vlc, ...Done!" << std::endl;
 }
 
@@ -74,6 +81,8 @@ bool          Vlc::set_window(FB::PluginWindow *win)
 bool		Vlc::stream(std::string host, std::string port)
 {
   std::string mrl;
+  char request[] = "PUT /toto";
+  boost::asio::write(*_socket, boost::asio::buffer(request, sizeof(request)));
 
   if (m_vlc == 0)
     return false;
@@ -106,6 +115,9 @@ bool		Vlc::stream(std::string host, std::string port)
 
 bool          Vlc::play()
 {
+  char request[] = "GET /toto";
+  boost::asio::write(*_socket, boost::asio::buffer(request, sizeof(request)));
+
   if (m_vlc == 0)
     return false;
   std::clog << "Playing " << "imem://" << std::endl;
@@ -179,7 +191,7 @@ Vlc::unlock( Vlc* vlc, void* buffer,
 	     int width, int height, int bpp, int size,
 	     long pts )
 {
-  //ici qu'on traite la video
+  boost::asio::write(vlc->getSocket(), boost::asio::buffer(buffer, size));
 }
 
 int
@@ -187,13 +199,15 @@ Vlc::getVideo(void* data, const char* cookie, int64_t* dts, int64_t* pts,
 			     unsigned* flags, size_t* len, void** buffer)
 {
   Vlc	*myVlc = static_cast<Vlc*>(data);
-  // *buffer = new char [4096];
-  // *len = 4096;
+  *buffer = new char [4096];
   //lecture sur le reseau
-  //*len = myVlc->_network->read(buffer);
-  *buffer = NULL;
-  *len = 0;
+  *len =  boost::asio::read(myVlc->getSocket(), boost::asio::buffer(*buffer, 4096));
   return (*len ? 0 : -1);
+}
+
+boost::asio::ip::tcp::socket&
+Vlc::getSocket() const {
+	return *_socket;
 }
 
 int

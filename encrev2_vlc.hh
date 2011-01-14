@@ -29,8 +29,8 @@
 # include <string>
 #define __STDC_FORMAT_MACROS
 #include <inttypes.h>
-
 # include <map>
+#include <boost/asio.hpp>
 # include "vlc_system_strategy.hh"
 
 class Vlc
@@ -43,6 +43,7 @@ public:
   bool          stream(std::string host, std::string port);
   bool          play();
   void		stop();
+  boost::asio::ip::tcp::socket& getSocket() const;
   void		put_events();
   static void	callback(const libvlc_event_t* event, void* ptr);
   static void	lock(Vlc* clipWorkflow, void**, int);
@@ -70,8 +71,7 @@ protected:
   libvlc_event_manager_t	*m_me;
   libvlc_media_t		*m_m;
   FB::PluginWindow		*m_window;
-  std::multimap<std::string, std::string> _opt;
-  int				_socket;
+  boost::asio::ip::tcp::socket*	_socket;
 };
 
 #endif	    /* !ENCREV2_VLC_HH_ */
