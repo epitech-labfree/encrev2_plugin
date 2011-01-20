@@ -107,7 +107,7 @@ bool		Vlc::stream(std::string host, std::string port)
     return false;
   }
   std::string mrl;
-  char request[] = "PUT /toto";
+  char request[] = "PUT toto\n\n";
   boost::asio::write(*_socket, boost::asio::buffer(request, sizeof(request)));
 
   if (m_vlc == 0)
@@ -224,6 +224,7 @@ Vlc::lock(Vlc* vlc, void** pp_ret,
   *pp_ret = (void*)buffer;
 }
 
+#include <stdio.h>
 void
 Vlc::unlock( Vlc* vlc, void* buffer,
 	     int width, int height, int bpp, int size,
@@ -231,7 +232,11 @@ Vlc::unlock( Vlc* vlc, void* buffer,
 {
   // c'est ici que l'on traite la video
   if (vlc->_is_connected)
-  boost::asio::write(vlc->getSocket(), boost::asio::buffer(buffer, size));
+    {
+      char *toto = reinterpret_cast<char*>(buffer);
+      printf("Gniarffffffffffffff%d %d\n", (int)buffer, toto[0]);
+      boost::asio::write(vlc->getSocket(), boost::asio::buffer(buffer, size));
+    }
 }
 
 void
