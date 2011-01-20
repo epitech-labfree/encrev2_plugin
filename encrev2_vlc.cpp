@@ -44,25 +44,34 @@ static const char * vlc_args[] = {
 
 Vlc::Vlc() : m_vlc(0), m_mp(0), m_m(0), m_window(0)
 {
-  using boost::asio::ip::tcp;
   std::cout << "Encre::Vlc, Initialization..." << std::endl;
   // init vlc modules, should be done only once
   m_vlc = libvlc_new(sizeof(vlc_args) / sizeof(vlc_args[0]), vlc_args);
-  boost::asio::io_service io_service;
-  tcp::resolver resolver(io_service);
-  tcp::resolver::query query(tcp::v4(), "localhost", "4242");
-  tcp::resolver::iterator iterator = resolver.resolve(query);
-  _socket = new tcp::socket(io_service);
-  //_socket->connect(*iterator);
-  std::cout << "Encre::Vlc, ...Done!" << std::endl;
+  std::clog << "Encre::Vlc, ...Done!" << std::endl;
 }
 
 Vlc::~Vlc()
 {
-  std::cout << "Encre::Vlc, Destruction" << std::endl;
+  std::clog << "Encre::Vlc, Destruction" << std::endl;
   libvlc_event_detach(m_me, libvlc_MediaPlayerPlaying, callback, this);
   libvlc_media_player_release(m_mp);
   libvlc_release(m_vlc);
+}
+
+void	      Vlc::connect() {
+	std::clog << "Encre::Vlc, Connection" << std::endl;
+	using boost::asio::ip::tcp;
+	boost::asio::io_service io_service;
+	tcp::resolver resolver(io_service);
+	tcp::resolver::query query(tcp::v4(), "localhost", "4242");
+	tcp::resolver::iterator iterator = resolver.resolve(query);
+	try {
+	_socket = new tcp::socket(io_service);
+	}
+	catch (...) {
+		std::cerr << "Oh no !" << std::endl;
+	}
+	_socket->connect(*iterator);
 }
 
 bool          Vlc::set_window(FB::PluginWindow *win)

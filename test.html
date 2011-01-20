@@ -10,14 +10,12 @@
     function start_stream()
     {
     var publish = document.getElementById('publish');
-    publish.set_option("transcode","acodec", "wav");
-    publish.stream('localhost','1234');
+    publish.stream('localhost','4242');
     }
 
     function start_play()
     {
     var publish = document.getElementById('publish');
-    publish.set_option("transcode","acodec", "wav");
     publish.play();
     }
 

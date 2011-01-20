@@ -43,8 +43,9 @@ public:
   bool          stream(std::string host, std::string port);
   bool          play();
   void		stop();
-  //std::string*	get_option();
   void		addOption(const char* opt);
+  void		connect();
+
   boost::asio::ip::tcp::socket& getSocket() const;
   void		put_events();
   static void	callback(const libvlc_event_t* event, void* ptr);
