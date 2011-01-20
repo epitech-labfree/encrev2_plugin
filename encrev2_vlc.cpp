@@ -59,6 +59,9 @@ Vlc::~Vlc()
 }
 
 void	      Vlc::connect() {
+	if (_is_connected == true)
+		return;
+
 	std::clog << "Encre::Vlc, Connection" << std::endl;
 	using boost::asio::ip::tcp;
 	boost::asio::io_service io_service;
@@ -77,8 +80,10 @@ void	      Vlc::connect() {
 }
 
 void	      Vlc::disconnect() {
-	if (_is_connected == true)
-		_socket->close();
+	if (_is_connected == false)
+		return ;
+	_is_connected = false;
+	_socket->close();
 }
 
 bool          Vlc::set_window(FB::PluginWindow *win)
