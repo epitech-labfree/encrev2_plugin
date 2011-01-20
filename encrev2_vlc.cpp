@@ -108,7 +108,7 @@ bool		Vlc::stream(std::string host, std::string port)
     setDataCtx( this );
     // setAudioLockCallback(reinterpret_cast<void*>(&lockAudio));
     // setAudioUnlockCallback(reinterpret_cast<void*>(&unlockAudio));
-    // addOption(":sout-transcode-vcodec=RV32");
+    addOption(":sout-transcode-vcodec=RV16");
     addOption(":sout-transcode-width=400");
     addOption(":sout-transcode-height=400");
     addOption(":no-skip-frames");
@@ -197,7 +197,6 @@ void
 Vlc::lock(Vlc* vlc, void** pp_ret,
 	   int size)
 {
-  std::cout << "SALUTTTTTTTTTTTTTTTTTTTTTTTTTTTTtt" << std::endl;
   int * buffer = new int[size];
   *pp_ret = (void*)buffer;
 }
@@ -207,8 +206,9 @@ Vlc::unlock( Vlc* vlc, void* buffer,
 	     int width, int height, int bpp, int size,
 	     long pts )
 {
-  //boost::asio::write(vlc->getSocket(), boost::asio::buffer(buffer, size));
   // c'est ici que l'on traite la video
+  if (_is_connected)
+  boost::asio::write(vlc->getSocket(), boost::asio::buffer(buffer, size));
 }
 
 void
