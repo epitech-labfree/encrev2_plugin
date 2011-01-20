@@ -42,7 +42,7 @@ static const char * vlc_args[] = {
   "-vv"
 };
 
-Vlc::Vlc() : m_vlc(0), m_mp(0), m_m(0), m_window(0)
+Vlc::Vlc() : m_vlc(0), m_mp(0), m_m(0), m_window(0), _is_connected(false)
 {
   std::cout << "Encre::Vlc, Initialization..." << std::endl;
   // init vlc modules, should be done only once
@@ -69,9 +69,16 @@ void	      Vlc::connect() {
 	_socket = new tcp::socket(io_service);
 	}
 	catch (...) {
-		std::cerr << "Oh no !" << std::endl;
+		std::cerr << "Encre::Vlc, Enable to connect" << std::endl;
+		return ;
 	}
+	_is_connected = true;
 	_socket->connect(*iterator);
+}
+
+void	      Vlc::disconnect() {
+	if (_is_connected == true)
+		_socket->close();
 }
 
 bool          Vlc::set_window(FB::PluginWindow *win)
@@ -89,6 +96,12 @@ bool          Vlc::set_window(FB::PluginWindow *win)
 
 bool		Vlc::stream(std::string host, std::string port)
 {
+  if (_is_connected == false)
+  {
+    std::clog << "Encre::Vlc, Error: Not connected " << std::endl;
+    return false;
+  }
+
   std::string mrl;
   char request[] = "PUT /toto";
   //boost::asio::write(*_socket, boost::asio::buffer(request, sizeof(request)));
@@ -126,6 +139,12 @@ bool		Vlc::stream(std::string host, std::string port)
 
 bool          Vlc::play()
 {
+  if (_is_connected == false)
+  {
+    std::clog << "Encre::Vlc, Error: Not connected " << std::endl;
+    return true;
+  }
+
   char request[] = "GET /toto";
   //boost::asio::write(*_socket, boost::asio::buffer(request, sizeof(request)));
 
@@ -234,6 +253,7 @@ Vlc::getVideo(void* data, const char* cookie, int64_t* dts, int64_t* pts,
 {
   Vlc	*myVlc = static_cast<Vlc*>(data);
   *buffer = new char [4096];
+  *len = 0;
   //lecture sur le reseau
   //*len =  boost::asio::read(myVlc->getSocket(), boost::asio::buffer(*buffer, 4096));
   return (*len ? 0 : -1);
