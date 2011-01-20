@@ -70,8 +70,15 @@ void	      Vlc::connect() {
 	}
 	catch (...) {
 		std::cerr << "Encre::Vlc, Enable to connect" << std::endl;
+		return ;
 	}
+	_is_connected = true;
 	_socket->connect(*iterator);
+}
+
+void	      Vlc::disconnect() {
+	if (_is_connected == true)
+		_socket->close();
 }
 
 bool          Vlc::set_window(FB::PluginWindow *win)
@@ -246,6 +253,7 @@ Vlc::getVideo(void* data, const char* cookie, int64_t* dts, int64_t* pts,
 {
   Vlc	*myVlc = static_cast<Vlc*>(data);
   *buffer = new char [4096];
+  *len = 0;
   //lecture sur le reseau
   //*len =  boost::asio::read(myVlc->getSocket(), boost::asio::buffer(*buffer, 4096));
   return (*len ? 0 : -1);

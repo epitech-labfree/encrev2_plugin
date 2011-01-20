@@ -30,6 +30,7 @@ class encrev2_pluginAPI : public FB::JSAPIAuto
                                const std::string &port);
   bool                  play();
   void			connect();
+  void			disconnect();
   void			stop();
   void			set_option(const char*);
   //std::string*		get_option();

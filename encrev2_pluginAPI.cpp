@@ -20,6 +20,7 @@ encrev2_pluginAPI::encrev2_pluginAPI(FB::BrowserHostPtr host, encrev2_plugin &pl
   registerMethod("play",      make_method(this, &encrev2_pluginAPI::play));
   registerMethod("stop",      make_method(this, &encrev2_pluginAPI::stop));
   registerMethod("connect",      make_method(this, &encrev2_pluginAPI::connect));
+  registerMethod("disconnect",      make_method(this, &encrev2_pluginAPI::disconnect));
   registerMethod("set_option",      make_method(this, &encrev2_pluginAPI::set_option));
   // registerMethod("get_option",      make_method(this, &encrev2_pluginAPI::get_option));
 
@@ -72,6 +73,11 @@ encrev2_pluginAPI::set_option(const char* s1)
 void
 encrev2_pluginAPI::connect() {
 	m_plugin.vlc().connect();
+}
+
+void
+encrev2_pluginAPI::disconnect() {
+	m_plugin.vlc().disconnect();
 }
 
 //std::string*

@@ -45,6 +45,7 @@ public:
   void		stop();
   void		addOption(const char* opt);
   void		connect();
+  void		disconnect();
 
   boost::asio::ip::tcp::socket& getSocket() const;
   void		put_events();
