@@ -44,7 +44,7 @@ static const char * vlc_args[] = {
 
 Vlc::Vlc() : m_vlc(0), m_mp(0), m_m(0), m_window(0), _is_connected(false)
 {
-  std::cout << "Encre::Vlc, Initialization..." << std::endl;
+  std::clog << "Encre::Vlc, Initialization..." << std::endl;
   // init vlc modules, should be done only once
   m_vlc = libvlc_new(sizeof(vlc_args) / sizeof(vlc_args[0]), vlc_args);
   std::clog << "Encre::Vlc, ...Done!" << std::endl;
@@ -89,9 +89,9 @@ void	      Vlc::disconnect() {
 bool          Vlc::set_window(FB::PluginWindow *win)
 {
   if (win)
-    cout << "Attaching to the window" << endl;
+    std::clog << "Attaching to the window" << endl;
   else
-    cout << "Detaching from the window" << endl;
+    std::clog << "Detaching from the window" << endl;
 
   // VlcSystemStrategy::set_window(m_mp, win);
   m_window = win;
@@ -114,7 +114,7 @@ bool		Vlc::stream(std::string host, std::string port)
     return false;
   VlcSystemStrategy::get_webcam_mrl(mrl);
   m_m = libvlc_media_new_location(m_vlc, mrl.c_str());
-  std::cout << "Streaming " << mrl << " to " << host << ":" << port << std::endl;
+  std::clog << "Streaming " << mrl << " to " << host << ":" << port << std::endl;
   if (m_m)
   {
     //vcodec=h264,vb=800,scale=1,acodec=mp4a,ab=128,channels=2,samplerate=44100
@@ -137,7 +137,7 @@ bool		Vlc::stream(std::string host, std::string port)
     //play la video
     libvlc_media_player_play(m_mp);
   }
-  cout << "event : " << (int64_t)m_me << endl;
+  std::clog << "event : " << (int64_t)m_me << endl;
   return true;
 }
 
@@ -154,7 +154,7 @@ bool          Vlc::play()
 
   if (m_vlc == 0)
     return false;
-  std::cout << "Playing " << "imem://width=400:height=400:fps=30:cookie=0:codec=H264:cat=4:caching=0" << std::endl;
+  std::clog << "Playing " << "imem://width=400:height=400:fps=30:cookie=0:codec=H264:cat=4:caching=0" << std::endl;
   m_m = libvlc_media_new_location(m_vlc, "imem://width=400:height=400:fps=30:cookie=0:codec=H264:cat=4:caching=0");
   if (m_m)
   {
@@ -190,7 +190,7 @@ Vlc::stop() {
 void
 Vlc::addOption( const char* opt )
 {
-  cout << "EncreVlc::addOption " << opt << endl;
+  std::clog << "EncreVlc::addOption " << opt << endl;
   libvlc_media_add_option_flag(m_m, opt, libvlc_media_option_trusted);
 }
 
@@ -205,7 +205,7 @@ Vlc::callback(const libvlc_event_t* event, void* ptr)
 {
   Vlc*	self = reinterpret_cast<Vlc*>(ptr);
 
-  cout << "Media player playing" << endl;
+  std::clog << "Media player playing" << endl;
   //self->playd();
 }
 
