@@ -29,9 +29,8 @@
 # include <string>
 #define __STDC_FORMAT_MACROS
 #include <inttypes.h>
-
-# include "encrev2_CliOpt.hh"
 # include <map>
+#include <boost/asio.hpp>
 # include "vlc_system_strategy.hh"
 
 class Vlc
@@ -41,27 +40,15 @@ public:
   ~Vlc();
 
   bool          set_window(FB::PluginWindow *win);
-  bool		start();
   bool          stream(std::string host, std::string port);
   bool          play();
   void		stop();
-  void		set_option(const std::string&, const std::string&, const std::string&);
-  std::string*	get_option();
-  void		reset_option();
-
-  void		setVideoLockCallback(void* callback);
-  void		setVideoUnlockCallback(void* callback);
-  void		setAudioLockCallback(void* callback);
-  void		setAudioUnlockCallback(void* callback);
+  //std::string*	get_option();
   void		addOption(const char* opt);
-  void		setDataCtx(void*);
-  void		setImemDataCtx(void*);
-
-  void		setVideoReleaseCallback(void*);
-  void		setVideoGetCallback(void*);
-
+  boost::asio::ip::tcp::socket& getSocket() const;
   void		put_events();
   static void	callback(const libvlc_event_t* event, void* ptr);
+
   static void	lock(Vlc* clipWorkflow, void**, int);
   static void	unlock(Vlc* clipWorkflow, void* buffer,
 			     int width, int height, int bpp, int size,
@@ -72,10 +59,20 @@ public:
 			     long pts);
 
   void		playd();
-
   static int	getVideo(void *data, const char *cookie, int64_t *dts, int64_t *pts,
 			     unsigned *flags, size_t *, void **);
   static int	release(void *data, const char *cookie, size_t, void *);
+
+private:
+  void		setVideoLockCallback(void* callback);
+  void		setVideoUnlockCallback(void* callback);
+  void		setAudioLockCallback(void* callback);
+  void		setAudioUnlockCallback(void* callback);
+  void		setVideoDataCtx(void*);
+  void		setVideoReleaseCallback(void*);
+  void		setVideoGetCallback(void*);
+  void		setDataCtx(void*);
+  void		setImemDataCtx(void*);
 
 protected:
   libvlc_instance_t		*m_vlc;
@@ -83,8 +80,7 @@ protected:
   libvlc_event_manager_t	*m_me;
   libvlc_media_t		*m_m;
   FB::PluginWindow		*m_window;
-  VlcCliOpt			*m_vlc_cli_opt;
-  std::multimap<std::string, std::string> _opt;
+  boost::asio::ip::tcp::socket*	_socket;
 };
 
 #endif	    /* !ENCREV2_VLC_HH_ */

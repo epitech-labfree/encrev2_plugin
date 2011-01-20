@@ -20,30 +20,19 @@ class encrev2_pluginAPI : public FB::JSAPIAuto
   encrev2_pluginAPI(FB::BrowserHostPtr host, encrev2_plugin &core);
   virtual ~encrev2_pluginAPI();
 
-  /*
-   * Generated example code
-   */
   // Read-only property ${PROPERTY.ident}
   std::string get_version();
-
-  // Method echo
-  FB::variant echo(const FB::variant& msg);
-
   // Method test-event
   void testEvent(const FB::variant& s);
 
-  /*
-   * Encre actual code
-   */
+  // Encre actual code
   bool                  stream(const std::string &host,
                                const std::string &port);
   bool                  play();
   bool			start();
   void			stop();
-  void			set_option(const std::string&,
-      const std::string&, const std::string&);
-  std::string*		get_option();
-  void		        reset_option();
+  void			set_option(const char*);
+  //std::string*		get_option();
 
  private:
   FB::BrowserHostPtr    m_host;

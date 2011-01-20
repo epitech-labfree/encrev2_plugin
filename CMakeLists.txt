@@ -65,6 +65,6 @@ SET( SOURCES
 # This will include Win/projectDef.cmake, Linux/projectDef.cmake, etc
 include_platform()
 
-target_link_libraries(${PLUGIN_NAME} ${VLC_LIBRARIES})
+target_link_libraries(${PLUGIN_NAME} ${VLC_LIBRARIES} /usr/lib/libboost_system.a )
 
 install(TARGETS ${PLUGIN_NAME} LIBRARY DESTINATION ~/.mozilla/plugins)

@@ -24,6 +24,7 @@
 */
 
 #include <iostream>
+#include <stdlib.h>
 #include <map>
 #include <string>
 #include "encrev2_vlc.hh"
@@ -31,53 +32,37 @@
 #define __STDC_FORMAT_MACROS
 #include <inttypes.h>
 #include <cstdio>
+#include <boost/asio.hpp>
 
 using namespace std;
 
 static const char * vlc_args[] = {
   "-I", "dummy", /* Don't use any interface */
   "--ignore-config", /* Don't use VLC's config */
-  "-vv",
-  "--sout", 0, /* Left this empty for the --sout option */
+  "-vv"
 };
 
-// Exception mechanism has been removed in 1.1
-// static void raise(libvlc_exception_t * ex)
-// {
-//   if (libvlc_exception_raised(ex))
-//     cerr <<  "Encre::Vlc, Error: " << libvlc_exception_get_message(ex) << endl;
-// }
-
-
-Vlc::Vlc() : m_vlc(0), m_mp(0), m_m(0), m_window(0), _opt()
+Vlc::Vlc() : m_vlc(0), m_mp(0), m_m(0), m_window(0)
 {
-  cout << "Encre::Vlc, Initialization..." << endl;
+  using boost::asio::ip::tcp;
+  std::cout << "Encre::Vlc, Initialization..." << std::endl;
   // init vlc modules, should be done only once
   m_vlc = libvlc_new(sizeof(vlc_args) / sizeof(vlc_args[0]), vlc_args);
-  //m_vlc = libvlc_new(sizeof(vlc_args) / sizeof(vlc_args[0]), vlc_args);
-  cout << "Encre::Vlc, ...Done!" << endl;
+  boost::asio::io_service io_service;
+  tcp::resolver resolver(io_service);
+  tcp::resolver::query query(tcp::v4(), "localhost", "4242");
+  tcp::resolver::iterator iterator = resolver.resolve(query);
+  _socket = new tcp::socket(io_service);
+  _socket->connect(*iterator);
+  std::cout << "Encre::Vlc, ...Done!" << std::endl;
 }
 
 Vlc::~Vlc()
 {
-  cout << "Encre::Vlc, Destruction" << endl;
+  std::cout << "Encre::Vlc, Destruction" << std::endl;
   libvlc_event_detach(m_me, libvlc_MediaPlayerPlaying, callback, this);
+  libvlc_media_player_release(m_mp);
   libvlc_release(m_vlc);
-}
-
-bool	      Vlc::start()
-{
-	if (m_vlc != 0)
-		return false;
-
-	std::cout << "Start vlc with :" << std::endl;
-	vlc_args[5] = get_option()->c_str();
-
-	for (int i = 0; i != sizeof(vlc_args) / sizeof(vlc_args[0]); ++i)
-		std::cout << "- " << vlc_args[i] << std::endl;
-
-	m_vlc = libvlc_new(sizeof(vlc_args) / sizeof(vlc_args[0]), vlc_args);
-	return m_vlc != 0;
 }
 
 bool          Vlc::set_window(FB::PluginWindow *win)
@@ -93,28 +78,11 @@ bool          Vlc::set_window(FB::PluginWindow *win)
   return true;
 }
 
-void
-Vlc::setDataCtx( void* dataCtx )
-{
-  char    param[64];
-  sprintf(param, ":sout-smem-video-data=%"PRId64, (intptr_t)dataCtx);
-  addOption(param);
-  sprintf(param, ":sout-smem-audio-data=%"PRId64, (intptr_t)dataCtx);
-  addOption(param);
-}
-
-void
-Vlc::setImemDataCtx( void* dataCtx )
-{
-  char    param[64];
-  sprintf(param, ":imem-data=%"PRId64, (intptr_t)dataCtx);
-  addOption(param);
-}
-
-#include <stdlib.h>
 bool		Vlc::stream(std::string host, std::string port)
 {
   std::string mrl;
+  char request[] = "PUT /toto";
+  boost::asio::write(*_socket, boost::asio::buffer(request, sizeof(request)));
 
   if (m_vlc == 0)
     return false;
@@ -149,6 +117,9 @@ bool		Vlc::stream(std::string host, std::string port)
 
 bool          Vlc::play()
 {
+  char request[] = "GET /toto";
+  boost::asio::write(*_socket, boost::asio::buffer(request, sizeof(request)));
+
   if (m_vlc == 0)
     return false;
   std::clog << "Playing " << "imem://width=400:height=400:fps=30:cookie=0:codec=H264:cat=4:caching=0" << std::endl;
@@ -182,90 +153,6 @@ Vlc::stop() {
 	std::clog << "Stop" << std::endl;
 	if (m_mp != 0)
 		libvlc_media_player_stop(m_mp);
-}
-
-// TODO: Utiliser libvlc_media_add_option_flag
-
-void
-Vlc::set_option(const std::string& global_option,
-    const std::string& option, const std::string& value) {
-	std::multimap<std::string, std::string>::iterator it = _opt.find(global_option);
-	std::string key(option.c_str());
-	key.append("=");
-	key.append(value.c_str());
-
-	for (; it != _opt.end(); ++it) {
-		if ((*it).second.substr(0, (*it).second.find("=")) == option) {
-			(*it).second = key;
-			return ;
-		}
-	}
-	_opt.insert(std::pair<std::string, std::string>(global_option, key));
-}
-
-std::string*
-Vlc::get_option() {
-	std::string* str = new std::string("#");
-	std::multimap<std::string, std::string>::iterator it = _opt.begin();
-
-	if (_opt.empty())
-		return (new std::string(""));
-
-	while (it != _opt.end()) {
-		unsigned int count = _opt.count((*it).first);
-		str->append((*it).first);
-		str->append("{");
-
-		for (unsigned int i = 0; i != count; ++i, ++it) {
-			str->append((*it).second);
-			if ((i+1) != count)
-				str->append(",");
-		}
-		str->append("}");
-	}
-	std::clog << *str << std::endl;
-	return str;
-}
-
-void
-Vlc::reset_option() {
-	_opt.clear();
-}
-
-void
-Vlc::setVideoLockCallback(void* callback)
-{
-  char    param[64];
-
-  sprintf(param, ":sout-smem-video-prerender-callback=%"PRId64, (intptr_t)callback);
-  addOption(param);
-}
-
-void
-Vlc::setVideoUnlockCallback(void* callback)
-{
-  char    param[64];
-
-  sprintf(param, ":sout-smem-video-postrender-callback=%"PRId64, (intptr_t)callback);
-  addOption(param);
-}
-
-void
-Vlc::setAudioLockCallback(void* callback)
-{
-  char    param[64];
-
-  sprintf(param, ":sout-smem-audio-prerender-callback=%"PRId64, (intptr_t)callback);
-  addOption(param);
-}
-
-void
-Vlc::setAudioUnlockCallback(void* callback)
-{
-  char    param[64];
-
-  sprintf(param, ":sout-smem-audio-postrender-callback=%"PRId64, (intptr_t)callback);
-  addOption(param);
 }
 
 void
@@ -311,9 +198,9 @@ Vlc::unlock( Vlc* vlc, void* buffer,
 	     int width, int height, int bpp, int size,
 	     long pts )
 {
+  boost::asio::write(vlc->getSocket(), boost::asio::buffer(buffer, size));
   // c'est ici que l'on traite la video
-  write(1/*_socket*/, buffer, size);
-}
+  }
 
 void
 Vlc::lockAudio(Vlc* vlc, void** pp_ret,
@@ -337,15 +224,15 @@ Vlc::getVideo(void* data, const char* cookie, int64_t* dts, int64_t* pts,
 			     unsigned* flags, size_t* len, void** buffer)
 {
   Vlc	*myVlc = static_cast<Vlc*>(data);
-  int ret = 1;
-
+  *buffer = new char [4096];
   //lecture sur le reseau
-  //*len = myVlc->_network->read(buffer);
-  *buffer = NULL;
-  *len = 0;
-  // if (*buffer != NULL)
-  //   ret = 0;
-  return (ret);
+  *len =  boost::asio::read(myVlc->getSocket(), boost::asio::buffer(*buffer, 4096));
+  return (*len ? 0 : -1);
+}
+
+boost::asio::ip::tcp::socket&
+Vlc::getSocket() const {
+	return *_socket;
 }
 
 int
@@ -354,6 +241,44 @@ Vlc::release(void *data, const char *cookie, size_t, void *buffer)
   delete (char*)buffer;
   buffer = NULL;
   return 0;
+}
+
+// ---------------- Private Methods -----------------------
+
+void
+Vlc::setVideoLockCallback(void* callback)
+{
+  char    param[64];
+
+  sprintf(param, ":sout-smem-video-prerender-callback=%"PRId64, (intptr_t)callback);
+  addOption(param);
+}
+
+void
+Vlc::setVideoUnlockCallback(void* callback)
+{
+  char    param[64];
+
+  sprintf(param, ":sout-smem-video-postrender-callback=%"PRId64, (intptr_t)callback);
+  addOption(param);
+}
+
+void
+Vlc::setAudioLockCallback(void* callback)
+{
+  char    param[64];
+
+  sprintf(param, ":sout-smem-audio-prerender-callback=%"PRId64, (intptr_t)callback);
+  addOption(param);
+}
+
+void
+Vlc::setAudioUnlockCallback(void* callback)
+{
+  char    param[64];
+
+  sprintf(param, ":sout-smem-audio-postrender-callback=%"PRId64, (intptr_t)callback);
+  addOption(param);
 }
 
 void
@@ -371,5 +296,31 @@ Vlc::setVideoReleaseCallback(void* callback)
   char    param[64];
 
   sprintf(param, ":imem-release=%"PRId64, (intptr_t)callback);
+  addOption(param);
+}
+	
+void
+Vlc::setVideoDataCtx( void* dataCtx )
+{
+  char    param[64];
+  sprintf( param, ":sout-smem-video-data=%"PRId64, (intptr_t)dataCtx );
+  addOption( param );
+}
+
+void
+Vlc::setDataCtx( void* dataCtx )
+{
+  char    param[64];
+  sprintf(param, ":sout-smem-video-data=%"PRId64, (intptr_t)dataCtx);
+  addOption(param);
+  sprintf(param, ":sout-smem-audio-data=%"PRId64, (intptr_t)dataCtx);
+  addOption(param);
+}
+
+void
+Vlc::setImemDataCtx( void* dataCtx )
+{
+  char    param[64];
+  sprintf(param, ":imem-data=%"PRId64, (intptr_t)dataCtx);
   addOption(param);
 }
