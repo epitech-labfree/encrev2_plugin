@@ -64,19 +64,19 @@ void	      Vlc::connect() {
 
 	std::clog << "Encre::Vlc, Connection" << std::endl;
 	using boost::asio::ip::tcp;
+	try {
 	boost::asio::io_service io_service;
 	tcp::resolver resolver(io_service);
 	tcp::resolver::query query(tcp::v4(), "localhost", "4242");
 	tcp::resolver::iterator iterator = resolver.resolve(query);
-	try {
 	_socket = new tcp::socket(io_service);
+	_socket->connect(*iterator);
 	}
 	catch (...) {
 		std::cerr << "Encre::Vlc, Enable to connect" << std::endl;
 		return ;
 	}
 	_is_connected = true;
-	_socket->connect(*iterator);
 }
 
 void	      Vlc::disconnect() {
@@ -215,7 +215,6 @@ Vlc::playd()
   libvlc_media_player_play(m_mp);
 }
 
-#include <iostream>
 void
 Vlc::lock(Vlc* vlc, void** pp_ret,
 	   int size)
