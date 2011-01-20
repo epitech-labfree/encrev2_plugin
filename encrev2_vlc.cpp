@@ -53,7 +53,7 @@ Vlc::Vlc() : m_vlc(0), m_mp(0), m_m(0), m_window(0)
   tcp::resolver::query query(tcp::v4(), "localhost", "4242");
   tcp::resolver::iterator iterator = resolver.resolve(query);
   _socket = new tcp::socket(io_service);
-  _socket->connect(*iterator);
+  //_socket->connect(*iterator);
   std::cout << "Encre::Vlc, ...Done!" << std::endl;
 }
 
@@ -82,7 +82,7 @@ bool		Vlc::stream(std::string host, std::string port)
 {
   std::string mrl;
   char request[] = "PUT /toto";
-  boost::asio::write(*_socket, boost::asio::buffer(request, sizeof(request)));
+  //boost::asio::write(*_socket, boost::asio::buffer(request, sizeof(request)));
 
   if (m_vlc == 0)
     return false;
@@ -92,14 +92,14 @@ bool		Vlc::stream(std::string host, std::string port)
   if (m_m)
   {
     //vcodec=h264,vb=800,scale=1,acodec=mp4a,ab=128,channels=2,samplerate=44100
-    addOption(":sout=#transcode{vcodec=h264,vb=800,scale=1,acodec=mp4a,ab=128,channels=2,samplerate=44100}:smem");
+    addOption(":sout=#transcode{}:smem");
     addOption(":v4l2-caching=500");
     setVideoLockCallback(reinterpret_cast<void*>(&Vlc::lock));
     setVideoUnlockCallback(reinterpret_cast<void*>(&Vlc::unlock));
     setDataCtx( this );
     // setAudioLockCallback(reinterpret_cast<void*>(&lockAudio));
     // setAudioUnlockCallback(reinterpret_cast<void*>(&unlockAudio));
-    addOption(":sout-transcode-vcodec=RV32");
+    // addOption(":sout-transcode-vcodec=RV32");
     addOption(":sout-transcode-width=400");
     addOption(":sout-transcode-height=400");
     addOption(":no-skip-frames");
@@ -108,21 +108,21 @@ bool		Vlc::stream(std::string host, std::string port)
 
     m_me = libvlc_media_player_event_manager(m_mp);
     put_events();
-    cout << "event : " << (int64_t)m_me << endl;
     //play la video
     libvlc_media_player_play(m_mp);
   }
+  cout << "event : " << (int64_t)m_me << endl;
   return true;
 }
 
 bool          Vlc::play()
 {
   char request[] = "GET /toto";
-  boost::asio::write(*_socket, boost::asio::buffer(request, sizeof(request)));
+  //boost::asio::write(*_socket, boost::asio::buffer(request, sizeof(request)));
 
   if (m_vlc == 0)
     return false;
-  std::clog << "Playing " << "imem://width=400:height=400:fps=30:cookie=0:codec=H264:cat=4:caching=0" << std::endl;
+  std::cout << "Playing " << "imem://width=400:height=400:fps=30:cookie=0:codec=H264:cat=4:caching=0" << std::endl;
   m_m = libvlc_media_new_location(m_vlc, "imem://width=400:height=400:fps=30:cookie=0:codec=H264:cat=4:caching=0");
   if (m_m)
   {
@@ -198,9 +198,9 @@ Vlc::unlock( Vlc* vlc, void* buffer,
 	     int width, int height, int bpp, int size,
 	     long pts )
 {
-  boost::asio::write(vlc->getSocket(), boost::asio::buffer(buffer, size));
+  //boost::asio::write(vlc->getSocket(), boost::asio::buffer(buffer, size));
   // c'est ici que l'on traite la video
-  }
+}
 
 void
 Vlc::lockAudio(Vlc* vlc, void** pp_ret,
@@ -226,7 +226,7 @@ Vlc::getVideo(void* data, const char* cookie, int64_t* dts, int64_t* pts,
   Vlc	*myVlc = static_cast<Vlc*>(data);
   *buffer = new char [4096];
   //lecture sur le reseau
-  *len =  boost::asio::read(myVlc->getSocket(), boost::asio::buffer(*buffer, 4096));
+  //*len =  boost::asio::read(myVlc->getSocket(), boost::asio::buffer(*buffer, 4096));
   return (*len ? 0 : -1);
 }
 
