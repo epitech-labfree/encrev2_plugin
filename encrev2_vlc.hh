@@ -73,6 +73,7 @@ protected:
   libvlc_media_t		*m_m;
   FB::PluginWindow		*m_window;
   boost::asio::ip::tcp::socket*	_socket;
+  bool				_is_connected;
 };
 
 #endif	    /* !ENCREV2_VLC_HH_ */

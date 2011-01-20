@@ -7,28 +7,30 @@
   <!-- <object id="receive" type="application/x-encrev2-plugin" width=320 height=240 text="Encre Video Conf">Unable to load plugin </object> -->
 
   <script language=JavaScript>
+    function get_publish()
+    {
+	return document.getElementById('publish');		  
+    }
     function start_stream()
     {
-    var publish = document.getElementById('publish');
-    publish.stream('localhost','4242');
+    	get_publish().stream('localhost','4242');
     }
 
     function start_play()
     {
-    var publish = document.getElementById('publish');
-    publish.play();
+    	get_publish().play();
     }
 
     function stop_play()
     {
-    var publish = document.getElementById('publish');
-    publish.stop();
+    	get_publish().stop();
     }
   </script>
 
   <form>
   <input type="button" value="Stream..." OnClick="start_stream()"/>
   <input type="button" value="Play..." OnClick="start_play()"/>
+  <input type="button" value="Connect to server" OnClick="get_publish().connect()"/>
   <input type="button" value="Stop !" OnClick="stop_play()"/>
   </form>
 
