@@ -101,10 +101,9 @@ bool		Vlc::stream(std::string host, std::string port)
     std::clog << "Encre::Vlc, Error: Not connected " << std::endl;
     return false;
   }
-
   std::string mrl;
   char request[] = "PUT /toto";
-  //boost::asio::write(*_socket, boost::asio::buffer(request, sizeof(request)));
+  boost::asio::write(*_socket, boost::asio::buffer(request, sizeof(request)));
 
   if (m_vlc == 0)
     return false;
@@ -146,7 +145,7 @@ bool          Vlc::play()
   }
 
   char request[] = "GET /toto";
-  //boost::asio::write(*_socket, boost::asio::buffer(request, sizeof(request)));
+  boost::asio::write(*_socket, boost::asio::buffer(request, sizeof(request)));
 
   if (m_vlc == 0)
     return false;
@@ -226,7 +225,7 @@ Vlc::unlock( Vlc* vlc, void* buffer,
 	     long pts )
 {
   // c'est ici que l'on traite la video
-  if (_is_connected)
+  if (vlc->_is_connected)
   boost::asio::write(vlc->getSocket(), boost::asio::buffer(buffer, size));
 }
 
