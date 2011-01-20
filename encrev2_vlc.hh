@@ -43,19 +43,26 @@ public:
   bool          stream(std::string host, std::string port);
   bool          play();
   void		stop();
+  void		addOption(const char* opt);
   void		connect();
+
   boost::asio::ip::tcp::socket& getSocket() const;
   void		put_events();
   static void	callback(const libvlc_event_t* event, void* ptr);
+
   static void	lock(Vlc* clipWorkflow, void**, int);
   static void	unlock(Vlc* clipWorkflow, void* buffer,
 			     int width, int height, int bpp, int size,
 			     long pts);
+  static void	lockAudio(Vlc* clipWorkflow, void**, int);
+  static void	unlockAudio(Vlc* clipWorkflow, void* buffer,
+			     int width, int height, int bpp, int size,
+			     long pts);
+
   void		playd();
   static int	getVideo(void *data, const char *cookie, int64_t *dts, int64_t *pts,
 			     unsigned *flags, size_t *, void **);
   static int	release(void *data, const char *cookie, size_t, void *);
-  void		addOption(const char* opt);
 
 private:
   void		setVideoLockCallback(void* callback);
@@ -65,6 +72,8 @@ private:
   void		setVideoDataCtx(void*);
   void		setVideoReleaseCallback(void*);
   void		setVideoGetCallback(void*);
+  void		setDataCtx(void*);
+  void		setImemDataCtx(void*);
 
 protected:
   libvlc_instance_t		*m_vlc;
