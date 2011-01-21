@@ -18,7 +18,7 @@ set (PROJNAME ${PLUGIN_NAME})
 #
 # Dependencies detection
 #
-set(ENV{PKG_CONFIG_PATH} /usr/local/myvlc/lib/pkgconfig)
+#set(ENV{PKG_CONFIG_PATH} /usr/local/myvlc/lib/pkgconfig)
 pkg_check_modules(VLC libvlc)
 
 if (VLC_FOUND)
@@ -62,9 +62,11 @@ SET( SOURCES
     ${GENERATED}
     )
 
+#set_target_properties(${PLUGIN_NAME} PROPERTIES COMPILE_FLAGS "-fPIC")
+
 # This will include Win/projectDef.cmake, Linux/projectDef.cmake, etc
 include_platform()
 
-target_link_libraries(${PLUGIN_NAME} ${VLC_LIBRARIES} /usr/lib/libboost_system.a )
+target_link_libraries(${PLUGIN_NAME} ${VLC_LIBRARIES} boost_system-mt )
 
 install(TARGETS ${PLUGIN_NAME} LIBRARY DESTINATION ~/.mozilla/plugins)

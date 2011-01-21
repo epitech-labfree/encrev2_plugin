@@ -154,24 +154,24 @@ bool          Vlc::play()
 
   if (m_vlc == 0)
     return false;
-  std::clog << "Playing " << "imem://width=400:height=400:fps=30:cookie=0:codec=H264:cat=4:caching=0" << std::endl;
+  std::clog << "Playing " << "imem://width=400:height=400:fps=30:cookie=0:cat=4:caching=500" << std::endl;
   m_m = libvlc_media_new_location(m_vlc, "imem://width=400:height=400:fps=30:cookie=0:codec=H264:cat=4:caching=0");
   if (m_m)
   {
     m_mp = libvlc_media_player_new_from_media(m_m);
 
-    addOption(":input-slave=imem://cookie=1:cat=1:codec=mp4a:samplerate=44100:channels=2:caching=0");
+    //addOption(":input-slave=imem://cookie=1:cat=1:codec=mp4a:samplerate=44100:channels=2:caching=0");
     setVideoGetCallback(reinterpret_cast<void*>(&getVideo));
     setVideoReleaseCallback(reinterpret_cast<void*>(&release));
     setImemDataCtx(this);
-    // addOption(":imem-codec=h264");
+    addOption(":demux=ts");
     // addOption(":imem-width=400");
     // addOption(":imem-height=400");
     // addOption(":imem-fps=1");
 
     addOption(":text-renderer dummy");
-    
-    //addOption(":imem-cat=4");    
+
+    //addOption(":imem-cat=4");
 
     libvlc_media_release(m_m);
     VlcSystemStrategy::set_window(m_mp, m_window);
@@ -334,7 +334,7 @@ Vlc::setVideoReleaseCallback(void* callback)
   sprintf(param, ":imem-release=%"PRId64, (intptr_t)callback);
   addOption(param);
 }
-	
+
 void
 Vlc::setVideoDataCtx( void* dataCtx )
 {
