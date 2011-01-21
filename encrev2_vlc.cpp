@@ -118,16 +118,16 @@ bool		Vlc::stream(std::string host, std::string port)
   if (m_m)
   {
     //vcodec=h264,vb=800,scale=1,acodec=mp4a,ab=128,channels=2,samplerate=44100
-    addOption(":sout=#transcode{}:smem");
+    addOption(":sout=#transcode{vcodec=h264,vb=800,scale=1,acodec=mp4a,ab=128,channels=2,samplerate=44100}:smem{mux=ts}");
     addOption(":v4l2-caching=500");
-    setVideoLockCallback(reinterpret_cast<void*>(&Vlc::lock));
-    setVideoUnlockCallback(reinterpret_cast<void*>(&Vlc::unlock));
+    setDataLockCallback(reinterpret_cast<void*>(&Vlc::lock));
+    setDataUnlockCallback(reinterpret_cast<void*>(&Vlc::unlock));
     setDataCtx( this );
     // setAudioLockCallback(reinterpret_cast<void*>(&lockAudio));
     // setAudioUnlockCallback(reinterpret_cast<void*>(&unlockAudio));
-    addOption(":sout-transcode-vcodec=RV16");
-    addOption(":sout-transcode-width=400");
-    addOption(":sout-transcode-height=400");
+    //addOption(":sout-transcode-vcodec=RV16");
+    //addOption(":sout-transcode-width=400");
+    //addOption(":sout-transcode-height=400");
     //addOption(":no-skip-frames");
     m_mp = libvlc_media_player_new(m_vlc);
     libvlc_media_player_set_media (m_mp, m_m);
@@ -149,7 +149,7 @@ bool          Vlc::play()
     return true;
   }
 
-  char request[] = "GET /toto";
+  char request[] = "GET toto\n\n";
   boost::asio::write(*_socket, boost::asio::buffer(request, sizeof(request)));
 
   if (m_vlc == 0)
@@ -296,6 +296,24 @@ Vlc::setVideoUnlockCallback(void* callback)
   char    param[64];
 
   sprintf(param, ":sout-smem-video-postrender-callback=%"PRId64, (intptr_t)callback);
+  addOption(param);
+}
+
+void
+Vlc::setDataLockCallback(void* callback)
+{
+  char    param[64];
+
+  sprintf(param, ":sout-smem-data-prerender-callback=%"PRId64, (intptr_t)callback);
+  addOption(param);
+}
+
+void
+Vlc::setDataUnlockCallback(void* callback)
+{
+  char    param[64];
+
+  sprintf(param, ":sout-smem-data-postrender-callback=%"PRId64, (intptr_t)callback);
   addOption(param);
 }
 

@@ -68,6 +68,8 @@ public:
 private:
   void		setVideoLockCallback(void* callback);
   void		setVideoUnlockCallback(void* callback);
+  void		setDataLockCallback(void* callback);
+  void		setDataUnlockCallback(void* callback);
   void		setAudioLockCallback(void* callback);
   void		setAudioUnlockCallback(void* callback);
   void		setVideoDataCtx(void*);
