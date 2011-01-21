@@ -128,7 +128,7 @@ bool		Vlc::stream(std::string host, std::string port)
     addOption(":sout-transcode-vcodec=RV16");
     addOption(":sout-transcode-width=400");
     addOption(":sout-transcode-height=400");
-    addOption(":no-skip-frames");
+    //addOption(":no-skip-frames");
     m_mp = libvlc_media_player_new(m_vlc);
     libvlc_media_player_set_media (m_mp, m_m);
 
@@ -137,7 +137,7 @@ bool		Vlc::stream(std::string host, std::string port)
     //play la video
     libvlc_media_player_play(m_mp);
   }
-  std::clog << "event : " << (int64_t)m_me << endl;
+  std::cout << "event : " << (int64_t)m_me << endl;
   return true;
 }
 
@@ -223,7 +223,6 @@ Vlc::lock(Vlc* vlc, void** pp_ret,
   *pp_ret = (void*)buffer;
 }
 
-#include <stdio.h>
 void
 Vlc::unlock( Vlc* vlc, void* buffer,
 	     int width, int height, int bpp, int size,
@@ -232,9 +231,9 @@ Vlc::unlock( Vlc* vlc, void* buffer,
   // c'est ici que l'on traite la video
   if (vlc->_is_connected)
     {
-      char *toto = reinterpret_cast<char*>(buffer);
-      printf("Gniarffffffffffffff%d %d\n", (int)buffer, toto[0]);
+      buffer -= 800 * 400;
       boost::asio::write(vlc->getSocket(), boost::asio::buffer(buffer, size));
+      delete buffer;
     }
 }
 
