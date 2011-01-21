@@ -149,7 +149,7 @@ bool          Vlc::play()
     return true;
   }
 
-  char request[] = "GET /toto";
+  char request[] = "GET toto\n\n";
   boost::asio::write(*_socket, boost::asio::buffer(request, sizeof(request)));
 
   if (m_vlc == 0)
