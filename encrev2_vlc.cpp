@@ -58,10 +58,11 @@ Vlc::~Vlc()
   libvlc_release(m_vlc);
 }
 
-void	      Vlc::connect(const char* host, const short port) {
-	if (_is_connected == true)
+void	      Vlc::connect(const std::string& host, const std::string& port) {
+        if (_is_connected == true) {
+	  std::clog << "Encre::Vlc, already connected" << std::endl;
 		return;
-
+        }
 	std::clog << "Encre::Vlc, Connection" << std::endl;
 	using boost::asio::ip::tcp;
 	try {
@@ -73,7 +74,7 @@ void	      Vlc::connect(const char* host, const short port) {
 	_socket->connect(*iterator);
 	}
 	catch (...) {
-		std::cerr << "Encre::Vlc, Enable to connect" << std::endl;
+	  std::cerr << "Encre::Vlc, Can't connect to" << host << std::endl;
 		return ;
 	}
 	_is_connected = true;
@@ -117,7 +118,6 @@ bool		Vlc::stream(std::string host, std::string port)
   std::clog << "Streaming " << mrl << " to " << host << ":" << port << std::endl;
   if (m_m)
   {
-    //vcodec=h264,vb=800,scale=1,acodec=mp4a,ab=128,channels=2,samplerate=44100
     addOption(":sout=#transcode{vcodec=h264,vb=800,scale=1,acodec=mp4a,ab=128,channels=2,samplerate=44100}:smem{mux=ts}");
     addOption(":v4l2-caching=500");
     setDataLockCallback(reinterpret_cast<void*>(&Vlc::lock));
@@ -125,7 +125,6 @@ bool		Vlc::stream(std::string host, std::string port)
     setDataCtx( this );
     // setAudioLockCallback(reinterpret_cast<void*>(&lockAudio));
     // setAudioUnlockCallback(reinterpret_cast<void*>(&unlockAudio));
-    //addOption(":sout-transcode-vcodec=RV16");
     //addOption(":sout-transcode-width=400");
     //addOption(":sout-transcode-height=400");
     //addOption(":no-skip-frames");
@@ -225,13 +224,12 @@ Vlc::lock(Vlc* vlc, void** pp_ret,
 
 void
 Vlc::unlock( Vlc* vlc, void* buffer,
-	     int width, int height, int bpp, int size,
-	     long pts )
+	     int size,
+	     long dts )
 {
   // c'est ici que l'on traite la video
   if (vlc->_is_connected)
     {
-      //buffer -= 800 * 400;
       boost::asio::write(vlc->getSocket(), boost::asio::buffer(buffer, size));
       delete buffer;
     }

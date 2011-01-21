@@ -44,7 +44,7 @@ public:
   bool          play();
   void		stop();
   void		addOption(const char* opt);
-  void		connect(const char*, const short);
+  void		connect(const std::string&, const std::string&);
   void		disconnect();
 
   boost::asio::ip::tcp::socket& getSocket() const;
@@ -53,7 +53,7 @@ public:
 
   static void	lock(Vlc* clipWorkflow, void**, int);
   static void	unlock(Vlc* clipWorkflow, void* buffer,
-			     int width, int height, int bpp, int size,
+			     int size,
 			     long pts);
   static void	lockAudio(Vlc* clipWorkflow, void**, int);
   static void	unlockAudio(Vlc* clipWorkflow, void* buffer,
