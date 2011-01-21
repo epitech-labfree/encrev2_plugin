@@ -44,7 +44,7 @@ public:
   bool          play();
   void		stop();
   void		addOption(const char* opt);
-  void		connect();
+  void		connect(const char*, const short);
   void		disconnect();
 
   boost::asio::ip::tcp::socket& getSocket() const;

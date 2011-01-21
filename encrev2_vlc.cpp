@@ -58,7 +58,7 @@ Vlc::~Vlc()
   libvlc_release(m_vlc);
 }
 
-void	      Vlc::connect() {
+void	      Vlc::connect(const char* host, const short port) {
 	if (_is_connected == true)
 		return;
 
@@ -67,7 +67,7 @@ void	      Vlc::connect() {
 	try {
 	boost::asio::io_service io_service;
 	tcp::resolver resolver(io_service);
-	tcp::resolver::query query(tcp::v4(), "10.224.6.152", "4242");
+	tcp::resolver::query query(tcp::v4(), host, port);
 	tcp::resolver::iterator iterator = resolver.resolve(query);
 	_socket = new tcp::socket(io_service);
 	_socket->connect(*iterator);

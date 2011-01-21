@@ -71,8 +71,8 @@ encrev2_pluginAPI::set_option(const char* s1)
 }
 
 void
-encrev2_pluginAPI::connect() {
-	m_plugin.vlc().connect();
+encrev2_pluginAPI::connect(const char* host, const short port) {
+	m_plugin.vlc().connect(host, port);
 }
 
 void
