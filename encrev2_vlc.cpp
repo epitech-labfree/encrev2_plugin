@@ -154,7 +154,7 @@ bool          Vlc::play()
 
   if (m_vlc == 0)
     return false;
-  std::clog << "Playing " << "imem://width=400:height=400:fps=30:cookie=0:cat=4:caching=500" << std::endl;
+  std::clog << "Playing " << "imem://width=400:height=400:fps=30:cookie=0:cat=4:caching=250" << std::endl;
   m_m = libvlc_media_new_location(m_vlc, "imem://width=400:height=400:fps=30:cookie=0:codec=H264:cat=4:caching=0");
   if (m_m)
   {
