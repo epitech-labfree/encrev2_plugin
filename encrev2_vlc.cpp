@@ -225,13 +225,12 @@ Vlc::lock(Vlc* vlc, void** pp_ret,
 
 void
 Vlc::unlock( Vlc* vlc, void* buffer,
-	     int width, int height, int bpp, int size,
-	     long pts )
+	     int size,
+	     long dts )
 {
   // c'est ici que l'on traite la video
   if (vlc->_is_connected)
     {
-      buffer -= 800 * 400;
       boost::asio::write(vlc->getSocket(), boost::asio::buffer(buffer, size));
       delete buffer;
     }
@@ -368,6 +367,8 @@ Vlc::setDataCtx( void* dataCtx )
   sprintf(param, ":sout-smem-video-data=%"PRId64, (intptr_t)dataCtx);
   addOption(param);
   sprintf(param, ":sout-smem-audio-data=%"PRId64, (intptr_t)dataCtx);
+  addOption(param);
+  sprintf(param, ":sout-smem-data-data=%"PRId64, (intptr_t)dataCtx);
   addOption(param);
 }
 
