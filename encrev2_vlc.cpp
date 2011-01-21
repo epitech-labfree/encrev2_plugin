@@ -67,7 +67,7 @@ void	      Vlc::connect() {
 	try {
 	boost::asio::io_service io_service;
 	tcp::resolver resolver(io_service);
-	tcp::resolver::query query(tcp::v4(), "localhost", "4242");
+	tcp::resolver::query query(tcp::v4(), "10.224.6.152", "4242");
 	tcp::resolver::iterator iterator = resolver.resolve(query);
 	_socket = new tcp::socket(io_service);
 	_socket->connect(*iterator);
@@ -231,7 +231,7 @@ Vlc::unlock( Vlc* vlc, void* buffer,
   // c'est ici que l'on traite la video
   if (vlc->_is_connected)
     {
-      buffer -= 800 * 400;
+      //buffer -= 800 * 400;
       boost::asio::write(vlc->getSocket(), boost::asio::buffer(buffer, size));
       delete buffer;
     }
@@ -262,7 +262,7 @@ Vlc::getVideo(void* data, const char* cookie, int64_t* dts, int64_t* pts,
   *buffer = new char [4096];
   *len = 0;
   //lecture sur le reseau
-  //*len =  boost::asio::read(myVlc->getSocket(), boost::asio::buffer(*buffer, 4096));
+  *len =  boost::asio::read(myVlc->getSocket(), boost::asio::buffer(*buffer, 4096));
   return (*len ? 0 : -1);
 }
 
@@ -368,6 +368,8 @@ Vlc::setDataCtx( void* dataCtx )
   sprintf(param, ":sout-smem-video-data=%"PRId64, (intptr_t)dataCtx);
   addOption(param);
   sprintf(param, ":sout-smem-audio-data=%"PRId64, (intptr_t)dataCtx);
+  addOption(param);
+  sprintf(param, ":sout-smem-data-data=%"PRId64, (intptr_t)dataCtx);
   addOption(param);
 }
 
