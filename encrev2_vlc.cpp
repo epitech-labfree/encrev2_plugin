@@ -120,6 +120,8 @@ bool		Vlc::stream(std::string host, std::string port)
   {
     addOption(":sout=#transcode{vcodec=h264,vb=800,scale=1,acodec=mp4a,ab=128,channels=2,samplerate=44100}:smem{mux=ts}");
     addOption(":v4l2-caching=500");
+    addOption(":sout-x264-tune=zerolatency");
+    addOption(":sout-x264-tune=veryfast");
     setDataLockCallback(reinterpret_cast<void*>(&Vlc::lock));
     setDataUnlockCallback(reinterpret_cast<void*>(&Vlc::unlock));
     setDataCtx( this );
