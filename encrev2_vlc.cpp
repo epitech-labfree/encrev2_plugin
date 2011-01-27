@@ -151,24 +151,18 @@ bool          Vlc::play()
 
   if (m_vlc == 0)
     return false;
-  std::clog << "Playing " << "imem://width=400:height=400:fps=30:cookie=0:cat=4:caching=250" << std::endl;
+  std::clog << "Playing " << "imem://width=400:height=400:fps=30:cookie=0:cat=4:caching=0:codec=h264" << std::endl;
   m_m = libvlc_media_new_location(m_vlc, "imem://width=400:height=400:fps=30:cookie=0:codec=H264:cat=4:caching=0");
   if (m_m)
   {
+    //addOption(":input-slave=imem://cookie=1:cat=1:codec=mp4a:samplerate=44100:channels=2:caching=0");
+    addOption(":demux=ts");
+    addOption(":text-renderer dummy");
     m_mp = libvlc_media_player_new_from_media(m_m);
 
-    //addOption(":input-slave=imem://cookie=1:cat=1:codec=mp4a:samplerate=44100:channels=2:caching=0");
     setVideoGetCallback(reinterpret_cast<void*>(&getVideo));
     setVideoReleaseCallback(reinterpret_cast<void*>(&release));
     setImemDataCtx(this);
-    addOption(":demux=ts");
-    // addOption(":imem-width=400");
-    // addOption(":imem-height=400");
-    // addOption(":imem-fps=1");
-
-    addOption(":text-renderer dummy");
-
-    //addOption(":imem-cat=4");
 
     libvlc_media_release(m_m);
     VlcSystemStrategy::set_window(m_mp, m_window);
@@ -216,7 +210,7 @@ Vlc::unlock( Vlc* vlc, void* buffer,
   if (vlc->_is_connected)
     {
       boost::asio::write(vlc->getSocket(), boost::asio::buffer(buffer, size));
-      delete buffer;
+      delete (char*)buffer;
     }
 }
 
@@ -224,7 +218,7 @@ void
 Vlc::lockAudio(Vlc* vlc, void** pp_ret,
 	   int size)
 {
-  int * buffer = new int[size * size];
+  int * buffer = new int[size];
   *pp_ret = (void*)buffer;
 }
 
@@ -233,8 +227,12 @@ Vlc::unlockAudio( Vlc* vlc, void* buffer,
 	     int width, int height, int bpp, int size,
 	     long pts )
 {
-  // c'est ici que l'on traite le son
-  delete buffer;
+  if (vlc->_is_connected)
+    {
+      // c'est ici que l'on traite le son
+      boost::asio::write(vlc->getSocket(), boost::asio::buffer(buffer, size));
+      delete (char*)buffer;
+    }
 }
 
 int
@@ -269,7 +267,7 @@ Vlc::setVideoLockCallback(void* callback)
 {
   char    param[64];
 
-  sprintf(param, ":sout-smem-video-prerender-callback=%"PRId64, (intptr_t)callback);
+  sprintf(param, ":sout-smem-video-prerender-callback=%"PRId64, (long long int)callback);
   addOption(param);
 }
 
@@ -278,7 +276,7 @@ Vlc::setVideoUnlockCallback(void* callback)
 {
   char    param[64];
 
-  sprintf(param, ":sout-smem-video-postrender-callback=%"PRId64, (intptr_t)callback);
+  sprintf(param, ":sout-smem-video-postrender-callback=%"PRId64, (long long int)callback);
   addOption(param);
 }
 
@@ -287,7 +285,7 @@ Vlc::setDataLockCallback(void* callback)
 {
   char    param[64];
 
-  sprintf(param, ":sout-smem-data-prerender-callback=%"PRId64, (intptr_t)callback);
+  sprintf(param, ":sout-smem-data-prerender-callback=%"PRId64, (long long int)callback);
   addOption(param);
 }
 
@@ -296,7 +294,7 @@ Vlc::setDataUnlockCallback(void* callback)
 {
   char    param[64];
 
-  sprintf(param, ":sout-smem-data-postrender-callback=%"PRId64, (intptr_t)callback);
+  sprintf(param, ":sout-smem-data-postrender-callback=%"PRId64, (long long int)callback);
   addOption(param);
 }
 
@@ -305,7 +303,7 @@ Vlc::setAudioLockCallback(void* callback)
 {
   char    param[64];
 
-  sprintf(param, ":sout-smem-audio-prerender-callback=%"PRId64, (intptr_t)callback);
+  sprintf(param, ":sout-smem-audio-prerender-callback=%"PRId64, (long long int)callback);
   addOption(param);
 }
 
@@ -314,7 +312,7 @@ Vlc::setAudioUnlockCallback(void* callback)
 {
   char    param[64];
 
-  sprintf(param, ":sout-smem-audio-postrender-callback=%"PRId64, (intptr_t)callback);
+  sprintf(param, ":sout-smem-audio-postrender-callback=%"PRId64, (long long int)callback);
   addOption(param);
 }
 
@@ -323,7 +321,7 @@ Vlc::setVideoGetCallback(void* callback)
 {
   char    param[64];
 
-  sprintf(param, ":imem-get=%"PRId64, (intptr_t)callback);
+  sprintf(param, ":imem-get=%"PRId64, (long long int)callback);
   addOption(param);
 }
 
@@ -332,7 +330,7 @@ Vlc::setVideoReleaseCallback(void* callback)
 {
   char    param[64];
 
-  sprintf(param, ":imem-release=%"PRId64, (intptr_t)callback);
+  sprintf(param, ":imem-release=%"PRId64, (long long int)callback);
   addOption(param);
 }
 
@@ -340,7 +338,7 @@ void
 Vlc::setVideoDataCtx( void* dataCtx )
 {
   char    param[64];
-  sprintf( param, ":sout-smem-video-data=%"PRId64, (intptr_t)dataCtx );
+  sprintf( param, ":sout-smem-video-data=%"PRId64, (long long int)dataCtx );
   addOption( param );
 }
 
@@ -348,11 +346,11 @@ void
 Vlc::setDataCtx( void* dataCtx )
 {
   char    param[64];
-  sprintf(param, ":sout-smem-video-data=%"PRId64, (intptr_t)dataCtx);
+  sprintf(param, ":sout-smem-video-data=%"PRId64, (long long int)dataCtx);
   addOption(param);
-  sprintf(param, ":sout-smem-audio-data=%"PRId64, (intptr_t)dataCtx);
+  sprintf(param, ":sout-smem-audio-data=%"PRId64, (long long int)dataCtx);
   addOption(param);
-  sprintf(param, ":sout-smem-data-data=%"PRId64, (intptr_t)dataCtx);
+  sprintf(param, ":sout-smem-data-data=%"PRId64, (long long int)dataCtx);
   addOption(param);
 }
 
@@ -360,6 +358,6 @@ void
 Vlc::setImemDataCtx( void* dataCtx )
 {
   char    param[64];
-  sprintf(param, ":imem-data=%"PRId64, (intptr_t)dataCtx);
+  sprintf(param, ":imem-data=%"PRId64, (long long int)dataCtx);
   addOption(param);
 }
