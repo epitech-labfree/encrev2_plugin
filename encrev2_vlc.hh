@@ -40,7 +40,7 @@ public:
   ~Vlc();
 
   bool          set_window(FB::PluginWindow *win);
-  bool          stream(std::string host, std::string port);
+  bool          stream();
   bool          play();
   void		stop();
   void		addOption(const char* opt);
@@ -48,7 +48,6 @@ public:
   void		disconnect();
 
   boost::asio::ip::tcp::socket& getSocket() const;
-  static void	callback(const libvlc_event_t* event, void* ptr);
 
   static void	lock(Vlc* clipWorkflow, void**, int);
   static void	unlock(Vlc* clipWorkflow, void* buffer,

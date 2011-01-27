@@ -99,7 +99,7 @@ bool          Vlc::set_window(FB::PluginWindow *win)
   return true;
 }
 
-bool		Vlc::stream(std::string host, std::string port)
+bool		Vlc::stream()
 {
   if (_is_connected == false)
   {
@@ -114,7 +114,7 @@ bool		Vlc::stream(std::string host, std::string port)
     return false;
   VlcSystemStrategy::get_webcam_mrl(mrl);
   m_m = libvlc_media_new_location(m_vlc, mrl.c_str());
-  std::clog << "Streaming " << mrl << " to " << host << ":" << port << std::endl;
+  std::clog << "Streaming " << mrl << std::endl;
   if (m_m)
   {
     addOption(":sout=#transcode{vcodec=h264,vb=800,scale=1,acodec=mp4a,ab=128,channels=2,samplerate=44100}:smem{mux=ts}");
@@ -143,7 +143,7 @@ bool          Vlc::play()
   if (_is_connected == false)
   {
     std::clog << "Encre::Vlc, Error: Not connected " << std::endl;
-    return true;
+    return false;
   }
 
   char request[] = "GET toto\n\n";
@@ -183,14 +183,6 @@ Vlc::addOption( const char* opt )
 {
   std::clog << "EncreVlc::addOption " << opt << endl;
   libvlc_media_add_option_flag(m_m, opt, libvlc_media_option_trusted);
-}
-
-void
-Vlc::callback(const libvlc_event_t* event, void* ptr)
-{
-  Vlc*	self = reinterpret_cast<Vlc*>(ptr);
-
-  std::clog << "Media player playing" << endl;
 }
 
 void
