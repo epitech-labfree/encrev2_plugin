@@ -48,10 +48,9 @@ void            encrev2_pluginAPI::testEvent(const FB::variant& var)
   FireEvent("onfired", FB::variant_list_of(var));
 }
 
-bool            encrev2_pluginAPI::stream(const std::string &host,
-                                          const std::string &port)
+bool            encrev2_pluginAPI::stream()
 {
-	return m_plugin.vlc().stream(host, port);
+	return m_plugin.vlc().stream();
 }
 
 bool            encrev2_pluginAPI::play()
@@ -70,7 +69,6 @@ encrev2_pluginAPI::set_option(const char* s1)
 	m_plugin.vlc().addOption(s1);
 }
 
-#include <iostream>
 void
 encrev2_pluginAPI::connect(const std::string& host, const std::string& port) {
 	m_plugin.vlc().connect(host, port);

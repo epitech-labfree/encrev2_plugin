@@ -26,8 +26,7 @@ class encrev2_pluginAPI : public FB::JSAPIAuto
   void testEvent(const FB::variant& s);
 
   // Encre actual code
-  bool                  stream(const std::string &host,
-                               const std::string &port);
+  bool                  stream();
   bool                  play();
   void			connect(const std::string&, const std::string&);
   void			disconnect();
