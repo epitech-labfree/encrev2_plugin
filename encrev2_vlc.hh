@@ -48,7 +48,6 @@ public:
   void		disconnect();
 
   boost::asio::ip::tcp::socket& getSocket() const;
-  void		put_events();
   static void	callback(const libvlc_event_t* event, void* ptr);
 
   static void	lock(Vlc* clipWorkflow, void**, int);
@@ -60,7 +59,6 @@ public:
 			     int width, int height, int bpp, int size,
 			     long pts);
 
-  void		playd();
   static int	getVideo(void *data, const char *cookie, int64_t *dts, int64_t *pts,
 			     unsigned *flags, size_t *, void **);
   static int	release(void *data, const char *cookie, size_t, void *);
@@ -81,7 +79,6 @@ private:
 protected:
   libvlc_instance_t		*m_vlc;
   libvlc_media_player_t		*m_mp;
-  libvlc_event_manager_t	*m_me;
   libvlc_media_t		*m_m;
   FB::PluginWindow		*m_window;
   boost::asio::ip::tcp::socket*	_socket;

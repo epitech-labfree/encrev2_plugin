@@ -53,7 +53,6 @@ Vlc::Vlc() : m_vlc(0), m_mp(0), m_m(0), m_window(0), _is_connected(false)
 Vlc::~Vlc()
 {
   std::clog << "Encre::Vlc, Destruction" << std::endl;
-  libvlc_event_detach(m_me, libvlc_MediaPlayerPlaying, callback, this);
   libvlc_media_player_release(m_mp);
   libvlc_release(m_vlc);
 }
@@ -133,12 +132,9 @@ bool		Vlc::stream(std::string host, std::string port)
     m_mp = libvlc_media_player_new(m_vlc);
     libvlc_media_player_set_media (m_mp, m_m);
 
-    m_me = libvlc_media_player_event_manager(m_mp);
-    put_events();
     //play la video
     libvlc_media_player_play(m_mp);
   }
-  std::cout << "event : " << (int64_t)m_me << endl;
   return true;
 }
 
@@ -196,24 +192,11 @@ Vlc::addOption( const char* opt )
 }
 
 void
-Vlc::put_events()
-{
-  libvlc_event_attach(m_me, libvlc_MediaPlayerPlaying, callback, this);
-}
-
-void
 Vlc::callback(const libvlc_event_t* event, void* ptr)
 {
   Vlc*	self = reinterpret_cast<Vlc*>(ptr);
 
   std::clog << "Media player playing" << endl;
-  //self->playd();
-}
-
-void
-Vlc::playd()
-{
-  libvlc_media_player_play(m_mp);
 }
 
 void
