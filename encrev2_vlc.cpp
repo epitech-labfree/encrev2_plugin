@@ -33,6 +33,7 @@
 #include <inttypes.h>
 #include <cstdio>
 #include <boost/asio.hpp>
+#include "network.hh"
 
 using namespace std;
 
@@ -42,50 +43,21 @@ static const char * vlc_args[] = {
   "-vv"
 };
 
-Vlc::Vlc() : m_vlc(0), m_mp(0), m_m(0), m_window(0), _is_connected(false)
+Vlc::Vlc() : m_vlc(0), m_mp(0), m_m(0), m_window(0)
 {
   std::clog << "Encre::Vlc, Initialization..." << std::endl;
   // init vlc modules, should be done only once
   m_vlc = libvlc_new(sizeof(vlc_args) / sizeof(vlc_args[0]), vlc_args);
+  _net = Network::getInstance();
   std::clog << "Encre::Vlc, ...Done!" << std::endl;
 }
 
 Vlc::~Vlc()
 {
   std::clog << "Encre::Vlc, Destruction" << std::endl;
-  _is_connected = false;
   
   libvlc_media_player_release(m_mp);
   libvlc_release(m_vlc);
-}
-
-void	      Vlc::connect(const std::string& host, const std::string& port) {
-        if (_is_connected == true) {
-	  std::clog << "Encre::Vlc, already connected" << std::endl;
-		return;
-        }
-	std::clog << "Encre::Vlc, Connection" << std::endl;
-	using boost::asio::ip::tcp;
-	try {
-	boost::asio::io_service io_service;
-	tcp::resolver resolver(io_service);
-	tcp::resolver::query query(tcp::v4(), host, port);
-	tcp::resolver::iterator iterator = resolver.resolve(query);
-	_socket = new tcp::socket(io_service);
-	_socket->connect(*iterator);
-	}
-	catch (...) {
-	  std::cerr << "Encre::Vlc, Can't connect to" << host << std::endl;
-		return ;
-	}
-	_is_connected = true;
-}
-
-void	      Vlc::disconnect() {
-	if (_is_connected == false)
-		return ;
-	_is_connected = false;
-	_socket->close();
 }
 
 bool          Vlc::set_window(FB::PluginWindow *win)
@@ -103,14 +75,15 @@ bool          Vlc::set_window(FB::PluginWindow *win)
 
 bool		Vlc::stream()
 {
-  if (_is_connected == false)
+  if (_net->isConnected() == false)
   {
     std::clog << "Encre::Vlc, Error: Not connected " << std::endl;
     return false;
   }
   std::string mrl;
-  char request[] = "PUT toto\n\n";
-  boost::asio::write(*_socket, boost::asio::buffer(request, sizeof(request)));
+  std::string request("PUT toto\n\n");
+  _net->write(request);
+  //boost::asio::write(*_socket, boost::asio::buffer(request, sizeof(request)));
 
   if (m_vlc == 0)
     return false;
@@ -142,14 +115,14 @@ bool		Vlc::stream()
 
 bool          Vlc::play()
 {
-  if (_is_connected == false)
+  if (_net->isConnected() == false)
   {
     std::clog << "Encre::Vlc, Error: Not connected " << std::endl;
     return false;
   }
 
-  char request[] = "GET toto\n\n";
-  boost::asio::write(*_socket, boost::asio::buffer(request, sizeof(request)));
+  std::string request("GET toto\n\n");
+  _net->write(request);
 
   if (m_vlc == 0)
     return false;
@@ -201,9 +174,11 @@ Vlc::unlock( Vlc* vlc, void* buffer,
 	     long dts )
 {
   // c'est ici que l'on traite la video
-  if (vlc && vlc->_is_connected)
+  if (vlc && vlc->_net->isConnected())
     {
-      boost::asio::write(vlc->getSocket(), boost::asio::buffer(buffer, size));
+      //boost::asio::write(vlc->getSocket(), boost::asio::buffer(buffer, size));
+      Network* net = Network::getInstance();
+      net->write(buffer, size);
       delete (char*)buffer;
     }
 }
@@ -221,10 +196,12 @@ Vlc::unlockAudio( Vlc* vlc, void* buffer,
 	     int width, int height, int bpp, int size,
 	     long pts )
 {
-  if (vlc && vlc->_is_connected)
+  if (vlc && vlc->_net->isConnected())
     {
       // c'est ici que l'on traite le son
-      boost::asio::write(vlc->getSocket(), boost::asio::buffer(buffer, size));
+      Network* net = Network::getInstance();
+      net->write(buffer, size);
+      //boost::asio::write(vlc->getSocket(), boost::asio::buffer(buffer, size));
       delete (char*)buffer;
     }
 }
@@ -239,7 +216,9 @@ Vlc::getVideo(void* data, const char* cookie, int64_t* dts, int64_t* pts,
   *buffer = new char [4096];
   *len = 0;
   //lecture sur le reseau
-  *len =  boost::asio::read(myVlc->getSocket(), boost::asio::buffer(*buffer, 4096));
+  Network* net = Network::getInstance();
+  *len = net->read(*buffer, 4096);
+  //*len =  boost::asio::read(myVlc->getSocket(), boost::asio::buffer(*buffer, 4096));
   return (*len ? 0 : -1);
 }
 
@@ -249,11 +228,6 @@ Vlc::release(void *data, const char *cookie, size_t, void *buffer)
   delete (char*)buffer;
   buffer = NULL;
   return 0;
-}
-
-boost::asio::ip::tcp::socket&
-Vlc::getSocket() const {
-	return *_socket;
 }
 
 // ---------------- Private Methods -----------------------

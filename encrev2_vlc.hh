@@ -27,11 +27,10 @@
 # define   	ENCREV2_VLC_HH_
 
 # include <string>
-#define __STDC_FORMAT_MACROS
-#include <inttypes.h>
-# include <map>
-#include <boost/asio.hpp>
+# define __STDC_FORMAT_MACROS
+# include <inttypes.h>
 # include "vlc_system_strategy.hh"
+# include "network.hh"
 
 class Vlc
 {
@@ -44,11 +43,6 @@ public:
   bool          play();
   void		stop();
   void		addOption(const char* opt);
-  void		connect(const std::string&, const std::string&);
-  void		disconnect();
-
-  boost::asio::ip::tcp::socket& getSocket() const;
-
   static void	lock(Vlc* clipWorkflow, void**, int);
   static void	unlock(Vlc* clipWorkflow, void* buffer,
 			     int size,
@@ -80,8 +74,7 @@ protected:
   libvlc_media_player_t		*m_mp;
   libvlc_media_t		*m_m;
   FB::PluginWindow		*m_window;
-  boost::asio::ip::tcp::socket*	_socket;
-  bool				_is_connected;
+  Network			*_net;
 };
 
 #endif	    /* !ENCREV2_VLC_HH_ */

@@ -14,7 +14,7 @@ add_definitions(-DPOSIX)
 include(${CMAKE_DIR}/common.cmake)
 
 set (PROJNAME ${PLUGIN_NAME})
-
+set (CMAKE_CXX_FLAGS "-g3")
 #
 # Dependencies detection
 #
@@ -67,6 +67,6 @@ SET( SOURCES
 # This will include Win/projectDef.cmake, Linux/projectDef.cmake, etc
 include_platform()
 
-target_link_libraries(${PLUGIN_NAME} ${VLC_LIBRARIES} boost_system-mt )
+target_link_libraries(${PLUGIN_NAME} ${VLC_LIBRARIES} boost_system-mt boost_system )
 
 install(TARGETS ${PLUGIN_NAME} LIBRARY DESTINATION ~/.mozilla/plugins)

@@ -71,12 +71,14 @@ encrev2_pluginAPI::set_option(const char* s1)
 
 void
 encrev2_pluginAPI::connect(const std::string& host, const std::string& port) {
-	m_plugin.vlc().connect(host, port);
+	Network* net = Network::getInstance();
+	net->connect(host, port);
 }
 
 void
 encrev2_pluginAPI::disconnect() {
-	m_plugin.vlc().disconnect();
+	Network* net = Network::getInstance();
+	net->disconnect();
 }
 
 //std::string*
