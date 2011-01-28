@@ -34,6 +34,7 @@
 #include <cstdio>
 #include <boost/asio.hpp>
 #include "network.hh"
+#include "protocol.hh"
 
 using namespace std;
 
@@ -81,8 +82,7 @@ bool		Vlc::stream()
     return false;
   }
   std::string mrl;
-  std::string request("PUT toto\n\n");
-  _net->write(request);
+  _net->write(Protocol::put("toto"));
   //boost::asio::write(*_socket, boost::asio::buffer(request, sizeof(request)));
 
   if (m_vlc == 0)
@@ -121,8 +121,7 @@ bool          Vlc::play()
     return false;
   }
 
-  std::string request("GET toto\n\n");
-  _net->write(request);
+  _net->write(Protocol::get("toto"));
 
   if (m_vlc == 0)
     return false;
