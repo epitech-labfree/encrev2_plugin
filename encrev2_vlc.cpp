@@ -37,27 +37,42 @@
 
 using namespace std;
 
-static const char * vlc_args[] = {
-  "-I", "dummy", /* Don't use any interface */
-  "--ignore-config", /* Don't use VLC's config */
-  "-vv"
-};
+Vlc::Vlc() : m_vlc(0), m_mp(0), m_m(0), m_window(0), 
+	_vlc_args(new std::list<const char*>()) {
 
-Vlc::Vlc() : m_vlc(0), m_mp(0), m_m(0), m_window(0)
-{
   std::clog << "Encre::Vlc, Initialization..." << std::endl;
   // init vlc modules, should be done only once
-  m_vlc = libvlc_new(sizeof(vlc_args) / sizeof(vlc_args[0]), vlc_args);
+
   _net = Network::getInstance();
+  _vlc_args->push_back("-I");
+  _vlc_args->push_back("dummy"); /* Don't use any interface */
+  _vlc_args->push_back("--ignore-config"); /* Don't use VLC's config */
+  _vlc_args->push_back("-vv");
+
   std::clog << "Encre::Vlc, ...Done!" << std::endl;
+}
+
+bool
+Vlc::start() {
+	if (m_vlc != 0)
+		return false;
+
+	const char* vlc_args[_vlc_args->size() + 1];
+	std::list<const char*>::iterator it = _vlc_args->begin();
+	for (unsigned int i = 0; it != _vlc_args->end(); ++it, ++i)
+		vlc_args[i] = (*it);
+	m_vlc = libvlc_new(sizeof(vlc_args) / sizeof(vlc_args[0]), vlc_args);
+	std::clog << "Encre::Vlc, Starting" << std::endl;
+	return m_vlc != 0;
 }
 
 Vlc::~Vlc()
 {
   std::clog << "Encre::Vlc, Destruction" << std::endl;
-  
+  Network::kill();
   libvlc_media_player_release(m_mp);
   libvlc_release(m_vlc);
+  delete _vlc_args;
 }
 
 bool          Vlc::set_window(FB::PluginWindow *win)
@@ -75,35 +90,37 @@ bool          Vlc::set_window(FB::PluginWindow *win)
 
 bool		Vlc::stream()
 {
-  if (_net->isConnected() == false)
+  if (m_vlc == 0)
+  	return false;
+
+  if (_net->isConnected() == false) // If m_vlc is valid, _net is valid too
   {
     std::clog << "Encre::Vlc, Error: Not connected " << std::endl;
     return false;
   }
-  std::string mrl;
+
   std::string request("PUT toto\n\n");
   _net->write(request);
   //boost::asio::write(*_socket, boost::asio::buffer(request, sizeof(request)));
 
-  if (m_vlc == 0)
-    return false;
+  std::string mrl;
   VlcSystemStrategy::get_webcam_mrl(mrl);
   m_m = libvlc_media_new_location(m_vlc, mrl.c_str());
   std::clog << "Streaming " << mrl << std::endl;
   if (m_m)
   {
-    addOption(":sout=#transcode{vcodec=h264,vb=800,scale=1,acodec=mp4a,ab=128,channels=2,samplerate=44100}:smem{mux=ts}");
-    addOption(":v4l2-caching=500");
-    addOption(":sout-x264-tune=zerolatency");
-    addOption(":sout-x264-tune=veryfast");
+    addRuntimeOption(":sout=#transcode{vcodec=h264,vb=800,scale=1,acodec=mp4a,ab=128,channels=2,samplerate=44100}:smem{mux=ts}");
+    addRuntimeOption(":v4l2-caching=500");
+    addRuntimeOption(":sout-x264-tune=zerolatency");
+    addRuntimeOption(":sout-x264-tune=veryfast");
     setDataLockCallback(reinterpret_cast<void*>(&Vlc::lock));
     setDataUnlockCallback(reinterpret_cast<void*>(&Vlc::unlock));
     setDataCtx( this );
     // setAudioLockCallback(reinterpret_cast<void*>(&lockAudio));
     // setAudioUnlockCallback(reinterpret_cast<void*>(&unlockAudio));
-    //addOption(":sout-transcode-width=400");
-    //addOption(":sout-transcode-height=400");
-    //addOption(":no-skip-frames");
+    //addRuntimeOption(":sout-transcode-width=400");
+    //addRuntimeOption(":sout-transcode-height=400");
+    //addRuntimeOption(":no-skip-frames");
     m_mp = libvlc_media_player_new(m_vlc);
     libvlc_media_player_set_media (m_mp, m_m);
 
@@ -115,6 +132,9 @@ bool		Vlc::stream()
 
 bool          Vlc::play()
 {
+  if (m_vlc == 0)
+    return false;
+
   if (_net->isConnected() == false)
   {
     std::clog << "Encre::Vlc, Error: Not connected " << std::endl;
@@ -124,15 +144,13 @@ bool          Vlc::play()
   std::string request("GET toto\n\n");
   _net->write(request);
 
-  if (m_vlc == 0)
-    return false;
   std::clog << "Playing " << "imem://width=400:height=400:fps=30:cookie=0:cat=4:caching=0:codec=h264" << std::endl;
   m_m = libvlc_media_new_location(m_vlc, "imem://width=400:height=400:fps=30:cookie=0:codec=H264:cat=4:caching=0");
   if (m_m)
   {
-    //addOption(":input-slave=imem://cookie=1:cat=1:codec=mp4a:samplerate=44100:channels=2:caching=0");
-    addOption(":demux=ts");
-    addOption(":text-renderer dummy");
+    //addRuntimeOption(":input-slave=imem://cookie=1:cat=1:codec=mp4a:samplerate=44100:channels=2:caching=0");
+    addRuntimeOption(":demux=ts");
+    addRuntimeOption(":text-renderer dummy");
     m_mp = libvlc_media_player_new_from_media(m_m);
 
     setVideoGetCallback(reinterpret_cast<void*>(&getVideo));
@@ -148,16 +166,23 @@ bool          Vlc::play()
 
 void
 Vlc::stop() {
-	std::clog << "Stop" << std::endl;
+	std::clog << "Stop playing video" << std::endl;
 	if (m_mp != 0)
 		libvlc_media_player_stop(m_mp);
 }
 
 void
-Vlc::addOption( const char* opt )
+Vlc::addRuntimeOption(const char* opt)
 {
-  std::clog << "EncreVlc::addOption " << opt << endl;
+  std::clog << "EncreVlc::addRuntimeOption " << opt << endl;
   libvlc_media_add_option_flag(m_m, opt, libvlc_media_option_trusted);
+}
+
+void
+Vlc::addStartUpOption(const char* opt)
+{
+  std::clog << "EncreVlc::addStartUpOption " << opt << endl;
+  _vlc_args->push_back(opt);
 }
 
 void
@@ -238,7 +263,7 @@ Vlc::setVideoLockCallback(void* callback)
   char    param[64];
 
   sprintf(param, ":sout-smem-video-prerender-callback=%"PRId64, (long long int)callback);
-  addOption(param);
+  addRuntimeOption(param);
 }
 
 void
@@ -247,7 +272,7 @@ Vlc::setVideoUnlockCallback(void* callback)
   char    param[64];
 
   sprintf(param, ":sout-smem-video-postrender-callback=%"PRId64, (long long int)callback);
-  addOption(param);
+  addRuntimeOption(param);
 }
 
 void
@@ -256,7 +281,7 @@ Vlc::setDataLockCallback(void* callback)
   char    param[64];
 
   sprintf(param, ":sout-smem-data-prerender-callback=%"PRId64, (long long int)callback);
-  addOption(param);
+  addRuntimeOption(param);
 }
 
 void
@@ -265,7 +290,7 @@ Vlc::setDataUnlockCallback(void* callback)
   char    param[64];
 
   sprintf(param, ":sout-smem-data-postrender-callback=%"PRId64, (long long int)callback);
-  addOption(param);
+  addRuntimeOption(param);
 }
 
 void
@@ -274,7 +299,7 @@ Vlc::setAudioLockCallback(void* callback)
   char    param[64];
 
   sprintf(param, ":sout-smem-audio-prerender-callback=%"PRId64, (long long int)callback);
-  addOption(param);
+  addRuntimeOption(param);
 }
 
 void
@@ -283,7 +308,7 @@ Vlc::setAudioUnlockCallback(void* callback)
   char    param[64];
 
   sprintf(param, ":sout-smem-audio-postrender-callback=%"PRId64, (long long int)callback);
-  addOption(param);
+  addRuntimeOption(param);
 }
 
 void
@@ -292,7 +317,7 @@ Vlc::setVideoGetCallback(void* callback)
   char    param[64];
 
   sprintf(param, ":imem-get=%"PRId64, (long long int)callback);
-  addOption(param);
+  addRuntimeOption(param);
 }
 
 void
@@ -301,7 +326,7 @@ Vlc::setVideoReleaseCallback(void* callback)
   char    param[64];
 
   sprintf(param, ":imem-release=%"PRId64, (long long int)callback);
-  addOption(param);
+  addRuntimeOption(param);
 }
 
 void
@@ -309,7 +334,7 @@ Vlc::setVideoDataCtx( void* dataCtx )
 {
   char    param[64];
   sprintf( param, ":sout-smem-video-data=%"PRId64, (long long int)dataCtx );
-  addOption( param );
+  addRuntimeOption( param );
 }
 
 void
@@ -317,11 +342,11 @@ Vlc::setDataCtx( void* dataCtx )
 {
   char    param[64];
   sprintf(param, ":sout-smem-video-data=%"PRId64, (long long int)dataCtx);
-  addOption(param);
+  addRuntimeOption(param);
   sprintf(param, ":sout-smem-audio-data=%"PRId64, (long long int)dataCtx);
-  addOption(param);
+  addRuntimeOption(param);
   sprintf(param, ":sout-smem-data-data=%"PRId64, (long long int)dataCtx);
-  addOption(param);
+  addRuntimeOption(param);
 }
 
 void
@@ -329,5 +354,5 @@ Vlc::setImemDataCtx( void* dataCtx )
 {
   char    param[64];
   sprintf(param, ":imem-data=%"PRId64, (long long int)dataCtx);
-  addOption(param);
+  addRuntimeOption(param);
 }

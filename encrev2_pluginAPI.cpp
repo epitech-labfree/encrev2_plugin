@@ -19,11 +19,12 @@ encrev2_pluginAPI::encrev2_pluginAPI(FB::BrowserHostPtr host, encrev2_plugin &pl
   registerMethod("stream",    make_method(this, &encrev2_pluginAPI::stream));
   registerMethod("play",      make_method(this, &encrev2_pluginAPI::play));
   registerMethod("stop",      make_method(this, &encrev2_pluginAPI::stop));
-  registerMethod("connect",      make_method(this, &encrev2_pluginAPI::connect));
+  registerMethod("connect",   make_method(this, &encrev2_pluginAPI::connect));
   registerMethod("disconnect",      make_method(this, &encrev2_pluginAPI::disconnect));
-  registerMethod("set_option",      make_method(this, &encrev2_pluginAPI::set_option));
-  // registerMethod("get_option",      make_method(this, &encrev2_pluginAPI::get_option));
-
+  registerMethod("setRuntimeOption",      make_method(this, &encrev2_pluginAPI::set_runtime_option));
+  registerMethod("setStartUpOption",	  make_method(this, &encrev2_pluginAPI::set_startup_option));
+  registerMethod("start",     make_method(this, &encrev2_pluginAPI::start_plugin));
+  
   // Read-only property
   registerProperty("version",
                    make_property(this,
@@ -48,6 +49,11 @@ void            encrev2_pluginAPI::testEvent(const FB::variant& var)
   FireEvent("onfired", FB::variant_list_of(var));
 }
 
+bool            encrev2_pluginAPI::start_plugin()
+{
+	return m_plugin.vlc().start();
+}
+
 bool            encrev2_pluginAPI::stream()
 {
 	return m_plugin.vlc().stream();
@@ -64,9 +70,14 @@ void            encrev2_pluginAPI::stop()
 }
 
 void
-encrev2_pluginAPI::set_option(const char* s1)
+encrev2_pluginAPI::set_runtime_option(const char* s1)
 {
-	m_plugin.vlc().addOption(s1);
+	m_plugin.vlc().addRuntimeOption(s1);
+}
+
+void
+encrev2_pluginAPI::set_startup_option(const char* s1) {
+	m_plugin.vlc().addStartUpOption(s1);
 }
 
 void
@@ -80,9 +91,4 @@ encrev2_pluginAPI::disconnect() {
 	Network* net = Network::getInstance();
 	net->disconnect();
 }
-
-//std::string*
-//encrev2_pluginAPI::get_option() {
-//	m_plugin.vlc().get_option();
-//}
 

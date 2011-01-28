@@ -29,6 +29,7 @@
 # include <string>
 # define __STDC_FORMAT_MACROS
 # include <inttypes.h>
+# include <list>
 # include "vlc_system_strategy.hh"
 # include "network.hh"
 
@@ -41,19 +42,20 @@ public:
   bool          set_window(FB::PluginWindow *win);
   bool          stream();
   bool          play();
+  bool          start();
   void		stop();
-  void		addOption(const char* opt);
+  void		addRuntimeOption(const char* opt);
+  void		addStartUpOption(const char* opt);
   static void	lock(Vlc* clipWorkflow, void**, int);
   static void	unlock(Vlc* clipWorkflow, void* buffer,
 			     int size,
 			     long pts);
   static void	lockAudio(Vlc* clipWorkflow, void**, int);
-  static void	unlockAudio(Vlc* clipWorkflow, void* buffer,
-			     int width, int height, int bpp, int size,
-			     long pts);
+  static void	unlockAudio(Vlc* clipWorkflow, void* buffer, int width, int
+		  height, int bpp, int size, long pts);
 
-  static int	getVideo(void *data, const char *cookie, int64_t *dts, int64_t *pts,
-			     unsigned *flags, size_t *, void **);
+  static int	getVideo(void *data, const char *cookie, int64_t *dts, int64_t
+		  *pts, unsigned *flags, size_t *, void **);
   static int	release(void *data, const char *cookie, size_t, void *);
 
 private:
@@ -75,6 +77,7 @@ protected:
   libvlc_media_t		*m_m;
   FB::PluginWindow		*m_window;
   Network			*_net;
+  std::list<const char*>	*_vlc_args;
 };
 
 #endif	    /* !ENCREV2_VLC_HH_ */

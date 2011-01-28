@@ -11,29 +11,19 @@
     {
 	return document.getElementById('publish');
     }
-    function start_stream()
-    {
-	get_publish().connect('localhost','4242');
-    	get_publish().stream();
-    }
 
-    function start_play()
+    function  start_plugin()
     {
+     	get_publish().start();
 	get_publish().connect('localhost','4242');
-    	get_publish().play();
-    }
-
-    function stop_play()
-    {
-    	get_publish().stop();
     }
   </script>
 
   <form>
-  <input type="button" value="Stream..." OnClick="start_stream()"/>
-  <input type="button" value="Play..." OnClick="start_play()"/>
-  <input type="button" value="Connect to server" OnClick="get_publish().connect()"/>
-  <input type="button" value="Stop !" OnClick="stop_play()"/>
+  <input type="button" value="START !" OnClick="start_plugin()"/>
+  <input type="button" value="Stream..." OnClick="get_publish().stream()"/>
+  <input type="button" value="Play..." OnClick="get_publish().play()"/>
+  <input type="button" value="Stop !" OnClick="get_publish().stop()"/>
   </form>
 
 </body>
