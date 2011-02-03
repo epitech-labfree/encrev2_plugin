@@ -83,7 +83,6 @@ bool		Vlc::stream()
   }
   std::string mrl;
   _net->write(Protocol::put("toto"));
-  //boost::asio::write(*_socket, boost::asio::buffer(request, sizeof(request)));
 
   if (m_vlc == 0)
     return false;
@@ -175,7 +174,6 @@ Vlc::unlock( Vlc* vlc, void* buffer,
   // c'est ici que l'on traite la video
   if (vlc && vlc->_net->isConnected())
     {
-      //boost::asio::write(vlc->getSocket(), boost::asio::buffer(buffer, size));
       Network* net = Network::getInstance();
       net->write(buffer, size);
       delete (char*)buffer;
