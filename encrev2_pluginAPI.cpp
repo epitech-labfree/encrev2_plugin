@@ -17,6 +17,7 @@ encrev2_pluginAPI::encrev2_pluginAPI(FB::BrowserHostPtr host, encrev2_plugin &pl
 {
   registerMethod("testEvent", make_method(this, &encrev2_pluginAPI::testEvent));
   registerMethod("stream",    make_method(this, &encrev2_pluginAPI::stream));
+  registerMethod("initStream",make_method(this, &encrev2_pluginAPI::init_stream));
   registerMethod("play",      make_method(this, &encrev2_pluginAPI::play));
   registerMethod("stop",      make_method(this, &encrev2_pluginAPI::stop));
   registerMethod("connect",   make_method(this, &encrev2_pluginAPI::connect));
@@ -63,6 +64,11 @@ bool            encrev2_pluginAPI::start_plugin()
 bool            encrev2_pluginAPI::stream()
 {
 	return m_plugin.vlc().stream();
+}
+
+bool            encrev2_pluginAPI::init_stream()
+{
+	return m_plugin.vlc().init_stream();
 }
 
 bool            encrev2_pluginAPI::play()

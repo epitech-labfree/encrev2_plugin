@@ -60,7 +60,10 @@ Vlc::start() {
 	const char* vlc_args[_vlc_args->size() + 1];
 	std::list<const char*>::iterator it = _vlc_args->begin();
 	for (unsigned int i = 0; it != _vlc_args->end(); ++it, ++i)
+	{
 		vlc_args[i] = (*it);
+		std::cout << *it << std::endl;
+	}
 	m_vlc = libvlc_new(sizeof(vlc_args) / sizeof(vlc_args[0]), vlc_args);
 	std::clog << "Encre::Vlc, Starting" << std::endl;
 	return m_vlc != 0;
@@ -88,25 +91,25 @@ bool          Vlc::set_window(FB::PluginWindow *win)
   return true;
 }
 
-bool		Vlc::stream()
+bool		Vlc::init_stream()
 {
-  if (m_vlc == 0)
-  	return false;
-
-  if (_net->isConnected() == false) // If m_vlc is valid, _net is valid too
-  {
-    std::clog << "Encre::Vlc, Error: Not connected " << std::endl;
+  if (good() == false)
     return false;
-  }
 
   std::string request("PUT toto\n\n");
   _net->write(request);
-  //boost::asio::write(*_socket, boost::asio::buffer(request, sizeof(request)));
 
   std::string mrl;
   VlcSystemStrategy::get_webcam_mrl(mrl);
-  m_m = libvlc_media_new_location(m_vlc, mrl.c_str());
-  std::clog << "Streaming " << mrl << std::endl;
+  m_m = libvlc_media_new_location(m_vlc, mrl.c_str()); // XXX: Never released
+  std::clog << "Init streaming " << mrl << std::endl;
+}
+
+bool		Vlc::stream()
+{
+  if (good() == false)
+    return false;
+
   if (m_m)
   {
     //addRuntimeOption(":sout=#transcode{vcodec=h264,vb=800,scale=1,acodec=mp4a,ab=128,channels=2,samplerate=44100}:smem{mux=ts}");
@@ -116,8 +119,6 @@ bool		Vlc::stream()
     setDataLockCallback(reinterpret_cast<void*>(&Vlc::lock));
     setDataUnlockCallback(reinterpret_cast<void*>(&Vlc::unlock));
     setDataCtx( this );
-    // setAudioLockCallback(reinterpret_cast<void*>(&lockAudio));
-    // setAudioUnlockCallback(reinterpret_cast<void*>(&unlockAudio));
     //addRuntimeOption(":sout-transcode-width=400");
     //addRuntimeOption(":sout-transcode-height=400");
     //addRuntimeOption(":no-skip-frames");
@@ -127,19 +128,19 @@ bool		Vlc::stream()
     //play la video
     libvlc_media_player_play(m_mp);
   }
+  std::clog << "Streaming " << std::endl;
   return true;
+}
+
+void	      Vlc::stop_stream() {
+    libvlc_media_release(m_m);
+    this->stop();
 }
 
 bool          Vlc::play()
 {
-  if (m_vlc == 0)
+  if (good() == false)
     return false;
-
-  if (_net->isConnected() == false)
-  {
-    std::clog << "Encre::Vlc, Error: Not connected " << std::endl;
-    return false;
-  }
 
   std::string request("GET toto\n\n");
   _net->write(request);
@@ -166,7 +167,7 @@ bool          Vlc::play()
 
 void
 Vlc::stop() {
-	std::clog << "Stop playing video" << std::endl;
+	std::clog << "Stop video" << std::endl;
 	if (m_mp != 0)
 		libvlc_media_player_stop(m_mp);
 }
@@ -355,4 +356,17 @@ Vlc::setImemDataCtx( void* dataCtx )
   char    param[64];
   sprintf(param, ":imem-data=%"PRId64, (long long int)dataCtx);
   addRuntimeOption(param);
+}
+
+bool
+Vlc::good() const {
+  if (m_vlc == 0)
+  	return false;
+
+  if (_net->isConnected() == false) // If m_vlc is valid, _net is valid too
+  {
+    std::clog << "Encre::Vlc, Error: Not connected " << std::endl;
+    return false;
+  }
+  return true; 
 }

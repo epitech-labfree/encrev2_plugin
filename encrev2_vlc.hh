@@ -40,7 +40,9 @@ public:
   ~Vlc();
 
   bool          set_window(FB::PluginWindow *win);
+  bool          init_stream();
   bool          stream();
+  void          stop_stream();
   bool          play();
   bool          start();
   void		stop();
@@ -70,6 +72,7 @@ private:
   void		setVideoGetCallback(void*);
   void		setDataCtx(void*);
   void		setImemDataCtx(void*);
+  inline bool	good() const;
 
 protected:
   libvlc_instance_t		*m_vlc;
