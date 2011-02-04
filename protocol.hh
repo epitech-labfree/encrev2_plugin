@@ -4,8 +4,8 @@
 
 class Protocol {
 	public:
-	static const char* put(const char*);
-	static const char* get(const char*);
+	static const char* put(const std::string&);
+	static const char* get(const std::string&);
 
 	private:
 	Protocol& operator=(const Protocol&);
