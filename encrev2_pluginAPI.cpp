@@ -66,14 +66,14 @@ bool            encrev2_pluginAPI::stream()
 	return m_plugin.vlc().stream();
 }
 
-bool            encrev2_pluginAPI::init_stream()
+bool            encrev2_pluginAPI::init_stream(const std::string& str)
 {
-	return m_plugin.vlc().init_stream();
+	return m_plugin.vlc().init_stream(str);
 }
 
-bool            encrev2_pluginAPI::play()
+bool            encrev2_pluginAPI::play(const std::string& str)
 {
-	return m_plugin.vlc().play();
+	return m_plugin.vlc().play(str);
 }
 
 void            encrev2_pluginAPI::stop()

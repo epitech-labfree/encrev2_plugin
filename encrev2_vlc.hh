@@ -32,6 +32,7 @@
 # include <list>
 # include "vlc_system_strategy.hh"
 # include "network.hh"
+# include <iostream>
 
 class Vlc
 {
@@ -40,10 +41,10 @@ public:
   ~Vlc();
 
   bool          set_window(FB::PluginWindow *win);
-  bool          init_stream();
+  bool          init_stream(const std::string&);
   bool          stream();
   void          stop_stream();
-  bool          play();
+  bool          play(const std::string&);
   bool          start();
   void		stop();
   void		addRuntimeOption(const char* opt);
@@ -59,7 +60,19 @@ public:
   static int	getVideo(void *data, const char *cookie, int64_t *dts, int64_t
 		  *pts, unsigned *flags, size_t *, void **);
   static int	release(void *data, const char *cookie, size_t, void *);
-  inline bool	good() const;
+  inline bool	good() const
+  {
+    if (m_vlc == 0)
+      return false;
+
+    if (_net->isConnected() == false) // If m_vlc is valid, _net is valid too
+      {
+	std::clog << "Encre::Vlc, Error: Not connected " << std::endl;
+	return false;
+      }
+    return true; 
+  }
+
 
 private:
   void		setVideoLockCallback(void* callback);

@@ -92,12 +92,12 @@ bool          Vlc::set_window(FB::PluginWindow *win)
   return true;
 }
 
-bool		Vlc::init_stream()
+bool		Vlc::init_stream(const std::string& label)
 {
   if (good() == false)
     return false;
 
-  _net->write(Protocol::put("toto"));
+  _net->write(Protocol::put(label));
 
   std::string mrl;
   VlcSystemStrategy::get_webcam_mrl(mrl);
@@ -137,12 +137,12 @@ void	      Vlc::stop_stream() {
     this->stop();
 }
 
-bool          Vlc::play()
+bool          Vlc::play(const std::string& label)
 {
   if (good() == false)
     return false;
 
-  _net->write(Protocol::get("toto"));
+  _net->write(Protocol::get(label));
 
   std::clog << "Playing " << "imem://width=400:height=400:fps=30:cookie=0:cat=4:caching=0:codec=h264" << std::endl;
   m_m = libvlc_media_new_location(m_vlc, "imem://width=400:height=400:fps=30:cookie=0:codec=H264:cat=4:caching=0");
@@ -354,17 +354,4 @@ Vlc::setImemDataCtx( void* dataCtx )
   char    param[64];
   sprintf(param, ":imem-data=%"PRId64, (long long int)dataCtx);
   addRuntimeOption(param);
-}
-
-bool
-Vlc::good() const {
-  if (m_vlc == 0)
-  	return false;
-
-  if (_net->isConnected() == false) // If m_vlc is valid, _net is valid too
-  {
-    std::clog << "Encre::Vlc, Error: Not connected " << std::endl;
-    return false;
-  }
-  return true; 
 }

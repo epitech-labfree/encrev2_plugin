@@ -15,7 +15,7 @@
     function stream()
     {
 	var p = get_publish();
-    	p.initStream();
+    	p.initStream("toto");
  	p.runtimeOption = ":sout=#transcode{vcodec=h264,vb=800,scale=1,acodec=mp4a,ab=128,channels=2,samplerate=44100}:smem{mux=ts}";
 	p.runtimeOption = ":v4l2-caching=500";
 	p.runtimeOption = ":sout-x264-tune=zerolatency";
@@ -40,7 +40,7 @@
 
   <form id="button_list" style="display:none">
     <input type="button" value="Stream..." OnClick="stream()"/>
-    <input type="button" value="Play..." OnClick="get_publish().play()"/>
+    <input type="button" value="Play..." OnClick="get_publish().play('toto')"/>
     <input type="button" value="Stop !" OnClick="get_publish().stop()"/>
   </form>
 
