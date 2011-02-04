@@ -11,29 +11,37 @@
     {
 	return document.getElementById('publish');
     }
-    function start_stream()
+
+    function stream()
     {
-	get_publish().connect('localhost','4242');
-    	get_publish().stream();
+	var p = get_publish();
+    	p.initStream();
+ 	p.runtimeOption = ":sout=#transcode{vcodec=h264,vb=800,scale=1,acodec=mp4a,ab=128,channels=2,samplerate=44100}:smem{mux=ts}";
+	p.runtimeOption = ":v4l2-caching=500";
+	p.runtimeOption = ":sout-x264-tune=zerolatency";
+	p.runtimeOption = ":sout-x264-tune=veryfast";
+	p.stream();
     }
 
-    function start_play()
+    function  start_plugin()
     {
+	// Set here specific start up option
+     	get_publish().start();
 	get_publish().connect('localhost','4242');
-    	get_publish().play();
-    }
 
-    function stop_play()
-    {
-    	get_publish().stop();
+	var node = document.getElementById("start");
+	node.style.display="none";
+	node = document.getElementById("button_list");
+	node.style.display="block";
     }
   </script>
 
-  <form>
-  <input type="button" value="Stream..." OnClick="start_stream()"/>
-  <input type="button" value="Play..." OnClick="start_play()"/>
-  <input type="button" value="Connect to server" OnClick="get_publish().connect()"/>
-  <input type="button" value="Stop !" OnClick="stop_play()"/>
+  <input type="button" id="start" value="START !" OnClick="start_plugin()"/>
+
+  <form id="button_list" style="display:none">
+    <input type="button" value="Stream..." OnClick="stream()"/>
+    <input type="button" value="Play..." OnClick="get_publish().play()"/>
+    <input type="button" value="Stop !" OnClick="get_publish().stop()"/>
   </form>
 
 </body>
