@@ -109,10 +109,10 @@ bool		Vlc::stream()
   std::clog << "Streaming " << mrl << std::endl;
   if (m_m)
   {
-    addRuntimeOption(":sout=#transcode{vcodec=h264,vb=800,scale=1,acodec=mp4a,ab=128,channels=2,samplerate=44100}:smem{mux=ts}");
-    addRuntimeOption(":v4l2-caching=500");
-    addRuntimeOption(":sout-x264-tune=zerolatency");
-    addRuntimeOption(":sout-x264-tune=veryfast");
+    //addRuntimeOption(":sout=#transcode{vcodec=h264,vb=800,scale=1,acodec=mp4a,ab=128,channels=2,samplerate=44100}:smem{mux=ts}");
+    //addRuntimeOption(":v4l2-caching=500");
+    //addRuntimeOption(":sout-x264-tune=zerolatency");
+    //addRuntimeOption(":sout-x264-tune=veryfast");
     setDataLockCallback(reinterpret_cast<void*>(&Vlc::lock));
     setDataUnlockCallback(reinterpret_cast<void*>(&Vlc::unlock));
     setDataCtx( this );
