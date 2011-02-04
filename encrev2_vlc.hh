@@ -59,6 +59,7 @@ public:
   static int	getVideo(void *data, const char *cookie, int64_t *dts, int64_t
 		  *pts, unsigned *flags, size_t *, void **);
   static int	release(void *data, const char *cookie, size_t, void *);
+  inline bool	good() const;
 
 private:
   void		setVideoLockCallback(void* callback);
@@ -72,7 +73,6 @@ private:
   void		setVideoGetCallback(void*);
   void		setDataCtx(void*);
   void		setImemDataCtx(void*);
-  inline bool	good() const;
 
 protected:
   libvlc_instance_t		*m_vlc;

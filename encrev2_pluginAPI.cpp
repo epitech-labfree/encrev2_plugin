@@ -81,14 +81,14 @@ void            encrev2_pluginAPI::stop()
   m_plugin.vlc().stop();
 }
 
-void
-encrev2_pluginAPI::set_runtime_option(const std::string& s1)
+void    encrev2_pluginAPI::set_runtime_option(const std::string& s1)
 {
-	m_plugin.vlc().addRuntimeOption(s1.c_str());
+	if (m_plugin.vlc().good())
+		m_plugin.vlc().addRuntimeOption(s1.c_str());
 }
 
-void
-encrev2_pluginAPI::set_startup_option(const std::string& s1) {
+void    encrev2_pluginAPI::set_startup_option(const std::string& s1)
+{
 	m_plugin.vlc().addStartUpOption(s1.c_str());
 }
 
