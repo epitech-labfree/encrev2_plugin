@@ -20,7 +20,7 @@ encrev2_pluginAPI::encrev2_pluginAPI(FB::BrowserHostPtr host, encrev2_plugin &pl
   registerMethod("play",      make_method(this, &encrev2_pluginAPI::play));
   registerMethod("stop",      make_method(this, &encrev2_pluginAPI::stop));
   registerMethod("connect",   make_method(this, &encrev2_pluginAPI::connect));
-  registerMethod("disconnect",      make_method(this, &encrev2_pluginAPI::disconnect));
+  registerMethod("disconnect",make_method(this, &encrev2_pluginAPI::disconnect));
   registerMethod("start",     make_method(this, &encrev2_pluginAPI::start_plugin));
   
   // Read-only property
@@ -29,10 +29,10 @@ encrev2_pluginAPI::encrev2_pluginAPI(FB::BrowserHostPtr host, encrev2_plugin &pl
                                  &encrev2_pluginAPI::get_version));
 
   // Read-Write property
-  registerProperty("startUpOption", make_method(this,
+  registerProperty("startUpOption", make_property(this,
 			  &encrev2_pluginAPI::get_startup_option,
 			  &encrev2_pluginAPI::set_startup_option));
-  registerProperty("runtimeOption", make_method(this,
+  registerProperty("runtimeOption", make_property(this,
 			  &encrev2_pluginAPI::get_runtime_option,
 			  &encrev2_pluginAPI::set_runtime_option));
 
@@ -76,26 +76,27 @@ void            encrev2_pluginAPI::stop()
 }
 
 void
-encrev2_pluginAPI::set_runtime_option(const char* s1)
+encrev2_pluginAPI::set_runtime_option(const std::string& s1)
 {
-	m_plugin.vlc().addRuntimeOption(s1);
-}
-
-const char*
-encrev2_pluginAPI::get_runtime_option()
-{
-	return "none";
+	m_plugin.vlc().addRuntimeOption(s1.c_str());
 }
 
 void
-encrev2_pluginAPI::set_startup_option(const char* s1) {
-	m_plugin.vlc().addStartUpOption(s1);
+encrev2_pluginAPI::set_startup_option(const std::string& s1) {
+	m_plugin.vlc().addStartUpOption(s1.c_str());
 }
 
-const char*
+// These two getters are provide for Firebreath. Don't use them.
+std::string*
+encrev2_pluginAPI::get_runtime_option()
+{
+	return new std::string("lol");
+}
+
+std::string*
 encrev2_pluginAPI::get_startup_option()
 {
-	return "none";
+	return 0;
 }
 
 void

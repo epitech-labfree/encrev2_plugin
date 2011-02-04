@@ -14,10 +14,10 @@
 
     function  start_plugin()
     {
-    	get_publish().setStartUpOption(":sout=#transcode{vcodec=h264,vb=800,scale=1,acodec=mp4a,ab=128,channels=2,samplerate=44100}:smem{mux=ts}");
-	get_publish().setStartUpOption(":v4l2-caching=500");
-	get_publish().setStartUpOption(":sout-x264-tune=zerolatency");
-	get_publish().setStartUpOption(":sout-x264-tune=veryfast");
+    	get_publish().startUpOption = ":sout=#transcode{vcodec=h264,vb=800,scale=1,acodec=mp4a,ab=128,channels=2,samplerate=44100}:smem{mux=ts}";
+	get_publish().startUpOption = ":v4l2-caching=500";
+	get_publish().startUpOption = ":sout-x264-tune=zerolatency";
+	get_publish().startUpOption = ":sout-x264-tune=veryfast";
  
      	get_publish().start();
 	get_publish().connect('localhost','4242');
