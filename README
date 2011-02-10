@@ -9,6 +9,9 @@
 ** Install Unix :
 ** ./prepmakesh-D WITH_SYSTEM_BOOST=1
 ** (cd build && make && make install)
+**
+** After the installation of vlc (see below), put LD_LIBRARY_PATH in the environnement for find the modules
+** (can be export LD_LIBRARY_PATH=/usr/local or setenv LD_LIBRARY_PATH /usr/local).
 ***
 ****
 ***************************************
