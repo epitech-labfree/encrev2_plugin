@@ -38,13 +38,13 @@
 
 using namespace std;
 
-Vlc::Vlc() : m_vlc(0), m_mp(0), m_m(0), m_window(0), 
+Vlc::Vlc() : m_vlc(0), m_mp(0), m_m(0), m_window(0), _net(0),
 	_vlc_args(new std::list<const char*>()) {
 
   std::clog << "Encre::Vlc, Initialization..." << std::endl;
   // init vlc modules, should be done only once
 
-  _net = Network::getInstance();
+  _net = new Network();
   _vlc_args->push_back("-I");
   _vlc_args->push_back("dummy"); /* Don't use any interface */
   _vlc_args->push_back("--ignore-config"); /* Don't use VLC's config */
@@ -73,7 +73,8 @@ Vlc::start() {
 Vlc::~Vlc()
 {
   std::clog << "Encre::Vlc, Destruction" << std::endl;
-  Network::kill();
+  if (_net)
+    delete _net;
   libvlc_media_player_release(m_mp);
   libvlc_release(m_vlc);
   delete _vlc_args;
@@ -144,7 +145,6 @@ bool          Vlc::play(const std::string& label)
 
   _net->write(Protocol::get(label));
 
-  std::clog << "Playing " << "imem://width=400:height=400:fps=30:cookie=0:cat=4:caching=0:codec=h264" << std::endl;
   m_m = libvlc_media_new_location(m_vlc, "imem://width=400:height=400:fps=30:cookie=0:codec=H264:cat=4:caching=0");
   if (m_m)
   {
@@ -157,7 +157,7 @@ bool          Vlc::play(const std::string& label)
     setVideoReleaseCallback(reinterpret_cast<void*>(&release));
     setImemDataCtx(this);
 
-    libvlc_media_release(m_m);
+    //libvlc_media_release(m_m);
     VlcSystemStrategy::set_window(m_mp, m_window);
     libvlc_media_player_play(m_mp);
   }
@@ -201,8 +201,8 @@ Vlc::unlock( Vlc* vlc, void* buffer,
   // c'est ici que l'on traite la video
   if (vlc && vlc->_net->isConnected())
     {
-      Network* net = Network::getInstance();
-      net->write(buffer, size);
+      //Network* net = Network::getInstance();
+      vlc->_net->write(buffer, size);
       delete (char*)buffer;
     }
 }
@@ -223,8 +223,8 @@ Vlc::unlockAudio( Vlc* vlc, void* buffer,
   if (vlc && vlc->_net->isConnected())
     {
       // c'est ici que l'on traite le son
-      Network* net = Network::getInstance();
-      net->write(buffer, size);
+      //Network* net = Network::getInstance();
+      vlc->_net->write(buffer, size);
       //boost::asio::write(vlc->getSocket(), boost::asio::buffer(buffer, size));
       delete (char*)buffer;
     }
@@ -240,8 +240,8 @@ Vlc::getVideo(void* data, const char* cookie, int64_t* dts, int64_t* pts,
   *buffer = new char [4096];
   *len = 0;
   //lecture sur le reseau
-  Network* net = Network::getInstance();
-  *len = net->read(*buffer, 4096);
+  //Network* net = Network::getInstance();
+  *len = myVlc->_net->read(*buffer, 4096);
   //*len =  boost::asio::read(myVlc->getSocket(), boost::asio::buffer(*buffer, 4096));
   return (*len ? 0 : -1);
 }

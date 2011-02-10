@@ -5,26 +5,11 @@
 
 using boost::asio::ip::tcp;
 
-Network* Network::_instance = 0;
-bool Network::_is_connected = false;
-tcp::socket* Network::_socket = 0;
-
-Network*
-Network::getInstance() {
-	if (Network::_instance == 0)
-		Network::_instance = new Network();
-	return Network::_instance;
-}
-
-void
-Network::kill() {
-	if (Network::_instance != 0)
-		delete Network::_instance;
-}
+Network::Network() : _socket(0), _is_connected(false) {}
 
 void
 Network::connect(const std::string& host, const std::string& port) {
-        if (Network::_is_connected == true) {
+        if (_is_connected == true) {
 	  	std::clog << "Encre::Network, already connected" << std::endl;
 		return;
         }

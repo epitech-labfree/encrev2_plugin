@@ -6,9 +6,8 @@ using boost::asio::ip::tcp;
 
 class Network {
 	public:
+	Network();
 	virtual ~Network() {}
-	static Network* getInstance();
-	static void     kill();
   	void		connect(const std::string&, const std::string&);
   	void		disconnect();
   	tcp::socket* 	getSocket() const;
@@ -19,17 +18,15 @@ class Network {
 	bool		isConnected() const;
 
 	protected:
-	Network() {}
 	Network(const Network&);
 	Network&
 	operator=(const Network&);
 
 	public:
-	static Network* _instance;
 
 	private:
-	static tcp::socket*	_socket;
-	static bool		_is_connected;
+	tcp::socket*		_socket;
+	bool			_is_connected;
 };
 
 #endif

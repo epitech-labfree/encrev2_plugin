@@ -107,13 +107,17 @@ encrev2_pluginAPI::get_startup_option()
 
 void
 encrev2_pluginAPI::connect(const std::string& host, const std::string& port) {
-	Network* net = Network::getInstance();
-	net->connect(host, port);
+	//Network* net = Network::getInstance();
+	Network* net = m_plugin.vlc().getNetwork();
+	if (net)
+	  net->connect(host, port);
 }
 
 void
 encrev2_pluginAPI::disconnect() {
-	Network* net = Network::getInstance();
-	net->disconnect();
+	//Network* net = Network::getInstance();
+	Network* net = m_plugin.vlc().getNetwork();
+	if (net)
+	  net->disconnect();
 }
 

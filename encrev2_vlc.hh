@@ -49,6 +49,8 @@ public:
   void		stop();
   void		addRuntimeOption(const char* opt);
   void		addStartUpOption(const char* opt);
+
+  Network	*getNetwork() const { return _net; }
   static void	lock(Vlc* clipWorkflow, void**, int);
   static void	unlock(Vlc* clipWorkflow, void* buffer,
 			     int size,
