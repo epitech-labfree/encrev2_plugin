@@ -58,9 +58,10 @@ Vlc::start() {
 	if (m_vlc != 0)
 		return false;
 
-	const char* vlc_args[_vlc_args->size() + 1];
+	const char* vlc_args[_vlc_args->size()];
 	std::list<const char*>::iterator it = _vlc_args->begin();
-	for (unsigned int i = 0; it != _vlc_args->end(); ++it, ++i)
+	unsigned int i = 0;
+	for ( ; it != _vlc_args->end(); ++it, ++i)
 	{
 		vlc_args[i] = (*it);
 		std::cout << *it << std::endl;
