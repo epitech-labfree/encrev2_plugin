@@ -58,45 +58,45 @@ void            encrev2_pluginAPI::testEvent(const FB::variant& var)
 
 bool            encrev2_pluginAPI::start_plugin()
 {
-	return m_plugin.vlc().start();
+  //return m_plugin.vlc().getStream()->start();
 }
 
 bool            encrev2_pluginAPI::stream()
 {
-	return m_plugin.vlc().stream();
+  //return m_plugin.vlc().getStream()->stream();
 }
 
 bool            encrev2_pluginAPI::init_stream(const std::string& str)
 {
-	return m_plugin.vlc().init_stream(str);
+  //return m_plugin.vlc().getStream()->init_stream(str);
 }
 
 bool            encrev2_pluginAPI::play(const std::string& str)
 {
-	return m_plugin.vlc().play(str);
+  //return m_plugin.vlc().getStream()->play(str);
 }
 
-void            encrev2_pluginAPI::stop()
+bool		encrev2_pluginAPI::stop()
 {
-  m_plugin.vlc().stop();
+  //return m_plugin.vlc().getStream()->stop();
 }
 
 void    encrev2_pluginAPI::set_runtime_option(const std::string& s1)
 {
-	if (m_plugin.vlc().good())
-		m_plugin.vlc().addRuntimeOption(s1.c_str());
+  //if (m_plugin.vlc().good())
+  m_plugin.vlc().getStream()->setOptions(s1.c_str());
 }
 
 void    encrev2_pluginAPI::set_startup_option(const std::string& s1)
 {
-	m_plugin.vlc().addStartUpOption(s1.c_str());
+	m_plugin.vlc().getStream()->setOptions(s1.c_str());
 }
 
 // These two getters are provide for Firebreath. Don't use them.
 std::string*
 encrev2_pluginAPI::get_runtime_option()
 {
-	return new std::string("lol");
+	return 0;
 }
 
 std::string*
@@ -108,16 +108,16 @@ encrev2_pluginAPI::get_startup_option()
 void
 encrev2_pluginAPI::connect(const std::string& host, const std::string& port) {
 	//Network* net = Network::getInstance();
-	Network* net = m_plugin.vlc().getNetwork();
-	if (net)
-	  net->connect(host, port);
+	// Network* net = m_plugin.vlc().getNetwork();
+	// if (net)
+	//   net->connect(host, port);
 }
 
 void
 encrev2_pluginAPI::disconnect() {
 	//Network* net = Network::getInstance();
-	Network* net = m_plugin.vlc().getNetwork();
-	if (net)
-	  net->disconnect();
+	// Network* net = m_plugin.vlc().getNetwork();
+	// if (net)
+	//   net->disconnect();
 }
 

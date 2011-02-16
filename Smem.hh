@@ -1,18 +1,22 @@
 // should contain smem dirty details.
 
-class Smem : boost::noncopyable
+#include <boost/utility.hpp>
+#include "Stream.hh"
+
+namespace vlc
 {
-public :
-  void		lock(Vlc* vlc, void** pp_ret, int size);
-  void		unlock( Vlc* vlc, void* buffer, int size, long dts );
-  void		setVideoLockCallback(void* callback);
-  void		setVideoUnlockCallback(void* callback);
-  void		setDataLockCallback(void* callback);
-  void		setDataUnlockCallback(void* callback);
-  void		setAudioLockCallback(void* callback);
-  void		setAudioUnlockCallback(void* callback);
-  void		setVideoDataCtx(void* dataCtx);
-  void		setDataCtx(void* dataCtx);
-protected :
-  Smem();
-};
+  class Smem : boost::noncopyable
+  {
+  public :
+    void		lock(Stream* stream, void** pp_ret, int size);
+    void		unlock(Stream* stream, void* buffer, int size, long dts );
+    void		setVideoLockCallback(Stream* stream, void* callback);
+    void		setVideoUnlockCallback(Stream* stream, void* callback);
+    void		setDataLockCallback(Stream* stream, void* callback);
+    void		setDataUnlockCallback(Stream* stream, void* callback);
+    void		setAudioLockCallback(Stream* stream, void* callback);
+    void		setAudioUnlockCallback(Stream* stream, void* callback);
+    void		setVideoDataCtx(Stream* stream, void* dataCtx);
+    void		setDataCtx(Stream* stream, void* dataCtx);
+  };
+}

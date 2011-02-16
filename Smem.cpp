@@ -1,95 +1,102 @@
 #include "Smem.hh"
+
+//Allow PRId64 to be defined:
+#define __STDC_FORMAT_MACROS
+#include <inttypes.h>
+
+#include <sstream>
+
+namespace vlc
+{
 void
-Smem::lock(Vlc* vlc, void** pp_ret,
-	   int size)
+Smem::lock(Stream* stream, void** pp_ret, int size)
 {
   int * buffer = new int[size];
   *pp_ret = (void*)buffer;
 }
 
 void
-Smem::unlock( Vlc* vlc, void* buffer,
-	     int size,
-	     long dts )
+Smem::unlock(Stream* stream, void* buffer, int size, long dts)
 {
-  // c'est ici que l'on traite la video
-  if (vlc && vlc->_net->isConnected())
-    {
-      //Network* net = Network::getInstance();
-      vlc->_net->write(buffer, size);
-      delete (char*)buffer;
-    }
+  //it's here where we can send the data of the stream
+  // if (stream && stream->_net->isConnected())
+  //   {
+  //     vlc->_net->write(buffer, size);
+  //     delete (char*)buffer;
+  //   }
 }
 
 void
-Smem::setVideoLockCallback(void* callback)
+Smem::setVideoLockCallback(Stream* stream, void* callback)
 {
-  char    param[64];
+  std::ostringstream oss;
 
-  sprintf(param, ":sout-smem-video-prerender-callback=%"PRId64, (long long int)callback);
-  addRuntimeOption(param);
+  oss << ":sout-smem-video-prerender-callback=" << reinterpret_cast<long long int>(callback);
+  stream->setOptions(oss.str().c_str());
 }
 
 void
-Smem::setVideoUnlockCallback(void* callback)
+Smem::setVideoUnlockCallback(Stream* stream, void* callback)
 {
-  char    param[64];
+  std::ostringstream oss;
 
-  sprintf(param, ":sout-smem-video-postrender-callback=%"PRId64, (long long int)callback);
-  addRuntimeOption(param);
+  oss << ":sout-smem-video-postrender-callback=" << reinterpret_cast<long long int>(callback);
+  stream->setOptions(oss.str().c_str());
 }
 
 void
-Smem::setDataLockCallback(void* callback)
+Smem::setDataLockCallback(Stream* stream, void* callback)
 {
-  char    param[64];
+  std::ostringstream oss;
 
-  sprintf(param, ":sout-smem-data-prerender-callback=%"PRId64, (long long int)callback);
-  addRuntimeOption(param);
+  oss << ":sout-smem-data-prerender-callback=" << reinterpret_cast<long long int>(callback);
+  stream->setOptions(oss.str().c_str());
 }
 
 void
-Smem::setDataUnlockCallback(void* callback)
+Smem::setDataUnlockCallback(Stream* stream, void* callback)
 {
-  char    param[64];
+  std::ostringstream oss;
 
-  sprintf(param, ":sout-smem-data-postrender-callback=%"PRId64, (long long int)callback);
-  addRuntimeOption(param);
+  oss << ":sout-smem-data-postrender-callback=" << reinterpret_cast<long long int>(callback);
+  stream->setOptions(oss.str().c_str());
 }
 
 void
-Smem::setAudioLockCallback(void* callback)
+Smem::setAudioLockCallback(Stream* stream, void* callback)
 {
-  char    param[64];
+  std::ostringstream oss;
 
-  sprintf(param, ":sout-smem-audio-prerender-callback=%"PRId64, (long long int)callback);
-  addRuntimeOption(param);
+  oss << ":sout-smem-audio-prerender-callback=" << reinterpret_cast<long long int>(callback);
+  stream->setOptions(oss.str().c_str());
 }
 
 void
-Smem::setAudioUnlockCallback(void* callback)
+Smem::setAudioUnlockCallback(Stream* stream, void* callback)
 {
-  char    param[64];
+  std::ostringstream oss;
 
-  sprintf(param, ":sout-smem-audio-postrender-callback=%"PRId64, (long long int)callback);
-  addRuntimeOption(param);
+  oss << ":sout-smem-audio-postrender-callback=" << reinterpret_cast<long long int>(callback);
+  stream->setOptions(oss.str().c_str());
 }
 
 
 void
-Smem::setVideoDataCtx( void* dataCtx )
+Smem::setVideoDataCtx(Stream* stream, void* dataCtx)
 {
-  char    param[64];
+  std::ostringstream oss;
 
-  sprintf( param, ":sout-smem-video-data=%"PRId64, (long long int)dataCtx );
-  addRuntimeOption( param );
+  oss << ":sout-smem-video-data=" << reinterpret_cast<long long int>(dataCtx);
+  stream->setOptions(oss.str().c_str());
 }
 
 void
-Smem::setDataCtx( void* dataCtx )
+Smem::setDataCtx(Stream* stream, void* dataCtx)
 {
-  char    param[64];
+  std::ostringstream oss;
 
-  sprintf(param, ":sout-smem-data-data=%"PRId64, (long long int)dataCtx);
-  addRuntimeOption(param);
+  oss << ":sout-smem-data-data=" << reinterpret_cast<long long int>(dataCtx);
+  stream->setOptions(oss.str().c_str());
+}
+
 }

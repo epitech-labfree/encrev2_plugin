@@ -68,18 +68,20 @@ bool            encrev2_plugin::onMouseMove(FB::MouseMoveEvent *evt,
 bool            encrev2_plugin::onWindowAttached(FB::AttachedEvent *evt,
                                                  FB::PluginWindow *w)
 {
-  m_vlc.set_window(w);
+  //TODO
+  //m_vlc.set_window(w);
   return false;
 }
 
 bool            encrev2_plugin::onWindowDetached(FB::DetachedEvent *evt,
                                                  FB::PluginWindow *w)
 {
-  m_vlc.set_window(0);
+  //TODO
+  //m_vlc.set_window(0);
   return false;
 }
 
-Vlc             &encrev2_plugin::vlc()
+vlc::Vlc             &encrev2_plugin::vlc()
 {
   return m_vlc;
 }

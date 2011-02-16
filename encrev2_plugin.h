@@ -22,7 +22,7 @@ class encrev2_plugin : public FB::PluginCore
  public:
   static void   StaticInitialize();
   static void   StaticDeinitialize();
-  Vlc           &vlc();
+  vlc::Vlc           &vlc();
 
  public:
   encrev2_plugin();
@@ -50,7 +50,7 @@ class encrev2_plugin : public FB::PluginCore
   /** END EVENTDEF -- DON'T CHANGE THIS LINE **/
 
  protected:
-  Vlc           m_vlc;
+  vlc::Vlc           m_vlc;
 };
 
 #endif
