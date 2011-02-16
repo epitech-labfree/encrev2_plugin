@@ -28,27 +28,28 @@ Imem::release(void *data, const char *cookie, size_t, void *buffer)
 void
 Imem::setVideoGetCallback(Stream* stream, void* callback)
 {
-  char    param[64];
+  std::ostringstream oss;
 
-  sprintf(param, ":imem-get=%"PRId64, (long long int)callback);
-  stream->setOptions(param);
+  oss << ":imem-get=" << reinterpret_cast<long long int>(callback);
+  stream->setOptions(oss.str().c_str());
 }
 
 void
 Imem::setVideoReleaseCallback(Stream* stream, void* callback)
 {
-  char    param[64];
+  std::ostringstream oss;
 
-  sprintf(param, ":imem-release=%"PRId64, (long long int)callback);
-  stream->setOptions(param);
+  oss << ":imem-release=" << reinterpret_cast<long long int>(callback);
+  stream->setOptions(oss.str().c_str());
 }
 
 void
 Imem::setImemDataCtx(Stream* stream, void* dataCtx)
 {
-  char    param[64];
-  sprintf(param, ":imem-data=%"PRId64, (long long int)dataCtx);
-  stream->setOptions(param);
+  std::ostringstream oss;
+
+  oss << ":imem-data=" << reinterpret_cast<long long int>(callback);
+  stream->setOptions(oss.str().c_str());
 }
 
 }
