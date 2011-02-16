@@ -1,5 +1,7 @@
 #include "Imem.hh"
 
+#include <sstream>
+
 namespace vlc
 {
 
@@ -48,7 +50,7 @@ Imem::setImemDataCtx(Stream* stream, void* dataCtx)
 {
   std::ostringstream oss;
 
-  oss << ":imem-data=" << reinterpret_cast<long long int>(callback);
+  oss << ":imem-data=" << reinterpret_cast<long long int>(dataCtx);
   stream->setOptions(oss.str().c_str());
 }
 
