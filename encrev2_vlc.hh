@@ -6,10 +6,9 @@
 #include <boost/utility.hpp>
 #include <vlc/vlc.h>
 
-#include <Stream.hh>
-
 namespace vlc
 {
+class	Stream;
   class	Vlc : public boost::noncopyable
   {
   private:
@@ -22,7 +21,10 @@ namespace vlc
     Vlc();
     Vlc(const std::vector<std::string>&	vlcOpts);
     Stream*				getStream() const;
+    friend				class Stream;
   };
 }
+
+#include "Stream.hh"
 
 #endif // _ENCRE_VLC_H

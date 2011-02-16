@@ -6,6 +6,8 @@
 #include <vector>
 #include <vlc/vlc.h>
 
+#include "encrev2_vlc.hh"
+
 namespace	vlc
 {
   class Stream : public boost::noncopyable
@@ -22,19 +24,19 @@ namespace	vlc
     virtual e_state			state();
     // This method returns a bool because some parameters may not
     // fulfill security policies.
-    virtual bool			setOptions(std::vector<std::string>);
+    virtual bool			setOptions(const std::vector<std::string>&);
     virtual bool			setOptions(const std::string&);
     virtual bool			play();
     virtual bool			stop();
 
-  protected :
-    Stream() {}
+    Stream();
     Stream(libvlc_media_player_t *mp);
 
+  protected :
+    Vlc*				m_vlc;
     libvlc_media_player_t*		m_mp;
     libvlc_media_t*			m_media;
     e_state				m_state;
-    //friend				class instance;
   };
 
 }
