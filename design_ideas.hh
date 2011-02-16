@@ -131,6 +131,10 @@ namespace vlc
  * extensible and loosely coupled. Don't hesitate to implement your
  * own idea if you're pretty sure about it.
  *
+ * when thinking about the network code design just pretend you are
+ * writing an independant library that would have allowed anyone to
+ * use the WONDERFULL Protocol (tm) inside their own applications.
+ *
  */
 
 // ? Could std::string handle binary data, i.e. does it relies on the
