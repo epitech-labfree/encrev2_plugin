@@ -1,7 +1,7 @@
 #ifndef _OUTPUTSTREAM_H
 # define _OUTPUTSTREAM_H
 
-#include "Stream.hh"
+#include "VlcStream.hh"
 #include "Smem.hh"
 #include <boost/signals2.hpp>
 
@@ -10,7 +10,7 @@ namespace encre
 
   typedef boost::signals2::signal<unsigned int (const char *, unsigned int)> t_bsign;
 
-  class	OutputStream : public Stream
+  class	OutputStream : public VlcStream
   {
   private :
     Smem		m_imem;

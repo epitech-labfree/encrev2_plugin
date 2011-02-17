@@ -24,18 +24,15 @@ namespace	encre
     virtual e_state			state();
     // This method returns a bool because some parameters may not
     // fulfill security policies.
-    virtual bool			setOptions(const std::vector<std::string>&);
-    virtual bool			setOptions(const std::string&);
-    virtual bool			play();
-    virtual bool			stop();
+    virtual bool			setOptions(const std::vector<std::string>&) = 0;
+    virtual bool			setOptions(const std::string&) = 0;
+    virtual bool			play() = 0;
+    virtual bool			stop() = 0;
 
     Stream();
-    Stream(libvlc_media_player_t *mp);
 
   protected :
-    Encre<libvlc_instance_t>*				m_encre;
-    libvlc_media_player_t*		m_mp;
-    libvlc_media_t*			m_media;
+    Encre<libvlc_instance_t>*		m_encre;
     e_state				m_state;
   };
 

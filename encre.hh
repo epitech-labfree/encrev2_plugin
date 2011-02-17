@@ -26,6 +26,7 @@ namespace encre
     bool					start();
     Stream*					getStream() const;
     friend					class Stream;
+    friend					class VlcStream;
   };
 }
 
