@@ -1,9 +1,10 @@
-#ifndef ENCREV2_PLUGIN_CLIENT_HH
-# define ENCREV2_PLUGIN_CLIENT_HH
-
-# include <boost/signals2.hpp>
 class Protocol;
 class Network;
+
+# include <boost/signals2.hpp>
+
+#ifndef ENCREV2_PLUGIN_CLIENT_HH
+# define ENCREV2_PLUGIN_CLIENT_HH
 
 struct binary_data {
 	char* data;
@@ -29,7 +30,7 @@ public:
 		if (m_protocol != 0)
 			delete m_protocol;
 	}
-	state& get_state() ;
+	state& get_state();
 	boost::signals2::signal<void (char**, size_t*)>& get_sig();
 	void control(char**, size_t*);
 

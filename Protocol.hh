@@ -2,14 +2,17 @@
 #define ENCREV2_PLUGIN_PROTOCOL_HH
 #include <string>
 
-class Protocol {
-	public:
-	static const char* put(const std::string&);
-	static const char* get(const std::string&);
+class binary_data;
+class Client;
 
-	private:
-	Protocol& operator=(const Protocol&);
-	Protocol(const Protocol&);
+class Protocol {
+public:
+	Protocol() {}
+	~Protocol() {}
+	bool parse_incoming_data(binary_data&, Client&);
+
+private:
+	bool is_header_complete() const;
 };
 
 #endif

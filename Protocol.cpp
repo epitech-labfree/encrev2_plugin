@@ -1,18 +1,14 @@
-#include "protocol.hh"
+#include "Protocol.hh"
+#include "Client.hh"
 #include <string>
 
-const char*
-Protocol::put(const std::string& stream) {
-  std::string* str = new std::string("PUT ");
-	str->append(stream);
-	str->append("\n\n");
-	return str->c_str();
+bool
+Protocol::parse_incoming_data(binary_data& buf, Client& client) {
+
 }
 
-const char*
-Protocol::get(const std::string& stream) {
-	std::string* str = new std::string("GET ");
-	str->append(stream);
-	str->append("\n\n");
-	return str->c_str();
+bool
+Protocol::is_header_complete() const {
+	
 }
+
