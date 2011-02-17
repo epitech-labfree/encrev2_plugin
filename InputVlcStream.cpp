@@ -1,4 +1,4 @@
-#include "InputStream.hh"
+#include "InputVlcStream.hh"
 
 namespace encre
 {
