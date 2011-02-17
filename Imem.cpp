@@ -5,53 +5,31 @@
 namespace encre
 {
 
-int
-Imem::getVideo(void* data, const char* cookie, int64_t* dts, int64_t* pts,
-			     unsigned* flags, size_t* len, void** buffer)
-{
-  // Vlc	*myVlc = static_cast<Vlc*>(data);
-  // if (myVlc == 0)
-  //   return -1;
-  // *buffer = new char [4096];
-  // *len = myVlc->_net->read(*buffer, 4096);
-  //use the callback of the InputStream
-  *len = 0;
-  return (*len ? 0 : -1);
-}
+  void
+  Imem::setVideoGetCallback(Stream* stream, void* callback)
+  {
+    setImem(stream, "get", callback);
+  }
 
-int
-Imem::release(void *data, const char *cookie, size_t, void *buffer)
-{
-  delete (char*)buffer;
-  buffer = NULL;
-  return 0;
-}
+  void
+  Imem::setVideoReleaseCallback(Stream* stream, void* callback)
+  {
+    setImem(stream, "release", callback);
+  }
 
-void
-Imem::setVideoGetCallback(Stream* stream, void* callback)
-{
-  std::ostringstream oss;
+  void
+  Imem::setImemDataCtx(Stream* stream, void* dataCtx)
+  {
+    setImem(stream, "data", dataCtx);
+  }
 
-  oss << ":imem-get=" << reinterpret_cast<long long int>(callback);
-  stream->setOptions(oss.str().c_str());
-}
+  void
+  Imem::setImem(Stream* stream, const std::string& which, void* data)
+  {
+    std::ostringstream oss;
 
-void
-Imem::setVideoReleaseCallback(Stream* stream, void* callback)
-{
-  std::ostringstream oss;
-
-  oss << ":imem-release=" << reinterpret_cast<long long int>(callback);
-  stream->setOptions(oss.str().c_str());
-}
-
-void
-Imem::setImemDataCtx(Stream* stream, void* dataCtx)
-{
-  std::ostringstream oss;
-
-  oss << ":imem-data=" << reinterpret_cast<long long int>(dataCtx);
-  stream->setOptions(oss.str().c_str());
-}
+    oss << ":imem-" << which << "=" << reinterpret_cast<long long int>(data);
+    stream->setOptions(oss.str().c_str());
+  }
 
 }
