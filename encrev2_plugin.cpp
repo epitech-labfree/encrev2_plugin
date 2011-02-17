@@ -69,7 +69,7 @@ bool            encrev2_plugin::onWindowAttached(FB::AttachedEvent *evt,
                                                  FB::PluginWindow *w)
 {
   //TODO
-  //m_vlc.set_window(w);
+  //m_encre.set_window(w);
   return false;
 }
 
@@ -77,14 +77,11 @@ bool            encrev2_plugin::onWindowDetached(FB::DetachedEvent *evt,
                                                  FB::PluginWindow *w)
 {
   //TODO
-  //m_vlc.set_window(0);
+  //m_encre.set_window(0);
   return false;
 }
 
-vlc::Vlc             &encrev2_plugin::vlc()
+encre::Encre<libvlc_instance_t>&		encrev2_plugin::encre()
 {
-  return m_vlc;
+  return m_encre;
 }
-
-
-

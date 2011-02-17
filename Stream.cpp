@@ -1,6 +1,6 @@
 #include "Stream.hh"
 
-namespace	vlc
+namespace	encre
 {
   Stream::~Stream()
   {
@@ -56,6 +56,6 @@ namespace	vlc
 
   Stream::Stream()
   {
-    m_mp = libvlc_media_player_new(m_vlc->m_vlc);
+    m_mp = libvlc_media_player_new(m_encre->m_vlc);
   }
 }

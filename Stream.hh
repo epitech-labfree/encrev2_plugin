@@ -6,9 +6,9 @@
 #include <vector>
 #include <vlc/vlc.h>
 
-#include "encrev2_vlc.hh"
+#include "encre.hh"
 
-namespace	vlc
+namespace	encre
 {
   class Stream : public boost::noncopyable
   {
@@ -33,7 +33,7 @@ namespace	vlc
     Stream(libvlc_media_player_t *mp);
 
   protected :
-    Vlc*				m_vlc;
+    Encre<libvlc_instance_t>*				m_encre;
     libvlc_media_player_t*		m_mp;
     libvlc_media_t*			m_media;
     e_state				m_state;

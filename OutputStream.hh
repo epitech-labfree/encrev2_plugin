@@ -5,7 +5,7 @@
 #include "Smem.hh"
 #include <boost/signals2.hpp>
 
-namespace vlc
+namespace encre
 {
 
   typedef boost::signals2::signal<unsigned int (const char *, unsigned int)> t_bsign;

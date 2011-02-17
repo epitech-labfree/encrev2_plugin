@@ -8,7 +8,7 @@
 
 #include "Stream.hh"
 
-namespace vlc
+namespace encre
 {
 
 class Imem

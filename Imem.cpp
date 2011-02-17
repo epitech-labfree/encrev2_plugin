@@ -2,7 +2,7 @@
 
 #include <sstream>
 
-namespace vlc
+namespace encre
 {
 
 int

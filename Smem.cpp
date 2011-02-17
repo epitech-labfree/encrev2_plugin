@@ -6,7 +6,7 @@
 
 #include <sstream>
 
-namespace vlc
+namespace encre
 {
 void
 Smem::lock(Stream* stream, void** pp_ret, int size)

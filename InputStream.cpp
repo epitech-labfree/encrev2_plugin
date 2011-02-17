@@ -1,6 +1,6 @@
 #include "InputStream.hh"
 
-namespace vlc
+namespace encre
 {
   InputStream::InputStream()
   {

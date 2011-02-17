@@ -3,7 +3,7 @@
 #include <boost/utility.hpp>
 #include "Stream.hh"
 
-namespace vlc
+namespace encre
 {
   class Smem : boost::noncopyable
   {
