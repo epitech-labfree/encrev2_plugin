@@ -1,4 +1,4 @@
-#include "OutputStream.hh"
+#include "OutputVlcStream.hh"
 
 namespace encre
 {
