@@ -4,13 +4,9 @@
 
 namespace encre
 {
-  t_bsign&
-  OutputStream::on_data_available()
-  {
-  }
-
   OutputStream::OutputStream() : m_videoSource(""), m_soundSource("")
   {
+    std::cout << "je suis dans l'output LOLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL" << std::endl;
     if (!getSource() || (m_videoSource == "" && m_soundSource == ""))
       throw "exception to catch in the instance of encre";
     if (m_videoSource != "" && m_soundSource == "")
@@ -19,6 +15,12 @@ namespace encre
       m_media = libvlc_media_new_location(m_encre->getData(), m_soundSource.c_str());
     else //TODO : I don't know how to treat this case
       m_media = libvlc_media_new_location(m_encre->getData(), m_videoSource.c_str());
+    stream();
+  }
+
+  t_bsign&
+  OutputStream::on_data_available()
+  {
   }
 
   bool

@@ -11,6 +11,7 @@
 
 #include "encrev2_pluginAPI.h"
 #include "encrev2_plugin.h"
+#include "encre.hh"
 
 encrev2_pluginAPI::encrev2_pluginAPI(FB::BrowserHostPtr host, encrev2_plugin &plugin)
   : m_host(host), m_plugin(plugin)
@@ -62,14 +63,12 @@ bool            encrev2_pluginAPI::start_plugin()
 
 bool            encrev2_pluginAPI::stream()
 {
-	//return m_plugin.encre().getStream()->stream();
-	return (false);
+	return m_plugin.encre().getStream(encre::STREAM);
 }
 
 bool            encrev2_pluginAPI::play(const std::string& str)
 {
-	//return m_plugin.encre().getStream()->play(str);
-	return (false);
+	return m_plugin.encre().getStream(encre::DISPLAY);
 }
 
 bool		encrev2_pluginAPI::stop()

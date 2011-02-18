@@ -13,6 +13,7 @@ namespace	encre
   class Stream : public boost::noncopyable
   {
   public:
+
     enum e_state
       {
         ACTIVE,				// not configurable anymore

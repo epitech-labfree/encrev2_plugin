@@ -1,4 +1,7 @@
 #include "encre.hh"
+#include "VlcStream.hh"
+#include "OutputVlcStream.hh"
+#include "InputVlcStream.hh"
 
 #include <iostream>
 
@@ -43,11 +46,34 @@ namespace encre
   }
 
   template <typename T>
-  Stream*	Encre<T>::getStream() const
+  Stream*	Encre<T>::getStream(e_action todo)
   {
     return m_stream;
   }
-  template Stream*	Encre<libvlc_instance_t>::getStream() const;
+  template <>
+  Stream*	Encre<libvlc_instance_t>::getStream(e_action todo)
+  {
+    if (todo != NOTHING)
+      {
+	if (m_stream)
+	  ;
+	switch (todo)
+	  {
+	  case STREAM :
+	    std::cout << STREAM << "   stream=" << todo << std::endl;
+	    m_stream = new OutputStream;
+	    std::cout << STREAM << "   stream=" << todo << std::endl;
+	    break;
+	  case DISPLAY :
+	    m_stream = new InputStream();
+	    break;
+	  default :
+	    m_stream = 0;
+	    break;
+	  }
+      }
+    return m_stream;
+  }
 
   template <typename T>
   bool			Encre<T>::start()

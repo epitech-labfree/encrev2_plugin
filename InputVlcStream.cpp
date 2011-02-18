@@ -1,10 +1,12 @@
 #include "InputVlcStream.hh"
+#include <iostream>
 
 namespace encre
 {
   InputStream::InputStream()
   {
-    m_media = libvlc_media_new_location(m_encre->getData(), "imem://width=400:height=400:fps=30:cookie=0:codec=H264:cat=4:caching=0");
+    std::cout << "je suis dans l'output LOLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL" << std::endl;
+    //m_media = libvlc_media_new_location(m_encre->getData(), "imem://width=400:height=400:fps=30:cookie=0:codec=H264:cat=4:caching=0");
     setOptions(":demux=ts");
     setOptions(":text-renderer dummy");
     displayData();

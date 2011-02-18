@@ -10,9 +10,17 @@ namespace encre
 {
   class	Stream;
 
+  enum e_action
+    {
+      NOTHING,
+      STREAM,
+      DISPLAY
+    };
+
   template <typename T>
   class	Encre : public boost::noncopyable
   {
+
   private:
     T*						m_data;
     Stream*					m_stream;
@@ -24,7 +32,7 @@ namespace encre
     Encre(const std::vector<std::string>&	vlcOpts);
 
     bool					start();
-    Stream*					getStream() const;
+    Stream*					getStream(e_action=NOTHING);
     T*						getData() const;
   };
 }
