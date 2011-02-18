@@ -13,13 +13,22 @@ namespace encre
   class	OutputStream : public VlcStream
   {
   private :
-    Smem		m_imem;
+    Smem		m_smem;
     t_bsign		m_signal;
+    std::string		m_videoSource;
+    std::string		m_soundSource;
+
   public :
-    t_bsign&		on_data_available();
     OutputStream();
+
+    t_bsign&		on_data_available();
+
     void		lock(Stream* stream, void** pp_ret, int size);
     void		unlock(Stream* stream, void* buffer, int size, long dts);
+    bool		getSource();
+    void		setSource(const std::string&, const std::string&);
+    bool		stream();
+
   };
 }
 

@@ -40,17 +40,19 @@ namespace	encre
       {
 	libvlc_media_player_stop(m_mp);
 	m_mp = 0;
+	libvlc_media_release(m_media);
+	m_media = 0;
       }
     return (true);
   }
 
-  VlcStream::VlcStream(libvlc_media_player_t* mp)
+  VlcStream::VlcStream(libvlc_media_player_t* mp) : m_media(0)
   {
     m_mp = mp;
   }
 
-  VlcStream::VlcStream()
+  VlcStream::VlcStream() : m_media(0)
   {
-    m_mp = libvlc_media_player_new(m_encre->m_vlc);
+    m_mp = libvlc_media_player_new(m_encre->getData());
   }
 }

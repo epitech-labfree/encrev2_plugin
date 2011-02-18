@@ -14,7 +14,7 @@ namespace encre
   class	Encre : public boost::noncopyable
   {
   private:
-    T*						m_vlc;
+    T*						m_data;
     Stream*					m_stream;
 
     static const char*	DefaultArgs[];
@@ -25,8 +25,7 @@ namespace encre
 
     bool					start();
     Stream*					getStream() const;
-    friend					class Stream;
-    friend					class VlcStream;
+    T*						getData() const;
   };
 }
 
