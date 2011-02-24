@@ -1,15 +1,11 @@
+#include <Network.hh>
+#include <vector>
 class Protocol;
-class Network;
 
 # include <boost/signals2.hpp>
 
 #ifndef ENCREV2_PLUGIN_CLIENT_HH
 # define ENCREV2_PLUGIN_CLIENT_HH
-
-struct binary_data {
-	char* data;
-	size_t size;
-};
 
 class Client {
 public:
@@ -22,23 +18,36 @@ public:
 		RECEIVING
 	};
 
-	Client() : m_network(0), m_protocol(new Protocol()),
-		m_state(NOT_CONNECTED) {}
-	~Client() {
+	Client(const std::string& host, uint16_t port)
+		: m_network(new Network<Client>(host, port)),
+		m_protocol(new Protocol()), m_state(NOT_CONNECTED), m_buff(0)
+	{
+	}
+
+	~Client()
+	{
 		if (m_network != 0)
 			delete m_network;
 		if (m_protocol != 0)
 			delete m_protocol;
+		if (m_buff != 0)
+			delete m_buff;
 	}
-	state& get_state();
-	boost::signals2::signal<void (char**, size_t*)>& get_sig();
-	void control(char**, size_t*);
+	inline state& get_state();
+	
+	inline void send_data(char*, size_t) const;
+	inline void receive_data(std::vector<unsigned char>*);
+	inline bool is_data_received() const;
+	void	    get_data(char**, size_t*);
+
+protected:
+	Client();
 
 private:
-	Network*	m_network;
-	Protocol*	m_protocol;
-	state		m_state;
-	boost::signals2::signal<void (char**, size_t*)>	m_sig;
+	Network<Client>*	m_network;
+	Protocol*		m_protocol;
+	state			m_state;
+	std::vector<unsigned char>* m_buff;
 };
 
 #endif
