@@ -33,11 +33,30 @@ public:
 		if (m_buff != 0)
 			delete m_buff;
 	}
-	inline state& get_state();
+
+	Client::state&
+	get_state() {
+		return m_state;
+	}
 	
-	inline void send_data(char*, size_t) const;
-	inline void receive_data(std::vector<unsigned char>*);
-	inline bool is_data_received() const;
+	void
+	send_data(char* buf, size_t size) const {
+		m_network->write(std::string(buf, size));
+	}
+	
+	void
+	receive_data(std::vector<unsigned char>* buff) {
+		if (m_buff != 0)
+			std::cerr << "Client::receive_data: Memory Leak" << std::endl;
+		m_buff = new std::vector<unsigned char>(*buff);
+		delete buff;
+	}
+	
+	bool
+	is_data_received() const {
+		return m_buff != 0;
+	}
+	
 	void	    get_data(char**, size_t*);
 
 protected:
