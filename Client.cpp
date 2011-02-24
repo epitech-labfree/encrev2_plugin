@@ -2,7 +2,6 @@
 #include <vector>
 #include <boost/signals2.hpp>
 #include "Protocol.hh"
-#include "Network.hh"
 #include "Client.hh"
 
 inline Client::state&
