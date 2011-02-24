@@ -19,8 +19,8 @@
 	<!-- p.runtimeOption = ":sout-x264-tune=zerolatency"; -->
 	<!-- p.runtimeOption = ":sout-x264-preset=veryfast"; -->
     	<!-- p.initStream("toto"); -->
-	p.stream();
 	p.setOptions = ":sout=#transcode{vcodec=h264,vb=800,scale=1,acodec=mp4a,ab=128,channels=2,samplerate=44100}:smem{mux=ts}:sout=#duplicate{dst=display}";
+	p.stream();
     }
 
     function  start_plugin()

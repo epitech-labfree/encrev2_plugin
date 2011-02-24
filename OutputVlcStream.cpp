@@ -60,11 +60,9 @@ namespace encre
   {
     std::cout << "i'm hereeeeeeeeee" << std::endl;
     //it's here where we can send the data of the stream
-    // if (stream && stream->_net->isConnected())
-    //   {
-    //     vlc->_net->write(buffer, size);
+    // XXX: Check if size > UINT_MAX //osef
+    stream->m_client->send_data((char*)buffer, size);
     delete (char*)buffer;
-    //   }
   }
 
   bool

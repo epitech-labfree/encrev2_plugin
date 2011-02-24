@@ -30,7 +30,7 @@ Client::is_data_received() const {
 void
 Client::get_data(char** data, size_t* size) {
  	for (unsigned int i = 0; i < m_buff->size(); ++i) {
-		*data[i] = m_buff->at(i);
+	  *data[i] = m_buff->at(i);
 	}
 	*size = m_buff->size();
 	delete m_buff;

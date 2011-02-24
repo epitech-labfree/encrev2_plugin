@@ -15,17 +15,19 @@ namespace encre
   }
 
   int
-  InputVlcStream::getVideo(void* data, const char* cookie, int64_t* dts, int64_t* pts,
-		 unsigned* flags, size_t* len, void** buffer)
+  InputVlcStream::getVideo(void* data, const char* cookie, int64_t* dts, int64_t* pts, unsigned* flags, size_t* len, void** buffer)
   {
-    // Vlc	*myVlc = static_cast<Vlc*>(data);
-    // if (myVlc == 0)
-    //   return -1;
-    // *buffer = new char [4096];
-    // *len = myVlc->_net->read(*buffer, 4096);
-    //use the callback of the InputVlcStream
-    std::cout << "lol" << std::endl;
+    InputVlcStream*	myInput = static_cast<InputVlcStream*>(data);
+
     *len = 0;
+    if (myInput == 0)
+      return -1;
+    if (myInput->m_client->is_data_received())
+      {
+	*len = 4096;
+	*buffer = new char [*len];
+	myInput->m_client->get_data((char**)buffer, len);
+      }
     return (*len ? 0 : -1);
   }
 
