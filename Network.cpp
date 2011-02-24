@@ -81,7 +81,7 @@ Network<Receiver>::read_handler(const boost::system::error_code& error,
 		if (m_receiver)
 			m_receiver->receive_data(m_buff);
 		else {
-			std::err << "No one to transmit data." << std::endl;
+			std::cerr << "No one to transmit data." << std::endl;
 			delete m_buff;
 		}
 	}
