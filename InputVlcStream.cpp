@@ -3,11 +3,9 @@
 
 namespace encre
 {
-  InputVlcStream::InputVlcStream(Encre<libvlc_instance_t>* encre) : VlcStream(encre)
+  InputVlcStream::InputVlcStream(Encre<libvlc_instance_t>* encre) : VlcStream(encre), m_window(0)
   {
-    m_media = libvlc_media_new_location(m_encre->getData(), "imem://width=400:height=400:fps=30:cookie=0:codec=H264:cat=4:caching=0");
-    setOptions(":demux=ts");
-    setOptions(":text-renderer dummy");
+    m_media = libvlc_media_new_location(m_encre->getData(), "imem://width=400:height=400:fps=30:cookie=0:codec=H264:cat=4:caching=0:demux=ts:text-renderer dummy");
     displayData();
   }
 
@@ -17,22 +15,26 @@ namespace encre
   }
 
   int
-  InputVlcStream::getVideo(void* data, const char* cookie, int64_t* dts, int64_t* pts,
-		 unsigned* flags, size_t* len, void** buffer)
+  InputVlcStream::getVideo(void* data, const char* cookie, int64_t* dts, int64_t* pts, unsigned* flags, size_t* len, void** buffer)
   {
-    // Vlc	*myVlc = static_cast<Vlc*>(data);
-    // if (myVlc == 0)
-    //   return -1;
-    // *buffer = new char [4096];
-    // *len = myVlc->_net->read(*buffer, 4096);
-    //use the callback of the InputVlcStream
+    InputVlcStream*	myInput = static_cast<InputVlcStream*>(data);
+
     *len = 0;
+    if (myInput == 0)
+      return -1;
+    if (myInput->m_client->is_data_received())
+      {
+	*len = 4096;
+	*buffer = new char [*len];
+	myInput->m_client->get_data((char**)buffer, len);
+      }
     return (*len ? 0 : -1);
   }
 
   int
   InputVlcStream::release(void *data, const char *cookie, size_t, void *buffer)
   {
+    std::cout << "relol" << std::endl;
     delete (char*)buffer;
     buffer = NULL;
     return 0;

@@ -34,10 +34,10 @@ namespace	encre
 
     Stream(Encre<libvlc_instance_t>*);
 
+    Client*				m_client;
   protected :
     Encre<libvlc_instance_t>*		m_encre;
     e_state				m_state;
-    Client*				m_client;
   };
 
 }

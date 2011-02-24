@@ -13,5 +13,6 @@ namespace	encre
 
   Stream::Stream(Encre<libvlc_instance_t>* lol) : m_encre(lol), m_state(INACTIVE), m_client(new Client("localhost", 4242))
   {
+    //client = new Client("localhost", 4242);
   }
 }
