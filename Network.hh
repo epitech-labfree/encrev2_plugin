@@ -7,6 +7,7 @@
 # include <boost/signals2.hpp>
 using boost::asio::ip::tcp;
 
+template<class Receiver>
 class Network : boost::noncopyable {
 public:
 	enum state {
@@ -20,19 +21,34 @@ public:
 	~Network() {
 		if (m_socket != 0)
 			delete m_socket;
+		if (m_buff != 0)
+			delete m_buff;
 	}
 	
-	size_t		write(void*, size_t);
-	size_t		write(const std::string&);
-	size_t		read(void*, size_t);
-	state&		get_state();
+	void		write(void*, size_t);
+	void		write(const std::string&);
+	void		read(size_t);
+	
+	state&	get_state() {
+		return m_state;
+	}
+	
+	void	set_receiver(Receiver* r) {
+		m_receiver = r;
+	}
 
 protected:
 	Network();
+	void	read_handler(const boost::system::error_code&,
+				size_t);
+	void	write_handler(const boost::system::error_code&,
+				size_t);
 
 private:
 	state		m_state;
 	tcp::socket*	m_socket;
+	std::vector<unsigned char>*	m_buff;
+	Receiver*	m_receiver;
 };
 
 #endif
