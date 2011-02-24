@@ -7,6 +7,13 @@
 # include <boost/signals2.hpp>
 using boost::asio::ip::tcp;
 
+/*
+ * Receiver concept:
+ * receive_data(std::vector<unsigned char>*)
+ * 
+ *
+ */
+
 template<class Receiver>
 class Network : boost::noncopyable {
 public:
