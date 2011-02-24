@@ -10,26 +10,28 @@ namespace encre
 {
   class	Stream;
 
+  enum e_action
+    {
+      NOTHING,
+      STREAM,
+      DISPLAY
+    };
+
   template <typename T>
-  class	Encre : public boost::noncopyable
+  class	Encre
   {
   private:
-    T*						m_vlc;
+    T*						m_data;
     Stream*					m_stream;
-
-    static const char*	DefaultArgs[];
 
   public :
     Encre();
     Encre(const std::vector<std::string>&	vlcOpts);
 
     bool					start();
-    Stream*					getStream() const;
-    friend					class Stream;
-    friend					class VlcStream;
+    T*						getData();
+    Stream*					getStream(e_action=NOTHING);
   };
 }
-
-#include "Stream.hh"
 
 #endif // _ENCRE_H

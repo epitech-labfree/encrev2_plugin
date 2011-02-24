@@ -81,7 +81,7 @@ bool            encrev2_plugin::onWindowDetached(FB::DetachedEvent *evt,
   return false;
 }
 
-encre::Encre<libvlc_instance_t>&		encrev2_plugin::encre()
+encre::Encre<libvlc_instance_t>*		encrev2_plugin::encre()
 {
-  return m_encre;
+  return &m_encre;
 }
