@@ -30,7 +30,7 @@ namespace	encre
     virtual bool			play() = 0;
     virtual bool			stop() = 0;
 
-    Stream();
+    Stream(Encre<libvlc_instance_t>*);
 
   protected :
     Encre<libvlc_instance_t>*		m_encre;

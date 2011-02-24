@@ -10,7 +10,7 @@ namespace encre
 {
   typedef boost::signals2::signal<unsigned int (const char *, unsigned int)> t_bsign;
 
-  class	InputStream : public VlcStream
+  class	InputVlcStream : public VlcStream
   {
   private :
     Imem		m_imem;
@@ -18,7 +18,7 @@ namespace encre
     FB::PluginWindow*	m_window;
 
   public :
-    InputStream();
+    InputVlcStream(Encre<libvlc_instance_t>*);
     t_bsign&		on_data_needed();
     int			getVideo(void* data, const char* cookie, int64_t* dts, int64_t* pts, unsigned* flags, size_t* len, void** buffer);
     int			release(void *data, const char *cookie, size_t, void *buffer);

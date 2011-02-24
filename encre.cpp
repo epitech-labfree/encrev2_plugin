@@ -5,38 +5,37 @@
 
 #include <iostream>
 
-template <typename T>
-const char*	encre::Encre<T>::DefaultArgs[] =
-  {
-    "-I",
-    "--ignore-config",
-    "dummy",
-    "-vv"
-  };
+static const char * vlc_args[] = {
+  "-I", "dummy", /* Don't use any interface */
+  "--ignore-config", /* Don't use VLC's config */
+  "-vv"
+};
 
 namespace encre
 {
   template <typename T>
   Encre<T>::Encre() : m_data(0), m_stream(0)
   {
-    std::clog << "Unknown ype" << std::endl;
+    std::clog << "Unknown type" << std::endl;
   }
 
-  template<>
+  template <>
   Encre<libvlc_instance_t>::Encre() : m_data(0), m_stream(0)
   {
-    m_data = libvlc_new(sizeof(DefaultArgs) / sizeof(*DefaultArgs), DefaultArgs);
+    std::cout << "Encre Initialisation:" << (unsigned int)this << std::endl;
+    m_data = libvlc_new(sizeof(vlc_args) / sizeof(vlc_args[0]), vlc_args);
   }
 
   template <typename T>
-  Encre<T>::Encre(const std::vector<std::string>& vlcOpts) :m_data(0), m_stream(0)
+  Encre<T>::Encre(const std::vector<std::string>& vlcOpts) : m_data(0), m_stream(0)
   {
     std::clog << "Unknown type" << std::endl;
   }
 
   template <>
-  Encre<libvlc_instance_t>::Encre(const std::vector<std::string>& vlcOpts) :m_data(0), m_stream(0)
+  Encre<libvlc_instance_t>::Encre(const std::vector<std::string>& vlcOpts) : m_data(0), m_stream(0)
   {
+    std::cout << "Encre Initialisation2:" << (unsigned int)this << std::endl;
     const char*	vlcArgs[vlcOpts.size()];
     for (unsigned int i=0; i < vlcOpts.size(); ++i)
       {
@@ -50,22 +49,24 @@ namespace encre
   {
     return m_stream;
   }
+
   template <>
   Stream*	Encre<libvlc_instance_t>::getStream(e_action todo)
   {
     if (todo != NOTHING)
       {
 	if (m_stream)
-	  ;
+	  {
+	    m_stream = 0;
+	    delete m_stream;
+	  }
 	switch (todo)
 	  {
 	  case STREAM :
-	    std::cout << STREAM << "   stream=" << todo << std::endl;
-	    m_stream = new OutputStream;
-	    std::cout << STREAM << "   stream=" << todo << std::endl;
+	    m_stream = new OutputVlcStream(this);
 	    break;
 	  case DISPLAY :
-	    m_stream = new InputStream();
+	    m_stream = new InputVlcStream(this);
 	    break;
 	  default :
 	    m_stream = 0;
@@ -84,20 +85,19 @@ namespace encre
   template <>
   bool			Encre<libvlc_instance_t>::start()
   {
-    std::cout << "here we initilise the network, return depend on it" << std::endl;
+    std::cout << "here we initilise the network, return depend of it" << std::endl;
     return true;
   }
 
   template <typename T>
-  T*			Encre<T>::getData() const
+  T*			Encre<T>::getData()
   {
     return (m_data);
   }
 
   template <>
-  libvlc_instance_t*	Encre<libvlc_instance_t>::getData() const
+  libvlc_instance_t*	Encre<libvlc_instance_t>::getData()
   {
     return (m_data);
   }
-
 }

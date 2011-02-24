@@ -14,7 +14,15 @@ namespace	encre
 
     for (; it != ite; ++it)
       {
-	libvlc_media_add_option_flag(m_media, (*it).c_str(), libvlc_media_option_trusted);
+	if (m_state != Stream::ACTIVE)
+	  {
+	    if (m_media)
+	      libvlc_media_add_option_flag(m_media, (*it).c_str(), libvlc_media_option_trusted);
+	    else
+	      return (false);
+	  }
+	else
+	  opt += (*it);
       }
     return (true);
   }
@@ -23,10 +31,17 @@ namespace	encre
   {
     if (m_state != Stream::ACTIVE)
       {
-	libvlc_media_add_option_flag(m_media, opts.c_str(), libvlc_media_option_trusted);
-	return (true);
+	if (m_media)
+	  {
+	    libvlc_media_add_option_flag(m_media, opts.c_str(), libvlc_media_option_trusted);
+	    return (true);
+	  }
+	else
+	  return (false);
       }
-    return (false);
+    else
+      opt += opts;
+    return (true);
   }
 
   bool		VlcStream::play()
@@ -46,13 +61,12 @@ namespace	encre
     return (true);
   }
 
-  VlcStream::VlcStream(libvlc_media_player_t* mp) : m_media(0)
+  VlcStream::VlcStream(Encre<libvlc_instance_t>* encre, libvlc_media_player_t* mp) : Stream(encre), m_media(0)
   {
     m_mp = mp;
   }
 
-  VlcStream::VlcStream() : m_media(0)
+  VlcStream::VlcStream(Encre<libvlc_instance_t>* encre) : Stream(encre), m_media(0)
   {
-    m_mp = libvlc_media_player_new(m_encre->getData());
   }
 }

@@ -18,25 +18,20 @@ namespace encre
     };
 
   template <typename T>
-  class	Encre : public boost::noncopyable
+  class	Encre
   {
-
   private:
     T*						m_data;
     Stream*					m_stream;
-
-    static const char*	DefaultArgs[];
 
   public :
     Encre();
     Encre(const std::vector<std::string>&	vlcOpts);
 
     bool					start();
+    T*						getData();
     Stream*					getStream(e_action=NOTHING);
-    T*						getData() const;
   };
 }
-
-#include "Stream.hh"
 
 #endif // _ENCRE_H

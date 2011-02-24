@@ -21,12 +21,13 @@ namespace	encre
     virtual bool			play();
     virtual bool			stop();
 
-    VlcStream();
-    VlcStream(libvlc_media_player_t *mp);
+    VlcStream(Encre<libvlc_instance_t>*);
+    VlcStream(Encre<libvlc_instance_t>*, libvlc_media_player_t *mp);
 
   protected :
     libvlc_media_player_t*		m_mp;
     libvlc_media_t*			m_media;
+    std::string				opt;
   };
 
 }

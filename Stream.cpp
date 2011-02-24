@@ -11,7 +11,7 @@ namespace	encre
     return (m_state);
   }
 
-  Stream::Stream() : m_state(INACTIVE)
+  Stream::Stream(Encre<libvlc_instance_t>* lol) : m_encre(lol), m_state(INACTIVE)
   {
   }
 }
