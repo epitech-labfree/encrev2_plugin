@@ -7,7 +7,8 @@
 #include <vlc/vlc.h>
 
 #include "encre.hh"
-//#include "Client.hh"
+#include "Network.hpp"
+#include "Client.hh"
 
 namespace	encre
 {
@@ -36,7 +37,7 @@ namespace	encre
   protected :
     Encre<libvlc_instance_t>*		m_encre;
     e_state				m_state;
-    //Client*				m_client;
+    Client*				m_client;
   };
 
 }

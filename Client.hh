@@ -1,6 +1,6 @@
-#include <Network.hh>
+#include <Network.hpp>
+#include <Protocol.hh>
 #include <vector>
-class Protocol;
 
 # include <boost/signals2.hpp>
 
