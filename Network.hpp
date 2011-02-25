@@ -68,7 +68,7 @@ public:
 		if (m_state != CONNECTED)
 			return;
 
-		async_write(*m_socket, buffer(buff.c_str(), buff.size()),
+		async_write(*m_socket, buffer(buff),
 				boost::bind(&Network::write_handler, this,
 					placeholders::error,
 					placeholders::bytes_transferred));
