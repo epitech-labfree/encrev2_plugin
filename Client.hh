@@ -26,12 +26,12 @@ public:
 
 	~Client()
 	{
-		if (m_network != 0)
-			delete m_network;
-		if (m_protocol != 0)
-			delete m_protocol;
-		if (m_buff != 0)
-			delete m_buff;
+		delete m_network;
+		delete m_protocol;
+		delete m_buff;
+		m_network == 0
+		m_protocol = 0;
+		m_buff = 0;
 	}
 
 	Client::state&
