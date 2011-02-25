@@ -81,7 +81,11 @@ bool            encrev2_pluginAPI::setOptions(const std::string& str, int todo)
 
 bool            encrev2_pluginAPI::play(const std::string& str)
 {
-	return m_plugin.encre()->getStream(encre::DISPLAY);
+	encre::Stream* streamer = m_plugin.encre()->getStream(encre::DISPLAY);
+	if (streamer != 0)
+	  return streamer->start();
+	else
+	  return false;
 }
 
 bool		encrev2_pluginAPI::stop()

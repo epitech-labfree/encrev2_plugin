@@ -8,7 +8,7 @@
 
   <script language=JavaScript>
     var streaming = 1;
-    var get = 2;
+    var getting = 2;
     function get_publish()
     {
 	return document.getElementById('publish');
@@ -27,8 +27,8 @@
     function get()
     {
 	var p = get_publish();
-	p.setOptions(":demux=ts");
-	p.setOptions(":text-renderer dummy");
+	p.setOptions(":demux=ts", getting);
+	p.setOptions(":text-renderer dummy", getting);
 	p.play('toto');
     }
 

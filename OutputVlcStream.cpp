@@ -39,11 +39,8 @@ namespace encre
 	std::clog << "libvlc_media_player_new: failed to create the media player" << std::endl;
 	return false;
       }
-    std::cout << "aie aie aie" << std::endl;
-
     libvlc_media_player_set_media(m_mp, m_media);
     setOptions("");
-    std::cout << "aie aie aie" << std::endl;
     VlcSystemStrategy::set_window(m_mp, 0);
     play();
     return true;
@@ -59,7 +56,6 @@ namespace encre
   void
   OutputVlcStream::unlock(Stream* stream, void* buffer, int size, long dts)
   {
-    std::cout << "i'm hereeeeeeeeee:" << size << std::endl;
     //it's here where we can send the data of the stream
     // XXX: Check if size > UINT_MAX //osef
     stream->m_client->send_data((char*)buffer, size);

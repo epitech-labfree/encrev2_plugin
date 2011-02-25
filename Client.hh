@@ -52,6 +52,7 @@ public:
 	control() {
 			m_network->write(std::string("GET toto\n\n", 10)); //XXX: CRAP
 			m_state = RECEIVING;
+			m_network->read(4096);
 	}
 	
 	void
@@ -62,7 +63,6 @@ public:
 			goto write;
 		}
 		else if (m_state == PUBLISHING) {
-			std::cout << "Write !" << std::endl;
 			goto write;
 		}
 		else {
