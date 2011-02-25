@@ -70,7 +70,6 @@ public:
 
 		if (m_state != CONNECTED)
 			return;
-		std::cout << "Network::write" << std::endl;
 		async_write(*m_socket, buffer(buff),
 				boost::bind(&Network::write_handler, this,
 					placeholders::error,
@@ -79,13 +78,13 @@ public:
 
 	void read(size_t size) {
 		using namespace boost::asio;
-		std::cout << "Network::read" << std::endl;
 
 		if (m_state != CONNECTED)
 			return ;
 		if (m_buff != 0)
 			std::cerr << "m_buff already assigned. Check that !" << std::endl;
 
+		std::cout << "Network::read" << std::endl;
 		m_buff = new std::vector<unsigned char>(size);
 		async_read(*m_socket, buffer(*m_buff, size), transfer_all(),
 				boost::bind(&Network::read_handler, this,
