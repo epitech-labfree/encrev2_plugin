@@ -27,6 +27,8 @@
     function get()
     {
 	var p = get_publish();
+	p.setOptions(":demux=ts");
+	p.setOptions(":text-renderer dummy");
 	p.play('toto');
     }
 

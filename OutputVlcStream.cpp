@@ -59,7 +59,7 @@ namespace encre
   void
   OutputVlcStream::unlock(Stream* stream, void* buffer, int size, long dts)
   {
-    std::cout << "i'm hereeeeeeeeee" << std::endl;
+    std::cout << "i'm hereeeeeeeeee:" << size << std::endl;
     //it's here where we can send the data of the stream
     // XXX: Check if size > UINT_MAX //osef
     stream->m_client->send_data((char*)buffer, size);
@@ -71,7 +71,8 @@ namespace encre
   {
     if (!VlcSystemStrategy::get_webcam_mrl(m_videoSource))
       return (false);
-    // TODO : sound
+    if (!VlcSystemStrategy::get_sound_mrl(m_soundSource))
+      return (false);
     return (true);
   }
 

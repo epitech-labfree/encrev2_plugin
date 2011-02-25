@@ -20,8 +20,8 @@ namespace encre
   public :
     InputVlcStream(Encre<libvlc_instance_t>*);
     t_bsign&		on_data_needed();
-    int			getVideo(void* data, const char* cookie, int64_t* dts, int64_t* pts, unsigned* flags, size_t* len, void** buffer);
-    int			release(void *data, const char *cookie, size_t, void *buffer);
+    static int		getVideo(void* data, const char* cookie, int64_t* dts, int64_t* pts, unsigned* flags, size_t* len, void** buffer);
+    static int		release(void *data, const char *cookie, size_t, void *buffer);
     bool		start();
   };
 }
