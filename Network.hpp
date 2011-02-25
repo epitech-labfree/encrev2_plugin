@@ -51,23 +51,6 @@ public:
 		m_socket = 0;
 	}
 
-	//struct handler {
-	//	void
-	//	operator()(const boost::system::error_code& ec,
-	//			std::size_t transferred)
-	//	{
-	//		using namespace boost::asio;
-	//		if (!ec)
-	//		{
-	//			std::cout << "handle_write: " << transferred << std::endl;
-	//		}
-	//		else
-	//		{
-	//			std::cout << "Error in read_handler: " << ec.message() << std::endl;
-	//		}
-	//	}
-	//};
-
 	void write(void* buff, size_t size) { //XXX: HARMFUL
 		using namespace boost::asio;
 
@@ -158,10 +141,10 @@ protected:
 	}
 
 private:
-	state		m_state;
-	tcp::socket*	m_socket;
+	state				m_state;
+	tcp::socket*			m_socket;
 	std::vector<unsigned char>*	m_buff;
-	Receiver*	m_receiver;
+	Receiver*			m_receiver;
 	boost::asio::io_service*	m_io_service;
 };
 
