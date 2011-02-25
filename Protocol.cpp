@@ -12,3 +12,7 @@ Protocol::is_header_complete() const {
 	
 }
 
+bool
+Protocol::foo() const {
+	return true;
+}

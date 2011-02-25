@@ -10,7 +10,7 @@ public:
 	Protocol() {}
 	~Protocol() {}
 	bool parse_incoming_data(binary_data&, Client&);
-
+	bool foo() const;
 private:
 	bool is_header_complete() const;
 };

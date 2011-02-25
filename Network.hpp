@@ -112,7 +112,7 @@ protected:
 			else {
 				std::cerr << "No one to transmit data." << std::endl;
 				delete m_buff;
-				m_buff = 0;Y
+				m_buff = 0;
 			}
 		}
 		else

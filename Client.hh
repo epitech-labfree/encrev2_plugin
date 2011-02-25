@@ -18,10 +18,19 @@ public:
 		RECEIVING
 	};
 
-	Client(const std::string& host, uint16_t port)
+	Client(const std::string& host, const std::string& port)
 		: m_network(new Network<Client>(host, port)),
 		m_protocol(new Protocol()), m_state(NOT_CONNECTED), m_buff(0)
 	{
+		switch (m_network->get_state()) {
+			case Network<Client>::CONNECTED:
+				m_state = CONNECTED;
+				break;
+			case Network<Client>::NOT_CONNECTED: // We probably have to handle it differently in the futur
+			case Network<Client>::ERROR:
+			default:
+				m_state = ERROR;
+		}
 	}
 
 	~Client()
@@ -29,7 +38,7 @@ public:
 		delete m_network;
 		delete m_protocol;
 		delete m_buff;
-		m_network == 0
+		m_network = 0;
 		m_protocol = 0;
 		m_buff = 0;
 	}
@@ -40,7 +49,22 @@ public:
 	}
 	
 	void
-	send_data(char* buf, size_t size) const {
+	send_data(char* buf, size_t size) {
+		if (m_state == CONNECTED && m_protocol->foo()) {
+			m_state = PUBLISHING;
+			std::cout << "PUT toto" << std::endl;
+			m_network->write(std::string("PUT toto\n\n", 10)); //XXX: CRAP
+			goto write;
+		}
+		else if (m_state == PUBLISHING) {
+			std::cout << "Write !" << std::endl;
+			goto write;
+		}
+		else {
+			std::cout << "Client::send_data error" << std::endl;
+			return ;
+		}
+	write:
 		m_network->write(std::string(buf, size));
 	}
 	
