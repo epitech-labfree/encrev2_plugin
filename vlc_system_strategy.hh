@@ -39,6 +39,7 @@ public:
   //                                  libvlc_exception_t *ex);
   static void           set_window(libvlc_media_player_t *mp, FB::PluginWindow *);
   static bool           get_webcam_mrl(std::string &mrl);
+  static bool		get_sound_mrl(std::string &mrl);
 };
 
 #endif	    /* !VLC_SYSTEM_SPECIFIC_HH_ */

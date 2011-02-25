@@ -52,3 +52,10 @@ bool             VlcSystemStrategy::get_webcam_mrl(std::string &mrl)
   return (true);
 }
 
+bool             VlcSystemStrategy::get_sound_mrl(std::string &mrl)
+{
+  mrl = ":input-slave=alsa://plughw:0,0";
+  mrl = "";
+  return (true);
+}
+
