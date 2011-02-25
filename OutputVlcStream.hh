@@ -23,8 +23,8 @@ namespace encre
 
     t_bsign&		on_data_available();
 
-    void		lock(Stream* stream, void** pp_ret, int size);
-    void		unlock(Stream* stream, void* buffer, int size, long dts);
+    static void		lock(Stream* stream, void** pp_ret, int size);
+    static void		unlock(Stream* stream, void* buffer, int size, long dts);
     bool		getSource();
     bool		setSource(const std::string&, const std::string&);
     bool		stream();
