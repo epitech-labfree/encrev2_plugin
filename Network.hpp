@@ -104,7 +104,7 @@ public:
 			std::cerr << "m_buff already assigned. Check that !" << std::endl;
 
 		m_buff = new std::vector<unsigned char>(size);
-		async_read(*m_socket, buffer(*m_buff), transfer_all(),
+		async_read(*m_socket, buffer(*m_buff, size), transfer_all(),
 				boost::bind(&Network::read_handler, this,
 					placeholders::error,
 					placeholders::bytes_transferred));
