@@ -1,4 +1,5 @@
 #include "VlcStream.hh"
+#include <iostream>
 
 namespace	encre
 {
@@ -14,33 +15,33 @@ namespace	encre
 
     for (; it != ite; ++it)
       {
-	if (m_state != Stream::ACTIVE)
-	  {
-	    if (m_media)
-	      libvlc_media_add_option_flag(m_media, (*it).c_str(), libvlc_media_option_trusted);
-	    else
-	      return (false);
-	  }
-	else
 	  opt += (*it);
+      }
+    if (m_state != Stream::ACTIVE)
+      {
+	if (m_media)
+	  libvlc_media_add_option_flag(m_media, (*it).c_str(), libvlc_media_option_trusted);
+	else
+	  return (false);
       }
     return (true);
   }
 
   bool		VlcStream::setOptions(const std::string& opts)
   {
+    opt += opts;
     if (m_state != Stream::ACTIVE)
       {
 	if (m_media)
 	  {
-	    libvlc_media_add_option_flag(m_media, opts.c_str(), libvlc_media_option_trusted);
+	    std::cout << "opt=" << opt << std::endl;
+	    libvlc_media_add_option_flag(m_media, opt.c_str(), libvlc_media_option_trusted);
+	    opt = "";
 	    return (true);
 	  }
 	else
 	  return (false);
       }
-    else
-      opt += opts;
     return (true);
   }
 

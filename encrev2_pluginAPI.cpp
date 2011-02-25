@@ -65,13 +65,17 @@ bool            encrev2_pluginAPI::start_plugin()
 
 bool            encrev2_pluginAPI::stream()
 {
-	encre::Stream* stream = m_plugin.encre()->getStream(encre::STREAM);
-	return stream;
+	encre::Stream* streamer = m_plugin.encre()->getStream(encre::STREAM);
+	if (streamer != 0)
+	  return streamer->start();
+	else
+	  return false;
 }
 
-bool            encrev2_pluginAPI::setOptions(const std::string& str)
+bool            encrev2_pluginAPI::setOptions(const std::string& str, int todo)
 {
-	encre::Stream* stream = m_plugin.encre()->getStream();
+	encre::e_action e = (encre::e_action)todo;
+	encre::Stream* stream = m_plugin.encre()->getStream(e);
 	return stream->setOptions(str);
 }
 

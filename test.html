@@ -7,6 +7,8 @@
   <!-- <object id="receive" type="application/x-encrev2-plugin" width=320 height=240 text="Encre Video Conf">Unable to load plugin </object> -->
 
   <script language=JavaScript>
+    var streaming = 1;
+    var get = 2;
     function get_publish()
     {
 	return document.getElementById('publish');
@@ -15,12 +17,17 @@
     function stream()
     {
 	var p = get_publish();
-	<!-- p.runtimeOption = ":sout-x264-tune=zerolatency"; -->
-	<!-- p.runtimeOption = ":sout-x264-preset=veryfast"; -->
-    	<!-- p.initStream("toto"); -->
-	p.setOptions = ":sout=#transcode{vcodec=h264,vb=800,scale=1,acodec=mp4a,ab=128,channels=2,samplerate=44100}:smem{mux=ts}:sout=#duplicate{dst=display}";
-	p.setOptions = ":v4l2-caching=500";
+	p.setOptions(":sout-x264-tune=zerolatency", streaming);
+	p.setOptions(":sout-x264-preset=veryfast", streaming);
+	p.setOptions(":sout=#transcode{vcodec=h264,vb=800,scale=1,acodec=mp4a,ab=128,channels=2,samplerate=44100}:smem{mux=ts}", streaming);
+	p.setOptions(":v4l2-caching=500", streaming);
 	p.stream();
+    }
+
+    function get()
+    {
+	var p = get_publish();
+	p.play('toto');
     }
 
     function  start_plugin()
@@ -40,7 +47,7 @@
 
   <form id="button_list" style="display:none">
     <input type="button" value="Stream..." OnClick="stream()"/>
-    <input type="button" value="Play..." OnClick="get_publish().play('toto')"/>
+    <input type="button" value="Play..." OnClick="get()"/>
     <input type="button" value="Stop !" OnClick="get_publish().stop()"/>
   </form>
 

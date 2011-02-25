@@ -27,8 +27,7 @@ namespace encre
     static void		unlock(Stream* stream, void* buffer, int size, long dts);
     bool		getSource();
     bool		setSource(const std::string&, const std::string&);
-    bool		stream();
-
+    bool		start();
   };
 }
 

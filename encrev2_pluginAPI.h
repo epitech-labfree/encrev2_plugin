@@ -8,6 +8,7 @@
 #include <sstream>
 #include "JSAPIAuto.h"
 #include "BrowserHostWrapper.h"
+#include "encre.hh"
 
 #ifndef H_encrev2_pluginAPI
 #define H_encrev2_pluginAPI
@@ -32,7 +33,7 @@ class encrev2_pluginAPI : public FB::JSAPIAuto
   bool			disconnect();
   bool			stop();
   bool			start_plugin();
-  bool			setOptions(const std::string& str);
+  bool			setOptions(const std::string&, int);
 
   std::string*		get_runtime_option();
   std::string*		get_startup_option();

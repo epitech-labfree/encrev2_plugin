@@ -15,7 +15,6 @@ namespace encre
       m_media = libvlc_media_new_location(m_encre->getData(), m_soundSource.c_str());
     else //TODO : I don't know how to treat this case
       m_media = libvlc_media_new_location(m_encre->getData(), m_videoSource.c_str());
-    stream();
   }
 
   t_bsign&
@@ -24,7 +23,7 @@ namespace encre
   }
 
   bool
-  OutputVlcStream::stream()
+  OutputVlcStream::start()
   {
     if (!m_media)
       {
@@ -43,6 +42,8 @@ namespace encre
     std::cout << "aie aie aie" << std::endl;
 
     libvlc_media_player_set_media(m_mp, m_media);
+    setOptions("");
+    std::cout << "aie aie aie" << std::endl;
     VlcSystemStrategy::set_window(m_mp, 0);
     play();
     return true;
@@ -82,5 +83,4 @@ namespace encre
     if (sound != "")
       m_soundSource = sound;
   }
-
 }

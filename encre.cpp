@@ -53,7 +53,7 @@ namespace encre
   template <>
   Stream*	Encre<libvlc_instance_t>::getStream(e_action todo)
   {
-    if (todo != NOTHING)
+    if (todo != NOTHING && m_stream == 0)
       {
 	if (m_stream)
 	  {

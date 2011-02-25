@@ -12,9 +12,9 @@ namespace encre
 
   enum e_action
     {
-      NOTHING,
-      STREAM,
-      DISPLAY
+      NOTHING=0,
+      STREAM=1,
+      DISPLAY=2
     };
 
   template <typename T>

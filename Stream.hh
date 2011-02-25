@@ -31,6 +31,7 @@ namespace	encre
     virtual bool			setOptions(const std::string&) = 0;
     virtual bool			play() = 0;
     virtual bool			stop() = 0;
+    virtual bool			start() = 0;
 
     Stream(Encre<libvlc_instance_t>*);
 

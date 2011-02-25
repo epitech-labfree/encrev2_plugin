@@ -4,7 +4,6 @@
 
 namespace encre
 {
-
   void
   Imem::setVideoGetCallback(Stream* stream, void* callback)
   {
@@ -31,5 +30,4 @@ namespace encre
     oss << ":imem-" << which << "=" << reinterpret_cast<long long int>(data);
     stream->setOptions(oss.str().c_str());
   }
-
 }
