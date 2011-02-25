@@ -48,7 +48,7 @@ void            VlcSystemStrategy::set_window(libvlc_media_player_t *mp,
 
 bool             VlcSystemStrategy::get_webcam_mrl(std::string &mrl)
 {
-  mrl = "v4l2:///dev/video0:alsa://plughw:0,0";
+  mrl = "v4l2:///dev/video0";
   return (true);
 }
 
