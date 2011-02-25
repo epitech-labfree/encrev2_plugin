@@ -23,14 +23,15 @@ public:
 	};
 
 	Network(const std::string& host, const std::string& port)
-	       : m_state(NOT_CONNECTED), m_socket(0), m_buff(0), m_receiver(0)
+	       : m_state(NOT_CONNECTED), m_socket(0), m_buff(0), m_receiver(0), m_io_service(0)
 	{
 		try {
-			boost::asio::io_service io_service;
-			tcp::resolver resolver(io_service);
+			//boost::asio::io_service io_service;
+			m_io_service = new boost::asio::io_service();
+			tcp::resolver resolver(*m_io_service);
 			tcp::resolver::query query(tcp::v4(), host, port); // TODO: Ipv6
 			tcp::resolver::iterator iterator = resolver.resolve(query);
-			m_socket = new tcp::socket(io_service);
+			m_socket = new tcp::socket(*m_io_service);
 			m_socket->connect(*iterator);
 		}
 		catch (...) {
@@ -50,12 +51,31 @@ public:
 		m_socket = 0;
 	}
 
-	void write(void* buff, size_t size) {
+	//struct handler {
+	//	void
+	//	operator()(const boost::system::error_code& ec,
+	//			std::size_t transferred)
+	//	{
+	//		using namespace boost::asio;
+	//		if (!ec)
+	//		{
+	//			std::cout << "handle_write: " << transferred << std::endl;
+	//		}
+	//		else
+	//		{
+	//			std::cout << "Error in read_handler: " << ec.message() << std::endl;
+	//		}
+	//	}
+	//};
+
+	void write(void* buff, size_t size) { //XXX: HARMFUL
 		using namespace boost::asio;
 
 		if (m_state != CONNECTED)
 			return;
 
+		std::cout << size << std::endl;
+		std::cout << (char*)buff << std::endl;
 		async_write(*m_socket, buffer(buff, size),
 				boost::bind(&Network::write_handler, this,
 					placeholders::error,
@@ -141,6 +161,7 @@ private:
 	tcp::socket*	m_socket;
 	std::vector<unsigned char>*	m_buff;
 	Receiver*	m_receiver;
+	boost::asio::io_service*	m_io_service;
 };
 
 #endif

@@ -47,12 +47,17 @@ public:
 	get_state() {
 		return m_state;
 	}
+
+	void
+	control() {
+			m_network->write(std::string("GET toto\n\n", 10)); //XXX: CRAP
+			m_state = RECEIVING;
+	}
 	
 	void
 	send_data(char* buf, size_t size) {
 		if (m_state == CONNECTED && m_protocol->foo()) {
 			m_state = PUBLISHING;
-			std::cout << "PUT toto" << std::endl;
 			m_network->write(std::string("PUT toto\n\n", 10)); //XXX: CRAP
 			goto write;
 		}
