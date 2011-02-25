@@ -11,8 +11,6 @@ using boost::asio::ip::tcp;
 /*
  * Receiver concept:
  * receive_data(std::vector<unsigned char>*)
- * 
- *
  */
 
 template<class Receiver>
@@ -24,13 +22,13 @@ public:
 		NOT_CONNECTED
 	};
 
-	Network(const std::string& host, unsigned short port) :
-		m_state(NOT_CONNECTED), m_socket(0), m_buff(0), m_receiver(0)
+	Network(const std::string& host, const std::string& port)
+	       : m_state(NOT_CONNECTED), m_socket(0), m_buff(0), m_receiver(0)
 	{
 		try {
 			boost::asio::io_service io_service;
 			tcp::resolver resolver(io_service);
-			tcp::resolver::query query(tcp::v4(), host, port);
+			tcp::resolver::query query(tcp::v4(), host, port); // TODO: Ipv6
 			tcp::resolver::iterator iterator = resolver.resolve(query);
 			m_socket = new tcp::socket(io_service);
 			m_socket->connect(*iterator);
@@ -39,16 +37,17 @@ public:
 			std::cerr << "Encre::Network, Can't connect to " << host <<
 				std::endl;
 			m_state = ERROR;
+			return ;
 		}
 		m_state = CONNECTED;
 		std::clog << "Encre::Network, Connection" << std::endl;
 	}
 
 	~Network() {
-		if (m_socket != 0)
-			delete m_socket;
-		if (m_buff != 0)
-			delete m_buff;
+		delete m_socket;
+		delete m_buff;
+		m_buff = 0;
+		m_socket = 0;
 	}
 
 	void write(void* buff, size_t size) {
@@ -113,12 +112,14 @@ protected:
 			else {
 				std::cerr << "No one to transmit data." << std::endl;
 				delete m_buff;
+				m_buff = 0;Y
 			}
 		}
 		else
 		{
 			std::cout << "Error in read_handler: " << error.message() << std::endl;
 			delete m_buff;
+			m_buff = 0;
 		}
 	}
 
