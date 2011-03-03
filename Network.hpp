@@ -24,26 +24,29 @@ public:
 	};
 
 	Network(const std::string& host, const std::string& port)
-	       : m_state(NOT_CONNECTED), m_socket(0), m_buff(0), m_receiver(0), m_io_service(0), m_thread(0)
+	       : m_state(NOT_CONNECTED), m_socket(0), m_buff(0), m_receiver(0), m_io_service()
 	{
 		try {
-			//boost::asio::io_service io_service;
-			m_io_service = new boost::asio::io_service();
-			tcp::resolver resolver(*m_io_service);
+			//m_io_service = boost::asio::io_service();
+			tcp::resolver resolver(m_io_service);
 			tcp::resolver::query query(tcp::v4(), host, port); // TODO: Ipv6
 			tcp::resolver::iterator iterator = resolver.resolve(query);
-			m_socket = new tcp::socket(*m_io_service);
+			
+			m_socket = new tcp::socket(m_io_service);
 			m_socket->connect(*iterator);
+
+			//boost::asio::ip::tcp::endpoint endpoint();
+			//m_socket->async_connect(endpoint, handle_connect);
 		}
 		catch (...) {
-			std::cerr << "Encre::Network, Can't connect to " << host <<
+			std::clog << "Encre::Network, Can't connect to " << host <<
 				std::endl;
 			m_state = ERROR;
 			return ;
 		}
 
 		try {
-			m_thread = new boost::thread(boost::bind(&boost::asio::io_service::run, m_io_service));
+		      m_thread = boost::thread(boost::bind(&Network<Receiver>::run, this));
 		} catch (...) {
 			std::cerr << "Error in initialisation of boost::thread" << std::endl;
 			m_state = ERROR;
@@ -56,20 +59,16 @@ public:
 	~Network() {
 		delete m_socket;
 		delete m_buff;
-		delete m_thread;
-		delete m_io_service;
 		m_socket = 0;
 		m_buff = 0;
 	}
 
-	void write(void* buff, size_t size) { //XXX: HARMFUL
+	void write(char* buff, size_t size) {
 		using namespace boost::asio;
 
 		if (m_state != CONNECTED)
 			return;
 
-		std::cout << size << std::endl;
-		std::cout << (char*)buff << std::endl;
 		async_write(*m_socket, buffer(buff, size),
 				boost::bind(&Network::write_handler, this,
 					placeholders::error,
@@ -115,6 +114,12 @@ public:
 
 protected:
 	Network();
+	void run() {
+		std::clog << "Encre::Network Thread started" << std::endl;
+		m_io_service.run();
+		std::clog << "Encre::Network Run finnish" << std::endl;
+	}
+
 	void	read_handler(const boost::system::error_code& error,
 		size_t transferred)
 	{
@@ -155,8 +160,8 @@ private:
 	tcp::socket*			m_socket;
 	std::vector<unsigned char>*	m_buff;
 	Receiver*			m_receiver;
-	boost::asio::io_service*	m_io_service;
-	boost::thread*			m_thread;
+	boost::asio::io_service		m_io_service;
+	boost::thread			m_thread;
 };
 
 #endif
