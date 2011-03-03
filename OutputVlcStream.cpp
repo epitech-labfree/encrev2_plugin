@@ -6,15 +6,21 @@ namespace encre
 {
   OutputVlcStream::OutputVlcStream(Encre<libvlc_instance_t>* encre) : VlcStream(encre), m_videoSource(""), m_soundSource("")
   {
-    
+    std::string media;    
     if (!getSource() || (m_videoSource == "" && m_soundSource == ""))
       throw "exception to catch in the instance of encre";
     if (m_videoSource != "" && m_soundSource == "")
-      m_media = libvlc_media_new_location(m_encre->getData(), m_videoSource.c_str());
+      media = m_videoSource;
     else if (m_videoSource == "" && m_soundSource != "")
-      m_media = libvlc_media_new_location(m_encre->getData(), m_soundSource.c_str());
+      media = m_soundSource;
     else //TODO : I don't know how to treat this case
-      m_media = libvlc_media_new_location(m_encre->getData(), m_videoSource.c_str());
+      {
+	media = m_videoSource;
+	//media += ":input-slave=";
+	//media += m_soundSource;
+      }
+    m_media = libvlc_media_new_location(m_encre->getData(), media.c_str());
+    setOptions(m_soundSource);
   }
 
   t_bsign&
