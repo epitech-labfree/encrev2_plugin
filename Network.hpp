@@ -4,6 +4,7 @@
 #include <iostream>
 # include <string>
 # include <boost/asio.hpp>
+# include <boost/thread.hpp>
 # include <boost/utility.hpp>
 # include <boost/signals2.hpp>
 using boost::asio::ip::tcp;
@@ -23,7 +24,7 @@ public:
 	};
 
 	Network(const std::string& host, const std::string& port)
-	       : m_state(NOT_CONNECTED), m_socket(0), m_buff(0), m_receiver(0), m_io_service(0)
+	       : m_state(NOT_CONNECTED), m_socket(0), m_buff(0), m_receiver(0), m_io_service(0), m_thread(0)
 	{
 		try {
 			//boost::asio::io_service io_service;
@@ -40,6 +41,14 @@ public:
 			m_state = ERROR;
 			return ;
 		}
+
+		try {
+			m_thread = new boost::thread(boost::ref(boost::bind(&boost::asio::io_service::run, m_io_service)));
+		} catch (...) {
+			std::cerr << "Error in initialisation of boost::thread" << std::endl;
+			m_state = ERROR;
+		}
+
 		m_state = CONNECTED;
 		std::clog << "Encre::Network, Connection" << std::endl;
 	}
@@ -47,8 +56,10 @@ public:
 	~Network() {
 		delete m_socket;
 		delete m_buff;
-		m_buff = 0;
+		delete m_thread;
+		delete m_io_service;
 		m_socket = 0;
+		m_buff = 0;
 	}
 
 	void write(void* buff, size_t size) { //XXX: HARMFUL
@@ -145,6 +156,7 @@ private:
 	std::vector<unsigned char>*	m_buff;
 	Receiver*			m_receiver;
 	boost::asio::io_service*	m_io_service;
+	boost::thread*			m_thread;
 };
 
 #endif
