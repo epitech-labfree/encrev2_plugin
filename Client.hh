@@ -18,7 +18,7 @@ public:
 		RECEIVING
 	};
 
-	Client(const std::string& host, const std::string& port)
+	Client(const std::string& host, short int port)
 		: m_network(new Network<Client>(host, port)),
 		m_protocol(new Protocol()), m_state(NOT_CONNECTED), m_buff(0)
 	{
