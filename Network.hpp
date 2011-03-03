@@ -43,7 +43,7 @@ public:
 		}
 
 		try {
-			m_thread = new boost::thread(boost::ref(boost::bind(&boost::asio::io_service::run, m_io_service)));
+			m_thread = new boost::thread(boost::bind(&boost::asio::io_service::run, m_io_service));
 		} catch (...) {
 			std::cerr << "Error in initialisation of boost::thread" << std::endl;
 			m_state = ERROR;
