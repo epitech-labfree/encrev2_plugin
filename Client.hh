@@ -70,7 +70,7 @@ public:
 			return ;
 		}
 	write:
-		m_network->write(std::string(buf, size));
+		m_network->write(buf, size);
 	}
 	
 	void
