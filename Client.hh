@@ -67,7 +67,6 @@ public:
 	
 	void
 	send_data(char* buf, size_t size) {
-		std::clog << "DEBUG: Client::send_data: state: " << m_state << std::endl;
 		if (m_state == CONNECTED && m_protocol->foo()) { //TODO: Replace foo() by a parser
 			m_state = PUBLISHING;
 			m_network->write(std::string("PUT toto\n\n", 10)); //XXX: CRAP
