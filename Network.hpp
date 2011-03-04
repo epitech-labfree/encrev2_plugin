@@ -24,7 +24,7 @@ public:
 	};
 
 	Network(const std::string& host, short int port)
-	       : m_state(NOT_CONNECTED), m_socket(0), m_buff(0), m_receiver(0), m_io_service()
+	       : m_state(NOT_CONNECTED), m_socket(0), m_buff(0), m_receiver(0), m_io_service(), m_thread(0)
 	{
 		//m_io_service = boost::asio::io_service();
 		//tcp::resolver resolver(m_io_service);
@@ -37,7 +37,7 @@ public:
 		m_endpoint = boost::asio::ip::tcp::endpoint(boost::asio::ip::address::from_string(host), port);
 		m_socket->async_connect(m_endpoint, boost::bind(&Network::connect_handler, this,
 						boost::asio::placeholders::error));
-		m_thread = boost::thread(boost::bind(&Network<Receiver>::run, this));
+		m_thread = new boost::thread(boost::bind(&Network<Receiver>::run, this));
 		std::cout << "NOTE: Network created" << std::endl;
 	}
 
@@ -57,8 +57,8 @@ public:
 				boost::bind(&Network::write_handler, this,
 					boost::asio::placeholders::error,
 					boost::asio::placeholders::bytes_transferred));
-		size_t num = m_io_service.poll();
-		std::clog << "DEBUG: Network::write1: poll " << num << std::endl;
+		if (m_thread == 0)
+			m_thread = new boost::thread(boost::bind(&Network<Receiver>::run, this));
 	}
 
 	void write(const std::string& buff) {
@@ -70,8 +70,8 @@ public:
 				boost::bind(&Network::write_handler, this,
 					placeholders::error,
 					placeholders::bytes_transferred));
-		size_t num = m_io_service.poll();
-		std::clog << "DEBUG: Network::write2: poll " << num << std::endl;
+		if (m_thread == 0)
+			m_thread = new boost::thread(boost::bind(&Network<Receiver>::run, this));
 	}
 
 	void read(size_t size) {
@@ -82,14 +82,13 @@ public:
 		if (m_buff != 0)
 			std::clog << "ERROR: Network::read: m_buff already assigned." << std::endl;
 
-		std::clog << "NOTE: Network::read" << std::endl;
 		m_buff = new std::vector<unsigned char>(size);
 		async_read(*m_socket, buffer(*m_buff, size), transfer_all(),
 				boost::bind(&Network::read_handler, this,
 					placeholders::error,
 					placeholders::bytes_transferred));
-		size_t num = m_io_service.poll();
-		std::clog << "DEBUG: Network::read: poll " << num << std::endl;
+		if (m_thread == 0)
+			m_thread = new boost::thread(boost::bind(&Network<Receiver>::run, this));
 	}
 
 	state&	get_state()
@@ -103,15 +102,16 @@ public:
 		m_receiver = r;
 	}
 
-protected:
+private:
 	Network();
 	void run() {
 		std::clog << "NOTE: Network::run started" << std::endl;
 		boost::system::error_code ec;
-		m_io_service.run(ec);
-		std::clog << "NOTE: Network::run finished: " << ec.message() << std::endl;
+		size_t num = m_io_service.run(ec);
+		std::clog << "NOTE: Network::run finished: " << ec.message() << " . After " << num << "handler" << std::endl;
 	}
 
+protected:
 	void	connect_handler(const boost::system::error_code& error) {
 		std::clog << "DEBUG: Network::connect_handler: call" << std::endl;
 		if (!error) {
@@ -167,7 +167,7 @@ private:
 	std::vector<unsigned char>*	m_buff;
 	Receiver*			m_receiver;
 	boost::asio::io_service		m_io_service;
-	boost::thread			m_thread;
+	boost::thread*			m_thread;
 	boost::asio::ip::tcp::endpoint  m_endpoint;
 };
 
