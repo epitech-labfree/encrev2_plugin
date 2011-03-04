@@ -99,6 +99,7 @@ public:
 
 	void	set_receiver(Receiver* r)
 	{
+		std::clog << "DEBUG: Network::set_receiver" << std::endl;
 		m_receiver = r;
 	}
 

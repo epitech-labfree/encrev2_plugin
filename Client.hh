@@ -34,6 +34,7 @@ public:
 				m_state = ERROR;
 		}
 		std::clog << "NOTE: Client created" << std::endl;
+		m_network->set_receiver(this);
 	}
 
 	~Client()
