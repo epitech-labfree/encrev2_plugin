@@ -1,7 +1,7 @@
 #ifndef ENCREV2_PLUGIN_NETWORK_HH_
 # define ENCREV2_PLUGIN_NETWORK_HH_
 
-#include <iostream>
+# include <iostream>
 # include <string>
 # include <boost/asio.hpp>
 # include <boost/thread.hpp>
@@ -19,8 +19,8 @@ class Network : boost::noncopyable {
 public:
 	enum state {
 		ERROR,
-		CONNECTED,
-		NOT_CONNECTED
+		NOT_CONNECTED,
+		CONNECTED
 	};
 
 	Network(const std::string& host, short int port)
@@ -34,11 +34,11 @@ public:
 		m_socket = new tcp::socket(m_io_service);
 		//m_socket->connect(*iterator);
 
-		std::clog << "test" << std::endl;
 		m_endpoint = boost::asio::ip::tcp::endpoint(boost::asio::ip::address::from_string(host), port);
-		std::clog << "test" << std::endl;
 		m_socket->async_connect(m_endpoint, boost::bind(&Network::connect_handler, this,
 						boost::asio::placeholders::error));
+		m_thread = boost::thread(boost::bind(&Network<Receiver>::run, this));
+		std::cout << "NOTE: Network created" << std::endl;
 	}
 
 	~Network() {
@@ -46,6 +46,7 @@ public:
 		delete m_buff;
 		m_socket = 0;
 		m_buff = 0;
+		std::cout << "NOTE: Network deleted" << std::endl;
 	}
 
 	void write(char* buff, size_t size) {
@@ -56,6 +57,8 @@ public:
 				boost::bind(&Network::write_handler, this,
 					boost::asio::placeholders::error,
 					boost::asio::placeholders::bytes_transferred));
+		size_t num = m_io_service.poll();
+		std::clog << "DEBUG: Network::write1: poll " << num << std::endl;
 	}
 
 	void write(const std::string& buff) {
@@ -67,6 +70,8 @@ public:
 				boost::bind(&Network::write_handler, this,
 					placeholders::error,
 					placeholders::bytes_transferred));
+		size_t num = m_io_service.poll();
+		std::clog << "DEBUG: Network::write2: poll " << num << std::endl;
 	}
 
 	void read(size_t size) {
@@ -75,14 +80,16 @@ public:
 		if (m_state != CONNECTED)
 			return ;
 		if (m_buff != 0)
-			std::cerr << "m_buff already assigned. Check that !" << std::endl;
+			std::clog << "ERROR: Network::read: m_buff already assigned." << std::endl;
 
-		std::cout << "Network::read" << std::endl;
+		std::clog << "NOTE: Network::read" << std::endl;
 		m_buff = new std::vector<unsigned char>(size);
 		async_read(*m_socket, buffer(*m_buff, size), transfer_all(),
 				boost::bind(&Network::read_handler, this,
 					placeholders::error,
 					placeholders::bytes_transferred));
+		size_t num = m_io_service.poll();
+		std::clog << "DEBUG: Network::read: poll " << num << std::endl;
 	}
 
 	state&	get_state()
@@ -98,21 +105,23 @@ public:
 protected:
 	Network();
 	void run() {
-		std::clog << "Encre::Network Thread started" << std::endl;
+		std::clog << "NOTE: Network::run started" << std::endl;
 		boost::system::error_code ec;
 		m_io_service.run(ec);
-		std::clog << "Encre::Network Run finnish: " << ec.message() << std::endl;
+		std::clog << "NOTE: Network::run finished: " << ec.message() << std::endl;
 	}
 
 	void	connect_handler(const boost::system::error_code& error) {
+		std::clog << "DEBUG: Network::connect_handler: call" << std::endl;
 		if (!error) {
-			m_thread = boost::thread(boost::bind(&Network<Receiver>::run, this));
 			m_state = CONNECTED;
-			std::clog << "Encre::Network Connection Success" << std::endl;
+			m_receiver->set_state((size_t)CONNECTED);
+			std::clog << "NOTE: Network Connection Success" << std::endl;
 		}
 		else {
 			m_state = ERROR;
-			std::clog << "Encre::Network Connection Failed" << std::endl;
+			m_receiver->set_state(ERROR);
+			std::clog << "NOTE: Network Connection Failed" << std::endl;
 		}	
 	}
 
@@ -121,18 +130,18 @@ protected:
 	{
 		if (!error)
 		{
-			std::cout << "handle_read: " << transferred << std::endl;
+			std::clog << "DEBUG: Network::handle_read: bytes read " << transferred << std::endl;
 			if (m_receiver)
 				m_receiver->receive_data(m_buff);
 			else {
-				std::cerr << "No one to transmit data." << std::endl;
+				std::clog << "DEBUG: Network::handle_read: No one to transmit data." << std::endl;
 				delete m_buff;
 				m_buff = 0;
 			}
 		}
 		else
 		{
-			std::cout << "Error in read_handler: " << error.message() << std::endl;
+			std::clog << "ERROR: Network::handle_read: " << error.message() << std::endl;
 			delete m_buff;
 			m_buff = 0;
 		}
@@ -143,11 +152,11 @@ protected:
 	{
 		if (!error)
 		{
-			std::cout << "handle_write: " << transferred << std::endl;
+			std::clog << "NOTE: Network::handle_write: bytes write " << transferred << std::endl;
 		}
 		else
 		{
-			std::cout << "Error in read_handler: " << error.message() << std::endl;
+			std::clog << "ERROR: Network::read_handler: " << error.message() << std::endl;
 		}
 	}
 

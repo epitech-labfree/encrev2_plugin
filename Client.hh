@@ -25,12 +25,15 @@ public:
 		switch (m_network->get_state()) {
 			case Network<Client>::CONNECTED:
 				m_state = CONNECTED;
+				std::clog << "DEBUG: Client::Client: network->state = CONNECTED " << m_network->get_state() << std::endl;
 				break;
 			case Network<Client>::NOT_CONNECTED: // We probably have to handle it differently in the futur
 			case Network<Client>::ERROR:
 			default:
+				std::clog << "DEBUG: Client::Client: network->state = ERROR/NOT_CONNECTED" << m_network->get_state() << std::endl;
 				m_state = ERROR;
 		}
+		std::clog << "NOTE: Client created" << std::endl;
 	}
 
 	~Client()
@@ -41,11 +44,17 @@ public:
 		m_network = 0;
 		m_protocol = 0;
 		m_buff = 0;
+		std::clog << "NOTE: Client deleted" << std::endl;
 	}
 
 	Client::state&
 	get_state() {
 		return m_state;
+	}
+
+	void
+	set_state(size_t nstate) {
+		m_state = (state)nstate;
 	}
 
 	void
@@ -57,7 +66,8 @@ public:
 	
 	void
 	send_data(char* buf, size_t size) {
-		if (m_state == CONNECTED && m_protocol->foo()) {
+		std::clog << "DEBUG: Client::send_data: state: " << m_state << std::endl;
+		if (m_state == CONNECTED && m_protocol->foo()) { //TODO: Replace foo() by a parser
 			m_state = PUBLISHING;
 			m_network->write(std::string("PUT toto\n\n", 10)); //XXX: CRAP
 			goto write;
@@ -66,7 +76,6 @@ public:
 			goto write;
 		}
 		else {
-			std::cout << "Client::send_data error" << std::endl;
 			return ;
 		}
 	write:
@@ -76,7 +85,7 @@ public:
 	void
 	receive_data(std::vector<unsigned char>* buff) {
 		if (m_buff != 0)
-			std::cerr << "Client::receive_data: Memory Leak" << std::endl;
+			std::clog << "ERROR: Client::receive_data: Memory Leak" << std::endl;
 		m_buff = new std::vector<unsigned char>(*buff);
 		delete buff;
 	}
