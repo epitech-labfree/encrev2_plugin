@@ -1,12 +1,11 @@
 #ifndef ENCREV2_PLUGIN_NETWORK_HH_
 # define ENCREV2_PLUGIN_NETWORK_HH_
 
+#include "Buffer.hh"
 # include <iostream>
 # include <string>
 # include <boost/asio.hpp>
-# include <boost/thread.hpp>
 # include <boost/utility.hpp>
-# include <boost/signals2.hpp>
 using boost::asio::ip::tcp;
 
 /*
@@ -24,20 +23,13 @@ public:
 	};
 
 	Network(const std::string& host, short int port)
-	       : m_state(NOT_CONNECTED), m_socket(0), m_buff(0), m_receiver(0), m_io_service(), m_thread(0)
+	       : m_state(NOT_CONNECTED), m_socket(0), m_buff(0), m_receiver(0), m_io_service(), is_running(false)
 	{
-		//m_io_service = boost::asio::io_service();
-		//tcp::resolver resolver(m_io_service);
-		//tcp::resolver::query query(tcp::v4(), host, port); // TODO: Ipv6
-		//tcp::resolver::iterator iterator = resolver.resolve(query);
-		
 		m_socket = new tcp::socket(m_io_service);
-		//m_socket->connect(*iterator);
 
 		m_endpoint = boost::asio::ip::tcp::endpoint(boost::asio::ip::address::from_string(host), port);
 		m_socket->async_connect(m_endpoint, boost::bind(&Network::connect_handler, this,
 						boost::asio::placeholders::error));
-		m_thread = new boost::thread(boost::bind(&Network<Receiver>::run, this));
 		std::cout << "NOTE: Network created" << std::endl;
 	}
 
@@ -57,8 +49,6 @@ public:
 				boost::bind(&Network::write_handler, this,
 					boost::asio::placeholders::error,
 					boost::asio::placeholders::bytes_transferred));
-		if (m_thread == 0)
-			m_thread = new boost::thread(boost::bind(&Network<Receiver>::run, this));
 	}
 
 	void write(const std::string& buff) {
@@ -66,12 +56,11 @@ public:
 
 		if (m_state != CONNECTED)
 			return;
+
 		async_write(*m_socket, buffer(buff),
 				boost::bind(&Network::write_handler, this,
 					placeholders::error,
 					placeholders::bytes_transferred));
-		if (m_thread == 0)
-			m_thread = new boost::thread(boost::bind(&Network<Receiver>::run, this));
 	}
 
 	void read(size_t size) {
@@ -87,8 +76,6 @@ public:
 				boost::bind(&Network::read_handler, this,
 					placeholders::error,
 					placeholders::bytes_transferred));
-		if (m_thread == 0)
-			m_thread = new boost::thread(boost::bind(&Network<Receiver>::run, this));
 	}
 
 	state&	get_state()
@@ -106,9 +93,12 @@ private:
 	Network();
 	void run() {
 		std::clog << "NOTE: Network::run started" << std::endl;
+		boost::unique_lock<boost::mutex> lock(m_mut);
+		is_running = true;
 		boost::system::error_code ec;
 		size_t num = m_io_service.run(ec);
 		std::clog << "NOTE: Network::run finished: " << ec.message() << " . After " << num << "handler" << std::endl;
+		is_running = false;
 	}
 
 protected:
@@ -123,7 +113,7 @@ protected:
 			m_state = ERROR;
 			m_receiver->set_state(ERROR);
 			std::clog << "NOTE: Network Connection Failed" << std::endl;
-		}	
+		}
 	}
 
 	void	read_handler(const boost::system::error_code& error,
@@ -153,22 +143,25 @@ protected:
 	{
 		if (!error)
 		{
-			std::clog << "NOTE: Network::handle_write: bytes write " << transferred << std::endl;
+			std::clog << "NOTE: Network::write_handler: bytes write " << transferred << std::endl;
 		}
 		else
 		{
-			std::clog << "ERROR: Network::read_handler: " << error.message() << std::endl;
+			std::clog << "ERROR: Network::write_handler: " << error.message() << std::endl;
 		}
+		exit (0);
 	}
 
 private:
 	state				m_state;
 	tcp::socket*			m_socket;
-	std::vector<unsigned char>*	m_buff;
+	const_buffer_list		m_buffers;
+	buffer_ptr			m_input_buffer;
 	Receiver*			m_receiver;
 	boost::asio::io_service		m_io_service;
-	boost::thread*			m_thread;
 	boost::asio::ip::tcp::endpoint  m_endpoint;
+	bool				is_running;
+	boost::mutex			m_mut;
 };
 
 #endif
