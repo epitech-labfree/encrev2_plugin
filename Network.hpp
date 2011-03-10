@@ -6,6 +6,7 @@
 # include <string>
 # include <boost/asio.hpp>
 # include <boost/utility.hpp>
+# include <boost/bind.hpp>
 using boost::asio::ip::tcp;
 
 /*
@@ -141,12 +142,11 @@ protected:
 private:
 	state				m_state;
 	tcp::socket*			m_socket;
-	const_buffer_list		m_buffers;
-	buffer_ptr			m_input_buffer;
+	encre::const_buffer_list	m_buffers;
+	encre::buffer_ptr		m_input_buffer;
 	Receiver*			m_receiver;
 	boost::asio::io_service		m_io_service;
 	boost::asio::ip::tcp::endpoint  m_endpoint;
-	boost::mutex			m_mut;
 };
 
 #endif
