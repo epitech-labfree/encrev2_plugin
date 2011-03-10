@@ -23,7 +23,7 @@ public:
 	};
 
 	Network(const std::string& host, short int port)
-	       : m_state(NOT_CONNECTED), m_socket(0), m_buff(0), m_receiver(0), m_io_service(), is_running(false)
+	       : m_state(NOT_CONNECTED), m_socket(0), m_buff(0), m_receiver(0), m_io_service()
 	{
 		m_socket = new tcp::socket(m_io_service);
 
@@ -34,6 +34,7 @@ public:
 	}
 
 	~Network() {
+		m_socket.shutdown();
 		delete m_socket;
 		delete m_buff;
 		m_socket = 0;
@@ -49,18 +50,6 @@ public:
 				boost::bind(&Network::write_handler, this,
 					boost::asio::placeholders::error,
 					boost::asio::placeholders::bytes_transferred));
-	}
-
-	void write(const std::string& buff) {
-		using namespace boost::asio;
-
-		if (m_state != CONNECTED)
-			return;
-
-		async_write(*m_socket, buffer(buff),
-				boost::bind(&Network::write_handler, this,
-					placeholders::error,
-					placeholders::bytes_transferred));
 	}
 
 	void read(size_t size) {
@@ -93,12 +82,9 @@ private:
 	Network();
 	void run() {
 		std::clog << "NOTE: Network::run started" << std::endl;
-		boost::unique_lock<boost::mutex> lock(m_mut);
-		is_running = true;
 		boost::system::error_code ec;
 		size_t num = m_io_service.run(ec);
 		std::clog << "NOTE: Network::run finished: " << ec.message() << " . After " << num << "handler" << std::endl;
-		is_running = false;
 	}
 
 protected:
@@ -160,7 +146,6 @@ private:
 	Receiver*			m_receiver;
 	boost::asio::io_service		m_io_service;
 	boost::asio::ip::tcp::endpoint  m_endpoint;
-	bool				is_running;
 	boost::mutex			m_mut;
 };
 
