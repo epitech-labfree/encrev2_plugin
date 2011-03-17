@@ -11,8 +11,8 @@ Client::get_data(char** data, size_t* size) {
 	m_buffers.pop_front();
 	encre::buffer* b = p.get();
 
- 	for (unsigned int i = 0; i < *size; ++i) {
-		*data[i] = b->at(i);
+ 	for (unsigned int i = 0; i < b->size(); ++i) {
+		(*data)[i] = b->at(i);
 	}
 
 	*size = b->size();
