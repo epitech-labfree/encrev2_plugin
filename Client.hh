@@ -1,8 +1,9 @@
+#include "Buffer.hh"
 #include <Network.hpp>
 #include <Protocol.hh>
 #include <vector>
 
-# include <boost/signals2.hpp>
+# include <boost/shared_ptr.hpp>
 
 #ifndef ENCREV2_PLUGIN_CLIENT_HH
 # define ENCREV2_PLUGIN_CLIENT_HH
@@ -20,7 +21,7 @@ public:
 
 	Client(const std::string& host, short int port)
 		: m_network(new Network<Client>(host, port)),
-		m_protocol(new Protocol()), m_state(NOT_CONNECTED), m_buff(0)
+		m_protocol(new Protocol()), m_state(NOT_CONNECTED), m_buffers()
 	{
 		switch (m_network->get_state()) {
 			case Network<Client>::CONNECTED:
@@ -41,10 +42,8 @@ public:
 	{
 		delete m_network;
 		delete m_protocol;
-		delete m_buff;
 		m_network = 0;
 		m_protocol = 0;
-		m_buff = 0;
 		std::clog << "NOTE: Client deleted" << std::endl;
 	}
 
@@ -60,7 +59,7 @@ public:
 
 	void
 	control() {
-			m_network->write(std::string("GET toto\n\n", 10)); //XXX: CRAP
+			m_network->write("GET toto\n\n", 10); //XXX: CRAP
 			m_state = RECEIVING;
 			m_network->read(4096);
 	}
@@ -69,7 +68,7 @@ public:
 	send_data(char* buf, size_t size) {
 		if (m_state == CONNECTED && m_protocol->foo()) { //TODO: Replace foo() by a parser
 			m_state = PUBLISHING;
-			m_network->write(std::string("PUT toto\n\n", 10)); //XXX: CRAP
+			m_network->write("PUT toto\n\n", 10); //XXX: CRAP
 			goto write;
 		}
 		else if (m_state == PUBLISHING) {
@@ -83,16 +82,13 @@ public:
 	}
 	
 	void
-	receive_data(std::vector<unsigned char>* buff) {
-		if (m_buff != 0)
-			std::clog << "ERROR: Client::receive_data: Memory Leak" << std::endl;
-		m_buff = new std::vector<unsigned char>(*buff);
-		delete buff;
+	receive_data(encre::buffer_ptr buff) {
+		m_buffers.push_back(buff);
 	}
 	
 	bool
 	is_data_received() const {
-		return m_buff != 0;
+		return m_buffers.size() != 0;
 	}
 	
 	void	    get_data(char**, size_t*);
@@ -104,7 +100,7 @@ private:
 	Network<Client>*	m_network;
 	Protocol*		m_protocol;
 	state			m_state;
-	std::vector<unsigned char>* m_buff;
+	encre::buffer_list m_buffers;
 };
 
 #endif
