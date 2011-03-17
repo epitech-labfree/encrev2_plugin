@@ -1,7 +1,6 @@
 #include "Buffer.hh"
 #include <Network.hpp>
 #include <Protocol.hh>
-#include <vector>
 
 # include <boost/shared_ptr.hpp>
 
@@ -100,7 +99,7 @@ private:
 	Network<Client>*	m_network;
 	Protocol*		m_protocol;
 	state			m_state;
-	encre::buffer_list m_buffers;
+	encre::buffer_list 	m_buffers;
 };
 
 #endif
