@@ -75,8 +75,8 @@ public:
 			return ;
 
 		encre::buffer_ptr p(new encre::buffer(size));
-		std::clog << "DEBUG: m_buffers->size() = " << m_buffers.size() << std::endl;
 		m_buffers.push_back(p);
+		//std::clog << "DEBUG: m_buffers->size() = " << m_buffers.size() << std::endl;
 		async_read(*m_socket, buffer(*p.get()), transfer_all(),
 				boost::bind(&Network::read_handler, this,
 					placeholders::error,
@@ -109,11 +109,11 @@ protected:
 
 	void	read_handler(const boost::system::error_code& error, size_t transferred) {
 		if (!error) {
-			std::clog << "DEBUG: Network::handle_read: bytes read " << transferred << std::endl;
+			//std::clog << "DEBUG: Network::handle_read: bytes read " << transferred << std::endl;
 			if (m_receiver) {
 				encre::buffer_ptr p = m_buffers.front();
 				m_buffers.pop_front();
-				std::clog << "DEBUG: (handler) m_buffers->size() = " << m_buffers.size() << std::endl;
+				//std::clog << "DEBUG: (handler) m_buffers->size() = " << m_buffers.size() << std::endl;
 				p->resize(transferred);
 				m_receiver->receive_data(p);
 			}
@@ -127,10 +127,13 @@ protected:
 	void write_handler(const boost::system::error_code&
 		error, size_t transferred)
 	{
-		if (!error)
-			std::clog << "NOTE: Network::write_handler: bytes write " << transferred << std::endl;
-		else
+		//if (!error)
+		//	std::clog << "NOTE: Network::write_handler: bytes write " << transferred << std::endl;
+		//else
+		//	std::clog << "ERROR: Network::write_handler: " << error.message() << std::endl;
+		if (error)
 			std::clog << "ERROR: Network::write_handler: " << error.message() << std::endl;
+
 	}
 
 private:
