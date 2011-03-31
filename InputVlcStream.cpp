@@ -1,6 +1,5 @@
 #include "InputVlcStream.hh"
 #include <iostream>
-#include <boost/thread.hpp>
 
 namespace encre
 {
