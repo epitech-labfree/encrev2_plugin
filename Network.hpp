@@ -47,7 +47,7 @@ public:
 		std::cout << "NOTE: Network deleted" << std::endl;
 	}
 
-	void write(char* buff, size_t size) {
+	void write(const char* buff, size_t size) {
 		if (m_state != CONNECTED || m_buffers.size() == 0)
 			return;
 

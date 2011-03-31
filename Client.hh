@@ -58,9 +58,9 @@ public:
 
 	void
 	control() {
-			m_network->write("GET toto\n\n", 10); //XXX: CRAP
-			m_state = RECEIVING;
-			m_network->read(4096);
+		m_network->write("GET toto\n\n", 10); //XXX: CRAP
+		m_state = RECEIVING;
+		//m_network->read(4096);
 	}
 	
 	void
