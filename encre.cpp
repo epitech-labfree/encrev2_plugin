@@ -8,7 +8,7 @@
 static const char * vlc_args[] = {
   "-I", "dummy", /* Don't use any interface */
   "--ignore-config", /* Don't use VLC's config */
-  "-vv"
+  ""
 };
 
 namespace encre

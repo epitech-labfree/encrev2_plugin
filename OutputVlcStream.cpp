@@ -64,8 +64,9 @@ namespace encre
   {
     //it's here where we can send the data of the stream
     // XXX: Check if size > UINT_MAX //osef
-    stream->m_client->send_data((char*)buffer, size);
-    delete (char*)buffer;
+    char* copy = new char[size]; // Change this to a smartpointer
+    memcpy(copy, buffer, size);
+    stream->m_client->send_data(copy, size);
   }
 
   bool
