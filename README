@@ -1,78 +1,72 @@
-***************************************
-****
-**FIREBREATH
-***
-** version : 1.3 (maybe current now), git clone git://github.com/epitech-labfree/FireBreath.git
-***
-** Depends : libgtk2.0-dev, cmake, boost (here libboost-dev, libboost-system-dev et libboost-thread-dev)
-***
-** Install Unix :
-** ./prepmakesh-D WITH_SYSTEM_BOOST=1
-** (cd build && make && make install)
-**
-** After the installation of vlc (see below), put LD_LIBRARY_PATH in the environnement for find the modules
-** (can be export LD_LIBRARY_PATH=/usr/local or setenv LD_LIBRARY_PATH /usr/local).
-***
-****
-***************************************
+## Dependencies
 
-***************************************
-****
-**VLC
-***
-**Version : 1.1 with smem modified, git clone git://github.com/epitech-labfree/vlc-1.1-encre.git
-***
-** Depends: ttf-freefont
-** Depends: vlc-nox
-** Depends: libaa1
-** Depends: libavcodec52
-** Depends: libavcodec-extra-52
-** Depends: libavutil50
-** Depends: libavutil-extra-50
-** Depends: libc6
-** Depends: libfreetype6
-** Depends: libfribidi0
-** Depends: libgcc1
-** Depends: libgl1-mesa-glx
-** Depends: libgl1
-** Depends: libgl1-mesa-glx
-** Depends: libgl1-mesa-swx11
-** Depends: libqtcore4
-** Depends: libqtgui4
-** Depends: libsdl-image1.2
-** Depends: libsdl1.2debian
-** Depends: libstdc++6
-** Depends: libtar
-** Depends: libva-x11-1
-** Depends: libva1
-** Depends: libvlccore4
-** Depends: libx11-6
-** Depends: libx11-xcb1
-** Depends: libxcb-keysyms1
-** Depends: libxcb-randr0
-** Depends: libxcb-shm0
-** Depends: libxcb-xv0
-** Depends: libxcb1
-** Depends: libxext6
-** Depends: zlib1g
-**
-** Can be done with 'sudo apt-get build-dep vlc'
-***
-** Install Unix :
-** ./bootstrap
-** ./configure --prefix=/usr/local
-** ./compile
-** sudo make install
-****
-***************************************
+### Firebreath
 
-***************************************
-****
-** Utils for devellopers
-***
-** Chrome/Chromium debug : http://code.google.com/p/chromium/wiki/LinuxDebugging
-***
-** firefox/chromium/seamonkey test.html test.html for testing
-** firefox debug : firefox -g test.html test.html and it's run with gdb
-****
-***************************************
+**Version 1.3** : git clone git://github.com/epitech-labfree/FireBreath.git
+*Installation for Unix* :
+<pre>
+mkdir projects && cd projects
+ln -s [somewhere]/encrev2_plugin
+cd ../
+./prepmakesh -D WITH_SYSTEM_BOOST=1
+cd build && make && make install
+</pre>
+
+### VLC
+**Version 1.1 custom** with patched smem  : git clone git://github.com/epitech-labfree/vlc-1.1-encre.git
+VLC has a huge set of dependencies, so if you are on a Debian based operating system do :
+<pre>sudo apt-get build-dep vlc</pre>
+Or follow this list :
+* ttf-freefont
+* vlc-nox
+* libaa1
+* libavcodec52
+* libavcodec-extra-52
+* libavutil50
+* libavutil-extra-50
+* libc6
+* libfreetype6
+* libfribidi0
+* libgcc1
+* libgl1-mesa-glx
+* libgl1
+* libgl1-mesa-glx
+* libgl1-mesa-swx11
+* libqtcore4
+* libqtgui4
+* libsdl-image1.2
+* libsdl1.2debian
+* libstdc++6
+* libtar
+* libva-x11-1
+* libva1
+* libvlccore4
+* libx11-6
+* libx11-xcb1
+* libxcb-keysyms1
+* libxcb-randr0
+* libxcb-shm0
+* libxcb-xv0
+* libxcb1
+* libxext6
+* zlib1g
+
+Installation for Unix :
+<pre>
+./bootstrap
+./configure --prefix=/usr/local
+./compile
+sudo make install
+</pre>
+
+### Boost
+**Version 1.42 or more**
+libboost-thread
+libboost-spirit
+libboost-asio
+libboost-system
+
+## Debugging
+**With Chrome/Chromium** : http://code.google.com/p/chromium/wiki/LinuxDebugging
+**With Firefox** : firefox -g test.html test.html
+
