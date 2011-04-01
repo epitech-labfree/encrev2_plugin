@@ -23,11 +23,6 @@ namespace encre
     setOptions(m_soundSource);
   }
 
-  t_bsign&
-  OutputVlcStream::on_data_available()
-  {
-  }
-
   bool
   OutputVlcStream::start()
   {
