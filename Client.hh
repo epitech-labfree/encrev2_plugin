@@ -25,15 +25,18 @@ public:
 		switch (m_network->get_state()) {
 			case Network<Client>::CONNECTED:
 				m_state = CONNECTED;
-				std::clog << "DEBUG: Client::Client: network->state = CONNECTED " << m_network->get_state() << std::endl;
+				std::clog << "NOTE: Client: state = CONNECTED " << std::endl;
 				break;
-			case Network<Client>::NOT_CONNECTED: // We probably have to handle it differently in the futur
+			case Network<Client>::NOT_CONNECTED:
+				m_state = NOT_CONNECTED;
+				std::clog << "NOTE: Client: state = NOT_CONNECTED" << std::endl;
+				break;
 			case Network<Client>::ERROR:
 			default:
-				std::clog << "DEBUG: Client::Client: network->state = ERROR/NOT_CONNECTED" << m_network->get_state() << std::endl;
 				m_state = ERROR;
+				std::clog << "NOTE: Client: state = ERROR" << std::endl;
 		}
-		std::clog << "NOTE: Client created" << std::endl;
+		std::clog << "DEBUG: Client: created" << std::endl;
 		m_network->set_receiver(this);
 	}
 
@@ -43,7 +46,7 @@ public:
 		delete m_protocol;
 		m_network = 0;
 		m_protocol = 0;
-		std::clog << "NOTE: Client deleted" << std::endl;
+		std::clog << "DEBUG: Client: deleted" << std::endl;
 	}
 
 	Client::state&
@@ -60,7 +63,7 @@ public:
 	control() {
 		m_network->write("GET toto\n\n", 10); //XXX: CRAP
 		m_state = RECEIVING;
-		//m_network->read(4096);
+		std::clog << "NOTE: Client: state = RECEIVING" << std::endl;
 	}
 	
 	void
@@ -68,6 +71,7 @@ public:
 		if (m_state == CONNECTED && m_protocol->foo()) { //TODO: Replace foo() by a parser
 			m_state = PUBLISHING;
 			m_network->write("PUT toto\n\n", 10); //XXX: CRAP
+			std::clog << "NOTE: Client: state = PUBLISHING" << std::endl;
 			goto write;
 		}
 		else if (m_state == PUBLISHING) {
