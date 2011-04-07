@@ -108,7 +108,7 @@ protected:
 
 	void	read_handler(const boost::system::error_code& error, size_t transferred) {
 		if (!error) {
-			std::clog << "DEBUG: Network::handle_read: bytes read " << transferred << std::endl;
+			//std::clog << "DEBUG: Network::handle_read: bytes read " << transferred << std::endl;
 			if (m_receiver) {
 				encre::buffer_ptr p = m_buffers.front();
 				m_buffers.pop_front();
