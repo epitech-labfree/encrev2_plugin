@@ -1,11 +1,14 @@
 #ifndef ENCREV2_PLUGIN_NETWORK_HH_
 # define ENCREV2_PLUGIN_NETWORK_HH_
 
-#include <iostream>
+#include "Buffer.hh"
+# include <iostream>
 # include <string>
 # include <boost/asio.hpp>
 # include <boost/utility.hpp>
-# include <boost/signals2.hpp>
+# include <boost/bind.hpp>
+# include <boost/thread.hpp>
+# include <boost/shared_ptr.hpp>
 using boost::asio::ip::tcp;
 
 /*
@@ -13,83 +16,45 @@ using boost::asio::ip::tcp;
  * receive_data(std::vector<unsigned char>*)
  */
 
+#define READ_SIZE 1024
+
 template<class Receiver>
 class Network : boost::noncopyable {
 public:
 	enum state {
 		ERROR,
-		CONNECTED,
-		NOT_CONNECTED
+		NOT_CONNECTED,
+		CONNECTED
 	};
 
-	Network(const std::string& host, const std::string& port)
-	       : m_state(NOT_CONNECTED), m_socket(0), m_buff(0), m_receiver(0), m_io_service(0)
+	Network(const std::string& host, short int port)
+	       : m_state(NOT_CONNECTED), m_socket(0), m_receiver(0), m_io_service(), m_buffers()
 	{
-		try {
-			//boost::asio::io_service io_service;
-			m_io_service = new boost::asio::io_service();
-			tcp::resolver resolver(*m_io_service);
-			tcp::resolver::query query(tcp::v4(), host, port); // TODO: Ipv6
-			tcp::resolver::iterator iterator = resolver.resolve(query);
-			m_socket = new tcp::socket(*m_io_service);
-			m_socket->connect(*iterator);
-		}
-		catch (...) {
-			std::cerr << "Encre::Network, Can't connect to " << host <<
-				std::endl;
-			m_state = ERROR;
-			return ;
-		}
-		m_state = CONNECTED;
-		std::clog << "Encre::Network, Connection" << std::endl;
+		m_socket = new tcp::socket(m_io_service);
+
+		m_endpoint = boost::asio::ip::tcp::endpoint(boost::asio::ip::address::from_string(host), port);
+		m_socket->async_connect(m_endpoint, boost::bind(&Network::connect_handler, this,
+						boost::asio::placeholders::error));
+
+		m_thread = boost::thread(boost::bind(&Network<Receiver>::run, this));
+		std::cout << "NOTE: Network created" << std::endl;
 	}
 
 	~Network() {
+		m_socket->shutdown(boost::asio::ip::tcp::socket::shutdown_both);
 		delete m_socket;
-		delete m_buff;
-		m_buff = 0;
 		m_socket = 0;
+		std::cout << "NOTE: Network deleted" << std::endl;
 	}
 
-	void write(void* buff, size_t size) { //XXX: HARMFUL
-		using namespace boost::asio;
-
-		if (m_state != CONNECTED)
+	void write(const char* buff, size_t size) {
+		if (m_state != CONNECTED || m_buffers.size() == 0)
 			return;
 
-		std::cout << size << std::endl;
-		std::cout << (char*)buff << std::endl;
-		async_write(*m_socket, buffer(buff, size),
+		async_write(*m_socket, boost::asio::buffer(buff, size),
 				boost::bind(&Network::write_handler, this,
-					placeholders::error,
-					placeholders::bytes_transferred));
-	}
-
-	void write(const std::string& buff) {
-		using namespace boost::asio;
-
-		if (m_state != CONNECTED)
-			return;
-		async_write(*m_socket, buffer(buff),
-				boost::bind(&Network::write_handler, this,
-					placeholders::error,
-					placeholders::bytes_transferred));
-	}
-
-	void read(size_t size) {
-		using namespace boost::asio;
-
-		if (m_state != CONNECTED)
-			return ;
-		if (m_buff != 0)
-			std::cerr << "m_buff already assigned. Check that !" << std::endl;
-
-		std::cout << "Network::read" << std::endl;
-		m_buff = new std::vector<unsigned char>(size);
-		async_read(*m_socket, buffer(*m_buff, size), transfer_all(),
-				boost::bind(&Network::read_handler, this,
-					placeholders::error,
-					placeholders::bytes_transferred));
+					boost::asio::placeholders::error,
+					boost::asio::placeholders::bytes_transferred));
 	}
 
 	state&	get_state()
@@ -99,52 +64,86 @@ public:
 
 	void	set_receiver(Receiver* r)
 	{
+		std::clog << "DEBUG: Network::set_receiver" << std::endl;
 		m_receiver = r;
 	}
 
-protected:
+	void read(size_t size) {
+		using namespace boost::asio;
+
+		if (m_state != CONNECTED)
+			return ;
+
+		encre::buffer_ptr p(new encre::buffer(size));
+		m_buffers.push_back(p);
+		//std::clog << "DEBUG: m_buffers->size() = " << m_buffers.size() << std::endl;
+		async_read(*m_socket, buffer(*p.get()), transfer_all(),
+				boost::bind(&Network::read_handler, this,
+					placeholders::error,
+					placeholders::bytes_transferred));
+	}
+
+private:
 	Network();
-	void	read_handler(const boost::system::error_code& error,
-		size_t transferred)
-	{
-		if (!error)
-		{
-			std::cout << "handle_read: " << transferred << std::endl;
-			if (m_receiver)
-				m_receiver->receive_data(m_buff);
-			else {
-				std::cerr << "No one to transmit data." << std::endl;
-				delete m_buff;
-				m_buff = 0;
-			}
+	void run() {
+		std::clog << "NOTE: Network::run started" << std::endl;
+		boost::system::error_code ec;
+		size_t num = m_io_service.run(ec);
+		std::clog << "NOTE: Network::run finished: " << ec.message() << " . After " << num << "handler" << std::endl;
+	}
+
+protected:
+	void	connect_handler(const boost::system::error_code& error) {
+		if (!error) {
+			m_state = CONNECTED;
+			m_receiver->set_state((size_t)CONNECTED);
+			std::clog << "NOTE: Network Connection Success" << std::endl;
+			Network::read(READ_SIZE);
 		}
-		else
-		{
-			std::cout << "Error in read_handler: " << error.message() << std::endl;
-			delete m_buff;
-			m_buff = 0;
+		else {
+			m_state = ERROR;
+			m_receiver->set_state(ERROR);
+			std::clog << "NOTE: Network Connection Failed" << std::endl;
+		}
+	}
+
+	void	read_handler(const boost::system::error_code& error, size_t transferred) {
+		if (!error) {
+			//std::clog << "DEBUG: Network::handle_read: bytes read " << transferred << std::endl;
+			if (m_receiver) {
+				encre::buffer_ptr p = m_buffers.front();
+				m_buffers.pop_front();
+				//std::clog << "DEBUG: (handler) m_buffers->size() = " << m_buffers.size() << std::endl;
+				p->resize(transferred);
+				m_receiver->receive_data(p);
+			}
+			read(READ_SIZE);
+		}
+		else {
+			std::clog << "ERROR: Network::handle_read: " << error.message() << std::endl;
 		}
 	}
 
 	void write_handler(const boost::system::error_code&
 		error, size_t transferred)
 	{
-		if (!error)
-		{
-			std::cout << "handle_write: " << transferred << std::endl;
-		}
-		else
-		{
-			std::cout << "Error in read_handler: " << error.message() << std::endl;
-		}
+		//if (!error)
+		//	std::clog << "NOTE: Network::write_handler: bytes write " << transferred << std::endl;
+		//else
+		//	std::clog << "ERROR: Network::write_handler: " << error.message() << std::endl;
+		if (error)
+			std::clog << "ERROR: Network::write_handler: " << error.message() << std::endl;
+
 	}
 
 private:
 	state				m_state;
 	tcp::socket*			m_socket;
-	std::vector<unsigned char>*	m_buff;
 	Receiver*			m_receiver;
-	boost::asio::io_service*	m_io_service;
+	boost::asio::io_service		m_io_service;
+	boost::asio::ip::tcp::endpoint  m_endpoint;
+	encre::buffer_list		m_buffers;
+	boost::thread                   m_thread;
 };
 
 #endif

@@ -4,13 +4,16 @@
 #include "Protocol.hh"
 #include "Client.hh"
 
+// Do *NOT* call whitout call is_data_received first.
 void
 Client::get_data(char** data, size_t* size) {
-	// XXX: Check for brain dead people who don't call is_data_received
- 	for (unsigned int i = 0; i < m_buff->size(); ++i) {
-	  (*data)[i] = m_buff->at(i);
+	encre::buffer_ptr p = m_buffers.front();
+	m_buffers.pop_front();
+	encre::buffer* b = p.get();
+
+ 	for (unsigned int i = 0; i < b->size(); ++i) {
+		(*data)[i] = b->at(i);
 	}
-	*size = m_buff->size();
-	delete m_buff;
-	m_buff = 0;
+
+	*size = b->size();
 }

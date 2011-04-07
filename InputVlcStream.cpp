@@ -40,7 +40,7 @@ namespace encre
       return -1;
     if (myInput->m_client->is_data_received())
       {
-	std::cout << "111111111111111111111111111woops1" << std::endl;
+	//std::cout << "111111111111111111111111111woops1" << std::endl;
 	*len = 4096;
 	*buffer = new char [*len];
 	myInput->m_client->get_data((char**)buffer, len);
