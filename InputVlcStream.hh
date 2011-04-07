@@ -3,7 +3,6 @@
 
 #include "VlcStream.hh"
 #include "Imem.hh"
-#include "vlc_system_strategy.hh"
 #include <boost/signals2.hpp>
 
 namespace encre
@@ -15,7 +14,6 @@ namespace encre
   private :
     Imem		m_imem;
     t_bsign		m_signal;
-    FB::PluginWindow*	m_window;
 
   public :
     InputVlcStream(Encre<libvlc_instance_t>*);

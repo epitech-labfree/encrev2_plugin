@@ -3,7 +3,7 @@
 
 namespace encre
 {
-  InputVlcStream::InputVlcStream(Encre<libvlc_instance_t>* encre) : VlcStream(encre), m_window(0)
+  InputVlcStream::InputVlcStream(Encre<libvlc_instance_t>* encre) : VlcStream(encre)
   {
     m_media = libvlc_media_new_location(m_encre->getData(), "imem://width=400:height=400:fps=30:cookie=0:codec=H264:cat=4:caching=0");
   }
@@ -30,7 +30,7 @@ namespace encre
     m_imem.setImemDataCtx(this, this);
     setOptions("");
 
-    VlcSystemStrategy::set_window(m_mp, m_window);
+    VlcSystemStrategy::set_window(m_mp, m_encre->m_window);
     m_client->control();
     play();
     return true;

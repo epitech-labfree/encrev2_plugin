@@ -2,6 +2,7 @@
 #include "VlcStream.hh"
 #include "OutputVlcStream.hh"
 #include "InputVlcStream.hh"
+#include "vlc_system_strategy.hh"
 
 #include <iostream>
 
@@ -106,5 +107,11 @@ namespace encre
   libvlc_instance_t*	Encre<libvlc_instance_t>::getData()
   {
     return (m_data);
+  }
+
+  template <typename T> void
+  Encre<T>::set_window(FB::PluginWindow *w)
+  {
+	m_window = w; 
   }
 }
