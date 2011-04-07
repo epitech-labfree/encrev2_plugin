@@ -19,8 +19,10 @@
 	var p = get_publish();
 	p.setOptions(":sout-x264-tune=zerolatency", streaming);
 	p.setOptions(":sout-x264-preset=veryfast", streaming);
-	p.setOptions(":sout=#transcode{vcodec=h264,vb=800,scale=1,acodec=mp4a,ab=128,channels=2,samplerate=44100}:smem{mux=ts}", streaming);
+	p.setOptions(":sout=#transcode{vcodec=h264,vb=800,scale=1,acodec=mp4a,ab=128,channels=1,samplerate=8000,audio-sync}:smem{mux=ts}", streaming);
+	p.setOptions(":alsa-samplerate=8000", streaming);
 	p.setOptions(":v4l2-caching=500", streaming);
+	p.setOptions(":alsa-caching=500", streaming);
 	p.stream();
     }
 
