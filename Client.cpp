@@ -57,4 +57,3 @@ Client::send_data(char* buf, size_t size) {
 write:
 	m_network->write(buf, size);
 }
-

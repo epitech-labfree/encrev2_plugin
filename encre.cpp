@@ -45,6 +45,13 @@ namespace encre
   }
 
   template <typename T>
+  Encre<T>::~Encre()
+  {
+	delete m_data;	  
+	m_data = 0;
+  }
+
+ template <typename T>
   Stream*	Encre<T>::getStream(e_action todo)
   {
     return m_stream;

@@ -56,8 +56,11 @@ namespace	encre
       {
 	libvlc_media_player_stop(m_mp);
 	m_mp = 0;
-	libvlc_media_release(m_media);
-	m_media = 0;
+      }
+      if (m_client != 0)
+      {
+              delete m_client;
+              m_client = 0;
       }
     return (true);
   }

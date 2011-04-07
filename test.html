@@ -33,23 +33,9 @@
 	p.setOptions(":text-renderer dummy", getting);
 	p.play('toto');
     }
-
-    function  start_plugin()
-    {
-	// Set here specific start up option
-     	get_publish().start();
-	<!-- get_publish().connect('localhost','4242'); -->
-
-	var node = document.getElementById("start");
-	node.style.display="none";
-	node = document.getElementById("button_list");
-	node.style.display="block";
-    }
   </script>
 
-  <input type="button" id="start" value="START !" OnClick="start_plugin()"/>
-
-  <form id="button_list" style="display:none">
+  <form id="button_list">
     <input type="button" value="Stream..." OnClick="stream()"/>
     <input type="button" value="Play..." OnClick="get()"/>
     <input type="button" value="Stop !" OnClick="get_publish().stop()"/>

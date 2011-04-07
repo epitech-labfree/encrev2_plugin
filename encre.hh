@@ -27,6 +27,7 @@ namespace encre
   public :
     Encre();
     Encre(const std::vector<std::string>&	vlcOpts);
+    virtual ~Encre();
 
     bool					start();
     T*						getData();
