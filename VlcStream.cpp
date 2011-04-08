@@ -34,7 +34,7 @@ namespace	encre
       {
 	if (m_media)
 	  {
-	    std::cout << "opt=" << opt << std::endl;
+	    EncreLog(EncreLog::Debug) << " opt=" << opt;
 	    libvlc_media_add_option_flag(m_media, opt.c_str(), libvlc_media_option_trusted);
 	    opt = "";
 	    return (true);

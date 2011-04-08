@@ -36,7 +36,6 @@ namespace encre
   //template <>
   //Encre<libvlc_instance_t>::Encre(const std::vector<std::string>& vlcOpts) : m_data(0), m_stream(0), m_window(0), m_host(new std::string("127.0.0.1")), m_port(4242)
   //{
-  //  std::cout << "Encre Initialisation2:" << (unsigned int)this << std::endl;
   //  const char*	vlcArgs[vlcOpts.size()];
   //  for (unsigned int i=0; i < vlcOpts.size(); ++i)
   //    {
