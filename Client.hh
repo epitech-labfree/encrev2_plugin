@@ -41,6 +41,10 @@ public:
 
 	void
 	control() {
+		if (m_state == NOT_CONNECTED || m_state == ERROR) {
+			EncreLog(EncreLog::Warning) << "Client is _not_ connected yet";
+			return;
+		}
 		m_network->write("GET toto\n\n", 10); //XXX: CRAP
 		m_state = RECEIVING;
 		EncreLog() << "Client: state = RECEIVING";
