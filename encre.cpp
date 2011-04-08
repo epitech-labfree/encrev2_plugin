@@ -31,7 +31,6 @@ namespace encre
   //template <typename T>
   //Encre<T>::Encre(const std::vector<std::string>& vlcOpts) : m_data(0), m_stream(0), m_window(0), m_host(new std::string("127.0.0.1")), m_port(4242)
   //{
-  //  std::clog << "Unknown type" << std::endl;
   //}
 
   //template <>

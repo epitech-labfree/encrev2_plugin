@@ -30,7 +30,7 @@ namespace encre
   {
     if (!m_media)
       {
-	std::clog << "vlc media is not set" << std::endl;
+	EncreLog(EncreLog::Warning) << "vlc media is not set";
 	return false;
       }
     m_smem.setDataLockCallback(this, reinterpret_cast<void*>(&encre::OutputVlcStream::lock));
@@ -39,7 +39,7 @@ namespace encre
     m_mp = libvlc_media_player_new(m_encre->getData());
     if (m_mp == 0)
       {
-	std::clog << "libvlc_media_player_new: failed to create the media player" << std::endl;
+	EncreLog(EncreLog::Error) << "libvlc_media_player_new: failed to create the media player";
 	return false;
       }
     libvlc_media_player_set_media(m_mp, m_media);
