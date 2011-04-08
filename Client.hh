@@ -26,7 +26,7 @@ public:
 		delete m_protocol;
 		m_network = 0;
 		m_protocol = 0;
-		std::clog << "DEBUG: Client: deleted" << std::endl;
+		EncreLog(EncreLog::Debug) << "Client: deleted";
 	}
 
 	Client::state&
@@ -43,7 +43,7 @@ public:
 	control() {
 		m_network->write("GET toto\n\n", 10); //XXX: CRAP
 		m_state = RECEIVING;
-		std::clog << "NOTE: Client: state = RECEIVING" << std::endl;
+		EncreLog() << "Client: state = RECEIVING";
 	}
 
 	void
