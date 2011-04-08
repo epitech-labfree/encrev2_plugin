@@ -8,7 +8,7 @@
 
 class EncreLog {
 public:
-	enum EncreMsgType {Note, Log, Warning, Error};
+	enum EncreMsgType {Note, Debug, Warning, Error};
 
 	EncreLog() : _type(Note), _buffer(), _file(0) {}
 
@@ -25,7 +25,7 @@ public:
 		std::string out = _buffer.str();
 
 	      	switch (_type) {
-		case Log:
+		case Debug:
 			out.insert(0, "DEBUG: ");
 			break ;
 		case Warning:
@@ -51,7 +51,7 @@ public:
 		}
 	}
 
-	template<typename T> EncreLog&
+	template<typename T> inline EncreLog&
 	operator<<(T t) {
 		_buffer << t;
 		return *this;
@@ -63,13 +63,13 @@ private:
 	const char* _file;
 };
 
-template<> EncreLog&
+template<> inline EncreLog&
 EncreLog::operator<< (char c) {
 	_buffer << "'" << c << "'";
 	return *this;
 }
 
-template<> EncreLog&
+template<> inline EncreLog&
 EncreLog::operator<<(bool b) {
 	_buffer << (b == true ? "true" : "false");
 	return *this;
