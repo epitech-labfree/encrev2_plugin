@@ -98,9 +98,9 @@ void	encrev2_pluginAPI::set_port(const short port)
 	m_plugin.encre()->m_port = port;
 }
 
-std::string* encrev2_pluginAPI::get_hostname()
+const std::string& encrev2_pluginAPI::get_hostname()
 {
-	return m_plugin.encre()->m_host;	
+	return *(m_plugin.encre()->m_host);
 }
 
 short	encrev2_pluginAPI::get_port()

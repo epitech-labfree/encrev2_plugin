@@ -33,7 +33,7 @@ class encrev2_pluginAPI : public FB::JSAPIAuto
   bool			setOptions(const std::string&, int);
 
   void			set_hostname(const std::string&);
-  std::string*		get_hostname();
+  const std::string&	get_hostname();
   void			set_port(const short);
   short			get_port();
 
