@@ -16,6 +16,7 @@
 #include "PluginCore.h"
 
 #include "encre.hh"
+#include "Stream.hh"
 
 class encrev2_plugin : public FB::PluginCore
 {

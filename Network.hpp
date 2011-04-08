@@ -37,14 +37,14 @@ public:
 						boost::asio::placeholders::error));
 
 		m_thread = boost::thread(boost::bind(&Network<Receiver>::run, this));
-		std::cout << "NOTE: Network created" << std::endl;
+		std::cout << "DEBUG: Network created" << std::endl;
 	}
 
 	~Network() {
 		m_socket->shutdown(boost::asio::ip::tcp::socket::shutdown_both);
 		delete m_socket;
 		m_socket = 0;
-		std::cout << "NOTE: Network deleted" << std::endl;
+		std::cout << "DEBUG: Network deleted" << std::endl;
 	}
 
 	void write(const char* buff, size_t size) {
@@ -76,7 +76,6 @@ public:
 
 		encre::buffer_ptr p(new encre::buffer(size));
 		m_buffers.push_back(p);
-		//std::clog << "DEBUG: m_buffers->size() = " << m_buffers.size() << std::endl;
 		async_read(*m_socket, buffer(*p.get()), transfer_all(),
 				boost::bind(&Network::read_handler, this,
 					placeholders::error,
@@ -86,10 +85,10 @@ public:
 private:
 	Network();
 	void run() {
-		std::clog << "NOTE: Network::run started" << std::endl;
+		std::clog << "DEBUG: Network::run started" << std::endl;
 		boost::system::error_code ec;
 		size_t num = m_io_service.run(ec);
-		std::clog << "NOTE: Network::run finished: " << ec.message() << " . After " << num << "handler" << std::endl;
+		std::clog << "DEBUG: Network::run finished: " << ec.message() << " . After " << num << " handler" << std::endl;
 	}
 
 protected:
@@ -97,13 +96,13 @@ protected:
 		if (!error) {
 			m_state = CONNECTED;
 			m_receiver->set_state((size_t)CONNECTED);
-			std::clog << "NOTE: Network Connection Success" << std::endl;
+			std::clog << "NOTE: Network state = CONNECTED" << std::endl;
 			Network::read(READ_SIZE);
 		}
 		else {
 			m_state = ERROR;
 			m_receiver->set_state(ERROR);
-			std::clog << "NOTE: Network Connection Failed" << std::endl;
+			std::clog << "NOTE: Network state = ERROR" << std::endl;
 		}
 	}
 
@@ -113,7 +112,6 @@ protected:
 			if (m_receiver) {
 				encre::buffer_ptr p = m_buffers.front();
 				m_buffers.pop_front();
-				//std::clog << "DEBUG: (handler) m_buffers->size() = " << m_buffers.size() << std::endl;
 				p->resize(transferred);
 				m_receiver->receive_data(p);
 			}
@@ -127,10 +125,6 @@ protected:
 	void write_handler(const boost::system::error_code&
 		error, size_t transferred)
 	{
-		//if (!error)
-		//	std::clog << "NOTE: Network::write_handler: bytes write " << transferred << std::endl;
-		//else
-		//	std::clog << "ERROR: Network::write_handler: " << error.message() << std::endl;
 		if (error)
 			std::clog << "ERROR: Network::write_handler: " << error.message() << std::endl;
 

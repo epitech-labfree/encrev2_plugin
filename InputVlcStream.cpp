@@ -3,7 +3,7 @@
 
 namespace encre
 {
-  InputVlcStream::InputVlcStream(Encre<libvlc_instance_t>* encre) : VlcStream(encre), m_window(0)
+  InputVlcStream::InputVlcStream(Encre<libvlc_instance_t>* encre) : VlcStream(encre)
   {
     m_media = libvlc_media_new_location(m_encre->getData(), "imem://width=400:height=400:fps=30:cookie=0:codec=H264:cat=4:caching=0");
   }
@@ -19,13 +19,18 @@ namespace encre
     if (m_media == 0)
       return (false);
     m_mp = libvlc_media_player_new_from_media(m_media);
+    if (m_mp == 0)
+      {
+	std::clog << "libvlc_media_player_new: failed to create the media player" << std::endl;
+	return false;
+      }
 
     m_imem.setVideoGetCallback(this, reinterpret_cast<void*>(&encre::InputVlcStream::getVideo));
     m_imem.setVideoReleaseCallback(this, reinterpret_cast<void*>(&encre::InputVlcStream::release));
     m_imem.setImemDataCtx(this, this);
     setOptions("");
 
-    VlcSystemStrategy::set_window(m_mp, m_window);
+    VlcSystemStrategy::set_window(m_mp, m_encre->m_window);
     m_client->control();
     play();
     return true;
@@ -40,14 +45,12 @@ namespace encre
       return -1;
     if (myInput->m_client->is_data_received())
       {
-	//std::cout << "111111111111111111111111111woops1" << std::endl;
 	*len = 4096;
 	*buffer = new char [*len];
 	myInput->m_client->get_data((char**)buffer, len);
       }
     else
       {
-	//std::cout << "222222222222222222222222222woops2" << std::endl;
 	*buffer = 0;
 	*len = 0;
 	return 0;

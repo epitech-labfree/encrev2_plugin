@@ -68,16 +68,14 @@ bool            encrev2_plugin::onMouseMove(FB::MouseMoveEvent *evt,
 bool            encrev2_plugin::onWindowAttached(FB::AttachedEvent *evt,
                                                  FB::PluginWindow *w)
 {
-  //TODO
-  //m_encre.set_window(w);
+  m_encre.set_window(w);
   return false;
 }
 
 bool            encrev2_plugin::onWindowDetached(FB::DetachedEvent *evt,
                                                  FB::PluginWindow *w)
 {
-  //TODO
-  //m_encre.set_window(0);
+  m_encre.set_window(0);
   return false;
 }
 

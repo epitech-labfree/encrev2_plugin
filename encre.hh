@@ -1,6 +1,7 @@
 #ifndef _ENCRE_H
 # define _ENCRE_H
 
+#include "vlc_system_strategy.hh"
 #include <string>
 #include <vector>
 #include <boost/utility.hpp>
@@ -27,10 +28,13 @@ namespace encre
   public :
     Encre();
     Encre(const std::vector<std::string>&	vlcOpts);
+    virtual ~Encre();
+    virtual void set_window(FB::PluginWindow *);
 
     bool					start();
     T*						getData();
     Stream*					getStream(e_action=NOTHING);
+    FB::PluginWindow*				m_window;
   };
 }
 
