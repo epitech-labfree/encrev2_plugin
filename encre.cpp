@@ -3,6 +3,7 @@
 #include "OutputVlcStream.hh"
 #include "InputVlcStream.hh"
 #include "vlc_system_strategy.hh"
+#include "EncreLog.hpp"
 
 #include <iostream>
 
@@ -17,13 +18,13 @@ namespace encre
   template <typename T>
   Encre<T>::Encre() : m_data(0), m_stream(0), m_window(0), m_host(new std::string("127.0.0.1")), m_port(4242)
   {
-    std::clog << "ERROR: Encre: Unknown type" << std::endl;
+    EncreLog(EncreLog::Error) << "Encre: Unknown type";
   }
 
   template <>
   Encre<libvlc_instance_t>::Encre() : m_data(0), m_stream(0), m_window(0), m_host(new std::string("127.0.0.1")), m_port(4242)
   {
-    std::cout << "DEBUG: Encre: Initialisation:" << (unsigned int)this << std::endl;
+    EncreLog(EncreLog::Debug) << "Encre: Initialisation" << (unsigned int)this;
     m_data = libvlc_new(sizeof(vlc_args) / sizeof(vlc_args[0]), vlc_args);
   }
 
@@ -93,7 +94,7 @@ namespace encre
   template <>
   bool			Encre<libvlc_instance_t>::start()
   {
-    std::cout << "here we initilise the network, return depend of it" << std::endl;
+    EncreLog() << "here we initilise the network, return depend of it";
     return true;
   }
 
