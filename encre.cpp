@@ -15,35 +15,35 @@ static const char * vlc_args[] = {
 namespace encre
 {
   template <typename T>
-  Encre<T>::Encre() : m_data(0), m_stream(0)
+  Encre<T>::Encre() : m_data(0), m_stream(0), m_window(0), m_host(new std::string("127.0.0.1")), m_port(4242)
   {
-    std::clog << "Unknown type" << std::endl;
+    std::clog << "ERROR: Encre: Unknown type" << std::endl;
   }
 
   template <>
-  Encre<libvlc_instance_t>::Encre() : m_data(0), m_stream(0)
+  Encre<libvlc_instance_t>::Encre() : m_data(0), m_stream(0), m_window(0), m_host(new std::string("127.0.0.1")), m_port(4242)
   {
-    std::cout << "Encre Initialisation:" << (unsigned int)this << std::endl;
+    std::cout << "DEBUG: Encre: Initialisation:" << (unsigned int)this << std::endl;
     m_data = libvlc_new(sizeof(vlc_args) / sizeof(vlc_args[0]), vlc_args);
   }
 
-  template <typename T>
-  Encre<T>::Encre(const std::vector<std::string>& vlcOpts) : m_data(0), m_stream(0)
-  {
-    std::clog << "Unknown type" << std::endl;
-  }
+  //template <typename T>
+  //Encre<T>::Encre(const std::vector<std::string>& vlcOpts) : m_data(0), m_stream(0), m_window(0), m_host(new std::string("127.0.0.1")), m_port(4242)
+  //{
+  //  std::clog << "Unknown type" << std::endl;
+  //}
 
-  template <>
-  Encre<libvlc_instance_t>::Encre(const std::vector<std::string>& vlcOpts) : m_data(0), m_stream(0)
-  {
-    std::cout << "Encre Initialisation2:" << (unsigned int)this << std::endl;
-    const char*	vlcArgs[vlcOpts.size()];
-    for (unsigned int i=0; i < vlcOpts.size(); ++i)
-      {
-	vlcArgs[i] = vlcOpts[i].c_str();
-      }
-    m_data = libvlc_new(sizeof(vlcArgs) / sizeof(*vlcArgs), vlcArgs);
-  }
+  //template <>
+  //Encre<libvlc_instance_t>::Encre(const std::vector<std::string>& vlcOpts) : m_data(0), m_stream(0), m_window(0), m_host(new std::string("127.0.0.1")), m_port(4242)
+  //{
+  //  std::cout << "Encre Initialisation2:" << (unsigned int)this << std::endl;
+  //  const char*	vlcArgs[vlcOpts.size()];
+  //  for (unsigned int i=0; i < vlcOpts.size(); ++i)
+  //    {
+  //      vlcArgs[i] = vlcOpts[i].c_str();
+  //    }
+  //  m_data = libvlc_new(sizeof(vlcArgs) / sizeof(*vlcArgs), vlcArgs);
+  //}
 
   template <typename T>
   Encre<T>::~Encre()
