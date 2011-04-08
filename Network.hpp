@@ -121,15 +121,20 @@ protected:
 		else {
 			EncreLog(EncreLog::Error) << "Network::handle_read: "
 			  << error.message();
+			m_state = ERROR;
+			EncreLog() << "Network state = ERROR";
 		}
 	}
 
 	void write_handler(const boost::system::error_code&
 		error, size_t transferred)
 	{
-		if (error)
+		if (error) {
 			EncreLog(EncreLog::Error) << "Network::handle_write: "
 			  << error.message();
+			m_state = ERROR;
+			EncreLog() << "Network state = ERROR";
+		}
 
 	}
 
