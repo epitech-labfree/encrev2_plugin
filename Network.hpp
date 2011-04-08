@@ -1,7 +1,8 @@
 #ifndef ENCREV2_PLUGIN_NETWORK_HH_
 # define ENCREV2_PLUGIN_NETWORK_HH_
 
-#include "Buffer.hh"
+# include "Buffer.hh"
+# include "EncreLog.hpp"
 # include <iostream>
 # include <string>
 # include <boost/asio.hpp>
@@ -37,14 +38,14 @@ public:
 						boost::asio::placeholders::error));
 
 		m_thread = boost::thread(boost::bind(&Network<Receiver>::run, this));
-		std::cout << "DEBUG: Network created" << std::endl;
+		EncreLog(EncreLog::Debug)<< "Network created";
 	}
 
 	~Network() {
 		m_socket->shutdown(boost::asio::ip::tcp::socket::shutdown_both);
 		delete m_socket;
 		m_socket = 0;
-		std::cout << "DEBUG: Network deleted" << std::endl;
+		EncreLog(EncreLog::Debug)<< "Network deleted";
 	}
 
 	void write(const char* buff, size_t size) {
@@ -64,7 +65,7 @@ public:
 
 	void	set_receiver(Receiver* r)
 	{
-		std::clog << "DEBUG: Network::set_receiver" << std::endl;
+		EncreLog(EncreLog::Debug)<< "Network::set_receiver";
 		m_receiver = r;
 	}
 
@@ -85,10 +86,11 @@ public:
 private:
 	Network();
 	void run() {
-		std::clog << "DEBUG: Network::run started" << std::endl;
+		EncreLog(EncreLog::Debug)<< "Network::run started";
 		boost::system::error_code ec;
 		size_t num = m_io_service.run(ec);
-		std::clog << "DEBUG: Network::run finished: " << ec.message() << " . After " << num << " handler" << std::endl;
+		EncreLog(EncreLog::Debug)<< "Network::run finished: " << ec.message()
+		  << ". After " << num << " handler ";
 	}
 
 protected:
@@ -96,19 +98,18 @@ protected:
 		if (!error) {
 			m_state = CONNECTED;
 			m_receiver->set_state((size_t)CONNECTED);
-			std::clog << "NOTE: Network state = CONNECTED" << std::endl;
+			EncreLog() << "Network state = CONNECTED";
 			Network::read(READ_SIZE);
 		}
 		else {
 			m_state = ERROR;
 			m_receiver->set_state(ERROR);
-			std::clog << "NOTE: Network state = ERROR" << std::endl;
+			EncreLog() << "Network state = ERROR";
 		}
 	}
 
 	void	read_handler(const boost::system::error_code& error, size_t transferred) {
 		if (!error) {
-			//std::clog << "DEBUG: Network::handle_read: bytes read " << transferred << std::endl;
 			if (m_receiver) {
 				encre::buffer_ptr p = m_buffers.front();
 				m_buffers.pop_front();
@@ -118,7 +119,8 @@ protected:
 			read(READ_SIZE);
 		}
 		else {
-			std::clog << "ERROR: Network::handle_read: " << error.message() << std::endl;
+			EncreLog(EncreLog::Error) << "Network::handle_read: "
+			  << error.message();
 		}
 	}
 
@@ -126,7 +128,8 @@ protected:
 		error, size_t transferred)
 	{
 		if (error)
-			std::clog << "ERROR: Network::write_handler: " << error.message() << std::endl;
+			EncreLog(EncreLog::Error) << "Network::handle_write: "
+			  << error.message();
 
 	}
 
