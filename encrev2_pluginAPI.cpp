@@ -17,6 +17,7 @@
 encrev2_pluginAPI::encrev2_pluginAPI(FB::BrowserHostPtr host, encrev2_plugin &plugin)
   : m_host(host), m_plugin(plugin)
 {
+  // Callable
   registerMethod("testEvent", make_method(this, &encrev2_pluginAPI::testEvent));
   registerMethod("stream",    make_method(this, &encrev2_pluginAPI::stream));
   registerMethod("play",      make_method(this, &encrev2_pluginAPI::play));
@@ -29,32 +30,32 @@ encrev2_pluginAPI::encrev2_pluginAPI(FB::BrowserHostPtr host, encrev2_plugin &pl
                                  &encrev2_pluginAPI::get_version));
 
   // Read-Write property
-  registerProperty("startUpOption", make_property(this,
-			  &encrev2_pluginAPI::get_startup_option,
-			  &encrev2_pluginAPI::set_startup_option));
-  registerProperty("runtimeOption", make_property(this,
-			  &encrev2_pluginAPI::get_runtime_option,
-			  &encrev2_pluginAPI::set_runtime_option));
+  registerProperty("hostname", make_property(this,
+  			  &encrev2_pluginAPI::get_hostname,
+			  &encrev2_pluginAPI::set_hostname));
+  registerProperty("port", make_property(this,
+  			  &encrev2_pluginAPI::get_port,
+			  &encrev2_pluginAPI::set_port));
 
   // Event
   registerEvent("onfired");
 }
 
-encrev2_pluginAPI::~encrev2_pluginAPI()
-{
-}
+encrev2_pluginAPI::~encrev2_pluginAPI() {}
 
-// Read-only property version
+// Read-only property
 std::string encrev2_pluginAPI::get_version()
 {
 	return "CURRENT_VERSION";
 }
 
+// Event
 void            encrev2_pluginAPI::testEvent(const FB::variant& var)
 {
 	FireEvent("onfired", FB::variant_list_of(var));
 }
 
+// Callable
 bool            encrev2_pluginAPI::stream()
 {
 	encre::Stream* streamer = m_plugin.encre()->getStream(encre::STREAM);
@@ -85,25 +86,24 @@ bool		encrev2_pluginAPI::stop()
 	return m_plugin.encre()->getStream()->stop();
 }
 
-// These two getters are provide for Firebreath. Don't use them.
-std::string*
-encrev2_pluginAPI::get_runtime_option()
+// Read-Write property
+void	encrev2_pluginAPI::set_hostname(const std::string& host)
 {
-	return 0;
+	delete m_plugin.encre()->m_host;
+	m_plugin.encre()->m_host = new std::string(host);
 }
 
-std::string*
-encrev2_pluginAPI::get_startup_option()
+void	encrev2_pluginAPI::set_port(const short port)
 {
-	return 0;
+	m_plugin.encre()->m_port = port;
 }
 
-void    encrev2_pluginAPI::set_runtime_option(const std::string& s1)
+const std::string& encrev2_pluginAPI::get_hostname()
 {
-  //	m_plugin.encre()->getStream().setOptions(s1.c_str());
+	return *(m_plugin.encre()->m_host);
 }
 
-void    encrev2_pluginAPI::set_startup_option(const std::string& s1)
+short	encrev2_pluginAPI::get_port()
 {
-  //	m_plugin.encre()->getStream().setOptions(s1.c_str());
+	return m_plugin.encre()->m_port;	
 }

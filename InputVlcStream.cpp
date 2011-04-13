@@ -21,7 +21,7 @@ namespace encre
     m_mp = libvlc_media_player_new_from_media(m_media);
     if (m_mp == 0)
       {
-	std::clog << "libvlc_media_player_new: failed to create the media player" << std::endl;
+	EncreLog() << "libvlc_media_player_new: failed to create the media player";
 	return false;
       }
 

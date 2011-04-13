@@ -14,7 +14,8 @@ namespace	encre
   }
 
   Stream::Stream(Encre<libvlc_instance_t>* instance) : m_encre(instance),
-  	m_state(INACTIVE), m_client(new Client("127.0.0.1", 4242))
+  	m_state(INACTIVE),
+	m_client(new Client(*(instance->m_host), instance->m_port))
   {
   }
 }

@@ -21,20 +21,26 @@ namespace encre
   template <typename T>
   class	Encre
   {
-  private:
-    T*						m_data;
-    Stream*					m_stream;
-
-  public :
+  public:
     Encre();
     Encre(const std::vector<std::string>&	vlcOpts);
     virtual ~Encre();
-    virtual void set_window(FB::PluginWindow *);
+
+    virtual void				set_window(FB::PluginWindow*);
 
     bool					start();
     T*						getData();
     Stream*					getStream(e_action=NOTHING);
+    std::string*				getHostname();
+
+  private:
+    T*						m_data;
+    Stream*					m_stream;
+
+  public:
     FB::PluginWindow*				m_window;
+    std::string*				m_host;
+    short					m_port;
   };
 }
 

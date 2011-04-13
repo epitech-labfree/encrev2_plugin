@@ -3,6 +3,7 @@
 #include <boost/signals2.hpp>
 #include "Protocol.hh"
 #include "Client.hh"
+#include "EncreLog.hpp"
 
 Client::Client(const std::string& host, short int port)
 	: m_network(new Network<Client>(host, port)),
@@ -11,18 +12,18 @@ Client::Client(const std::string& host, short int port)
 	switch (m_network->get_state()) {
 		case Network<Client>::CONNECTED:
 			m_state = CONNECTED;
-			std::clog << "NOTE: Client: state = CONNECTED " << std::endl;
+			EncreLog() << "Client: state = CONNECTED";
 			break;
 		case Network<Client>::NOT_CONNECTED:
 			m_state = NOT_CONNECTED;
-			std::clog << "NOTE: Client: state = NOT_CONNECTED" << std::endl;
+			EncreLog() << "Client: state = NOT_CONNECTED";
 			break;
 		case Network<Client>::ERROR:
 		default:
 			m_state = ERROR;
-			std::clog << "NOTE: Client: state = ERROR" << std::endl;
+			EncreLog() << "Client: state = ERROR";
 	}
-	std::clog << "DEBUG: Client: created" << std::endl;
+	EncreLog(EncreLog::Debug) << "Client: Created";
 	m_network->set_receiver(this);
 }
 
@@ -45,7 +46,7 @@ Client::send_data(char* buf, size_t size) {
 	if (m_state == CONNECTED && m_protocol->foo()) { //TODO: Replace foo() by a parser
 		m_state = PUBLISHING;
 		m_network->write("PUT toto\n\n", 10); //XXX: CRAP
-		std::clog << "NOTE: Client: state = PUBLISHING" << std::endl;
+		EncreLog() << "Client: state = PUBLISHING";
 		goto write;
 	}
 	else if (m_state == PUBLISHING) {

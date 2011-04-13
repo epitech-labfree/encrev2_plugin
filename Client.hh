@@ -26,7 +26,7 @@ public:
 		delete m_protocol;
 		m_network = 0;
 		m_protocol = 0;
-		std::clog << "DEBUG: Client: deleted" << std::endl;
+		EncreLog(EncreLog::Debug) << "Client: deleted";
 	}
 
 	Client::state&
@@ -41,9 +41,13 @@ public:
 
 	void
 	control() {
+		if (m_state == NOT_CONNECTED || m_state == ERROR) {
+			EncreLog(EncreLog::Warning) << "Client is _not_ connected yet";
+			return;
+		}
 		m_network->write("GET toto\n\n", 10); //XXX: CRAP
 		m_state = RECEIVING;
-		std::clog << "NOTE: Client: state = RECEIVING" << std::endl;
+		EncreLog() << "Client: state = RECEIVING";
 	}
 
 	void

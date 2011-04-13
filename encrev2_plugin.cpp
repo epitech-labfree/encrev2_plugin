@@ -13,12 +13,13 @@
 #include "encrev2_pluginAPI.h"
 #include "encrev2_plugin.h"
 #include "PluginWindow.h"
+#include "EncreLog.hpp"
 
 using namespace std;
 
 void            encrev2_plugin::StaticInitialize()
 {
-  cout << "encrev2_plugin::StaticInitialize()" << endl;
+  EncreLog() << "encrev2_plugin::StaticInitialize()";
   // Place one-time initialization stuff here; note that there isn't an absolute guarantee that
   // this will only execute once per process, just a guarantee that it won't execute again until
   // after StaticDeinitialize is called
@@ -26,7 +27,7 @@ void            encrev2_plugin::StaticInitialize()
 
 void            encrev2_plugin::StaticDeinitialize()
 {
-  cout << "encrev2_plugin::StaticDeinitialize()" << endl;
+  EncreLog() << "encrev2_plugin::StaticDeinitialize()";
   // Place one-time deinitialization stuff here
 }
 
