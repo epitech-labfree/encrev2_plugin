@@ -97,13 +97,15 @@ protected:
 	void	connect_handler(const boost::system::error_code& error) {
 		if (!error) {
 			m_state = CONNECTED;
-			m_receiver->set_state((size_t)CONNECTED);
+			if (m_receiver)
+			  m_receiver->set_state((size_t)CONNECTED);
 			EncreLog() << "Network state = CONNECTED";
 			Network::read(READ_SIZE);
 		}
 		else {
 			m_state = ERROR;
-			m_receiver->set_state(ERROR);
+			if (m_receiver)
+			  m_receiver->set_state(ERROR);
 			EncreLog() << "Network state = ERROR";
 		}
 	}
