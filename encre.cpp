@@ -24,7 +24,7 @@ namespace encre
   template <>
   Encre<libvlc_instance_t>::Encre() : m_data(0), m_stream(0), m_window(0), m_host(new std::string("127.0.0.1")), m_port(4242)
   {
-    EncreLog(EncreLog::Debug) << "Encre: Initialisation" << (unsigned int)this;
+    EncreLog(EncreLog::Debug) << "Encre: Initialisation" << (intptr_t)this;
     m_data = libvlc_new(sizeof(vlc_args) / sizeof(vlc_args[0]), vlc_args);
   }
 
@@ -47,7 +47,7 @@ namespace encre
   template <typename T>
   Encre<T>::~Encre()
   {
-	delete m_data;	  
+	delete m_data;
 	m_data = 0;
   }
 
@@ -111,6 +111,6 @@ namespace encre
   template <typename T> void
   Encre<T>::set_window(FB::PluginWindow *w)
   {
-	m_window = w; 
+	m_window = w;
   }
 }

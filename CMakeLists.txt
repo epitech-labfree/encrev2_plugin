@@ -8,13 +8,11 @@
 cmake_minimum_required (VERSION 2.6)
 set (CMAKE_BACKWARDS_COMPATIBILITY 2.6)
 set (CMAKE_BUILD_TYPE Debug)
+set (CMAKE_CXX_FLAGS "-g3")
 
 add_definitions(-DPOSIX)
 
-include(${CMAKE_DIR}/common.cmake)
-
 set (PROJNAME ${PLUGIN_NAME})
-set (CMAKE_CXX_FLAGS "-g3")
 #
 # Dependencies detection
 #
@@ -27,18 +25,13 @@ else (VLC_FOUND)
   message(SEND_ERROR "libvlc not found, this is required. Maybe check the PKG_CONFIG_PATH variable")
 endif (VLC_FOUND)
 
+Project(${PROJNAME})
+
 include_directories(${VLC_INCLUDE_DIRS})
+include_directories(${CMAKE_CURRENT_SOURCE_DIR})
+include_directories(${PLUGIN_INCLUDE_DIRS})
 link_directories(${VLC_LIBRARY_DIRS})
 
-
-set(CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}")
-include_directories(/usr/include)
-include_directories(${EXPAT_INCLUDE_DIR})
-include_directories(${SRTP_INCLUDE_DIR})
-include_directories(${XMPPHELP_INCLUDE_DIR})
-
-
-browserplugin_project(${PROJNAME})
 
 file (GLOB GENERAL RELATIVE ${CMAKE_CURRENT_SOURCE_DIR}
     [^.]*.cpp
